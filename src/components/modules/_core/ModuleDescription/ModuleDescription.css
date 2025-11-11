@@ -1,0 +1,16 @@
+.module-description {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.module-description h2 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+}
+
+.module-description p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}

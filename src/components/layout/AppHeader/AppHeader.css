@@ -1,0 +1,226 @@
+.app-header {
+  background: var(--surface-color);
+  box-shadow: var(--shadow);
+
+  min-height: 70px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Contenedor izquierdo - Espacio balanceado */
+.header-left {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  min-width: 0;
+}
+
+.header-spacer {
+  width: 40px;
+  height: 40px;
+  visibility: hidden;
+}
+
+/* Contenedor central - Información del proyecto */
+.header-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.project-info {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.project-name {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+}
+
+.project-client {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* Contenedor derecho - Información del módulo actual (solo móvil) */
+.header-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 0;
+}
+
+.current-module {
+  display: none; /* Oculto por defecto, solo visible en móvil */
+  text-align: right;
+}
+
+.module-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  background: var(--background-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .app-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .project-name {
+    font-size: 1.3rem;
+  }
+
+  .project-client {
+    font-size: 0.85rem;
+  }
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0.6rem 1rem;
+    min-height: 60px;
+  }
+
+  .header-content {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .header-left,
+  .header-center,
+  .header-right {
+    flex: none;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .header-left {
+    order: 3;
+    display: none;
+  }
+
+  .header-center {
+    order: 1;
+    flex: none;
+  }
+
+  .header-right {
+    order: 2;
+    justify-content: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .project-info {
+    gap: 0.1rem;
+  }
+
+  .project-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .project-client {
+    font-size: 0.8rem;
+    font-weight: 400;
+  }
+
+  /* Mostrar información del módulo actual en móvil */
+  .current-module {
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+
+  .module-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    background: var(--primary-color);
+    color: white;
+    padding: 0.3rem 1rem;
+    border-radius: 1rem;
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .app-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .project-name {
+    font-size: 1.1rem;
+  }
+
+  .project-client {
+    font-size: 0.75rem;
+  }
+
+  .module-name {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.8rem;
+  }
+}
+
+/* Pantallas muy grandes */
+@media (min-width: 1440px) {
+  .header-content {
+    max-width: 1400px;
+  }
+
+  .project-name {
+    font-size: 1.6rem;
+  }
+
+  .project-client {
+    font-size: 1rem;
+  }
+}
+
+/* Ajustes para cuando no hay proyecto seleccionado */
+.app-header:not(.has-project) .header-center {
+  display: none;
+}
+
+.app-header:not(.has-project) .header-left,
+.app-header:not(.has-project) .header-right {
+  flex: 1;
+}

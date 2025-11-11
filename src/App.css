@@ -1,0 +1,46 @@
+/* App.css */
+.App {
+  min-height: 100vh;
+}
+
+/* Estilos temporales para la página de inicio */
+.temporary-home {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.temporary-home h1 {
+  color: #1e3c72;
+  margin-bottom: 1rem;
+}
+
+.temporary-home p {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.temporary-home button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.temporary-home button:hover {
+  background: #c82333;
+}
+
+.temporary-home .next-steps {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.temporary-home .next-steps h3 {
+  color: #1e3c72;
+  margin-bottom: 1rem;
+}

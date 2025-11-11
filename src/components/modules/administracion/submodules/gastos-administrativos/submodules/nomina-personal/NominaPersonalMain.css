@@ -1,0 +1,178 @@
+/* src/components/modules/administracion/submodules/gastos-administrativos/submodules/nomina-personal/NominaPersonalMain.css */
+
+/* Container */
+.nomina-personal-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Grid principal */
+.nomina-personal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Tarjetas principales */
+.nomina-personal-card {
+  background: var(--surface-color, #ffffff);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  min-height: 200px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.nomina-personal-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color, #007bff),
+    var(--secondary-color, #6c757d)
+  );
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.nomina-personal-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md, 0 8px 15px rgba(0, 0, 0, 0.15));
+  border-color: var(--primary-color, #007bff);
+}
+
+.nomina-personal-card:hover::before {
+  transform: scaleX(1);
+}
+
+.nomina-card-icon {
+  font-size: clamp(2.4rem, 6vw, 3.5rem);
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.nomina-personal-card:hover .nomina-card-icon {
+  transform: scale(1.1);
+}
+
+.nomina-card-content {
+  width: 100%;
+}
+
+.nomina-card-content h3 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.nomina-card-content p {
+  color: var(--text-secondary, #718096);
+  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.8vw, 1rem);
+  margin: 0 0 1rem 0;
+}
+
+.project-badge {
+  background: var(--background-color, #f8f9fa);
+  color: var(--text-secondary, #718096);
+  padding: 0.375rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: auto;
+  display: inline-block;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .nomina-personal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nomina-personal-card {
+    padding: 1.25rem;
+  }
+
+  .nomina-card-icon {
+    font-size: 3rem;
+  }
+
+  .nomina-card-content h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Móviles grandes */
+@media (max-width: 639px) {
+  .nomina-personal-main {
+    padding: 0 0.75rem;
+  }
+
+  .nomina-personal-grid {
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .nomina-personal-card {
+    padding: 1rem;
+    min-height: 160px;
+  }
+
+  .nomina-card-icon {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .nomina-card-content h3 {
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .nomina-card-content p {
+    font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .nomina-personal-card {
+    background: var(--surface-color, #2d3748);
+  }
+
+  .nomina-card-content h3 {
+    color: var(--text-primary, #e2e8f0);
+  }
+
+  .nomina-card-content p {
+    color: var(--text-secondary, #cbd5e0);
+  }
+
+  .project-badge {
+    background: var(--background-color, #4a5568);
+    color: var(--text-secondary, #cbd5e0);
+  }
+}

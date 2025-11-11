@@ -1,0 +1,202 @@
+/* InvoicesList.css */
+.invoices-list h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.date-filter {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.date-filter label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.date-filter input {
+  padding: 10px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.clear-filter {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.clear-filter:hover {
+  background: #5a6268;
+}
+
+.stats span {
+  font-weight: 600;
+  color: #495057;
+  background: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.no-invoices {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+}
+
+.no-invoices p {
+  color: #6c757d;
+  font-size: 1.1em;
+  margin: 0;
+}
+
+.invoices-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 25px;
+}
+
+.invoice-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.invoice-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.invoice-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2em;
+}
+
+.invoice-date {
+  background: #007bff;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.invoice-details {
+  margin-bottom: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.detail-row.total {
+  border-top: 2px solid #e9ecef;
+  border-bottom: none;
+  margin-top: 8px;
+  padding-top: 12px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.client-deductions {
+  margin: 20px 0;
+  padding: 15px;
+  background: #fff3cd;
+  border-radius: 8px;
+  border: 1px solid #ffeaa7;
+}
+
+.client-deductions h4 {
+  margin: 0 0 10px 0;
+  color: #856404;
+  font-size: 1em;
+}
+
+.deduction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 0.9em;
+  border-bottom: 1px solid rgba(133, 100, 4, 0.1);
+}
+
+.deduction-item:last-child {
+  border-bottom: none;
+}
+
+.deduction-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  margin-top: 8px;
+  border-top: 1px solid rgba(133, 100, 4, 0.3);
+  font-weight: bold;
+  color: #856404;
+}
+
+.final-amounts {
+  margin-top: 20px;
+  padding: 15px;
+  background: #d4edda;
+  border-radius: 8px;
+  border: 1px solid #c3e6cb;
+}
+
+.final-amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-weight: bold;
+}
+
+.final-amount:first-child {
+  color: #155724;
+}
+
+.final-amount:last-child {
+  color: #0c5460;
+  border-top: 1px solid #c3e6cb;
+  padding-top: 12px;
+}

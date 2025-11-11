@@ -1,0 +1,104 @@
+.project-lobby {
+  padding: 2rem;
+}
+
+.project-header {
+  background: var(--surface-color);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+}
+
+.project-header h1 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.project-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.project-info span {
+  padding: 0.5rem 1rem;
+  background: var(--background-color);
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.welcome-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: var(--surface-color);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+}
+
+.welcome-message h2 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.welcome-message p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+  margin-bottom: 2rem;
+}
+
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.stat-card h3 {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.stat-value.active {
+  color: var(--success-color);
+}
+
+@media (max-width: 768px) {
+  .project-lobby {
+    padding: 1rem;
+  }
+
+  .project-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .project-info span {
+    text-align: center;
+  }
+
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+}

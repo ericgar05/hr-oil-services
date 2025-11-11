@@ -1,0 +1,161 @@
+.project-card {
+
+  margin:auto;
+  background: var(--surface-color);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 20px;
+  max-width: 50vh;
+
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.project-name {
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1.25rem;
+  flex: 1;
+}
+
+.project-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.project-status-active {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.project-status-inactive {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.project-card-body {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: row;
+
+}
+
+.project-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  
+  gap: 0.75rem;
+}
+
+
+
+.info-item strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.info-item span {
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.project-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.delete-confirm-modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-md);
+  max-width: 400px;
+  width: 100%;
+}
+
+.delete-confirm-modal h4 {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.delete-confirm-modal p {
+  margin-bottom: 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+.icon{
+  width: 20px;
+  
+}
+.icon-item{
+  width: 20px;
+  margin-right: 5px;
+ 
+}
+div>h3{
+  white-space: nowrap; 
+  overflow: hidden;    
+  text-overflow: ellipsis;
+  flex-grow: 1; 
+  flex-shrink: 1;
+  font-size: 1em;
+  margin-bottom: 8px;
+  flex: 1 1 auto;
+  
+}
+
+@media (max-width: 768px) {
+  .project-card-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .action-buttons {
+    justify-content: space-between;
+  }
+
+}

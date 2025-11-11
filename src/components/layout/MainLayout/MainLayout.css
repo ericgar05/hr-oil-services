@@ -1,0 +1,123 @@
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--background-color, #f8fafc); /* Fallback color */
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left 0.3s ease;
+  background-color: #f8fafc; /* Fondo consistente */
+}
+
+/* Cuando la sidebar está abierta */
+.main-layout.sidebar-open .main-content {
+  margin-left: 250px;
+  width: calc(100% - 250px); /* IMPORTANTE: Evita desbordamiento */
+}
+
+/* Cuando la sidebar está cerrada */
+.main-layout.sidebar-closed .main-content {
+  margin-left: 0;
+  width: 100%; /* Ocupa todo el ancho */
+}
+
+.content-area {
+  flex: 1;
+  padding: 0;
+  overflow-y: auto;
+  height: calc(100vh - 70px);
+  background-color: #f8fafc; /* Cambié a un color más moderno */
+  position: relative;
+}
+
+/* NUEVO: Contenedor para el contenido de las páginas */
+.page-content {
+  padding: 1.5rem;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.sidebar-action-icon {
+  width: 1em;
+  height: 1em;
+  fill: #fff;
+}
+
+/* Responsive - MEJORADO */
+@media (max-width: 768px) {
+  .main-layout.sidebar-open .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .content-area {
+    height: calc(100vh - 60px);
+    padding: 0;
+  }
+
+  .page-content {
+    padding: 1rem;
+  }
+
+  /* En móviles, cuando la sidebar está abierta, evitar scroll del contenido */
+  .main-layout.sidebar-open {
+    overflow: hidden;
+  }
+  
+  /* Mejorar el scroll en móviles */
+  .content-area {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Ajustes para pantallas muy altas */
+@media (min-height: 800px) {
+  .content-area {
+    height: calc(100vh - 80px);
+  }
+}
+
+/* NUEVO: Soporte para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .main-layout {
+    background-color: var(--background-dark, #0f172a);
+  }
+  
+  .main-content {
+    background-color: var(--background-dark, #0f172a);
+  }
+  
+  .content-area {
+    background-color: var(--background-dark, #0f172a);
+  }
+}
+
+/* NUEVO: Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .main-content {
+    transition: none;
+  }
+}
+
+/* NUEVO: Scrollbar personalizada para navegadores WebKit */
+.content-area::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-area::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.content-area::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.content-area::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

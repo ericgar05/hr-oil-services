@@ -1,0 +1,46 @@
+.module-header {
+  margin-bottom: 2rem;
+}
+
+.module-header h1 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+}
+
+.module-header p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.module-content {
+  background: var(--surface-color);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  min-height: 400px;
+}
+
+.permission-denied {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.permission-denied h2 {
+  color: var(--error-color);
+  margin-bottom: 1rem;
+}
+
+.permission-denied p {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+  .module-container {
+    padding: 1rem;
+  }
+
+  .module-content {
+    padding: 1rem;
+  }
+}

@@ -1,0 +1,25 @@
+.financial-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.financial-card {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 0.375rem;
+  text-align: center;
+  border-left: 4px solid var(--primary-color);
+}
+
+.financial-value {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.financial-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}

@@ -1,0 +1,228 @@
+// src/components/modules/contrato/submodules/presupuesto/components/PresupuestoForm.jsx
+import React, { useState } from 'react'
+import './PresupuestoForm.css'
+
+const PresupuestoForm = ({ 
+  presupuesto, 
+  onSubmit, 
+  onCancel, 
+  showItemsForm = false, 
+  onAddItem 
+}) => {
+  const [formData, setFormData] = useState({
+    contratoNumero: presupuesto.contratoNumero || '',
+    nombreContrato: presupuesto.nombreContrato || ''
+  })
+
+  const [itemData, setItemData] = useState({
+    item: '',
+    descripcion: '',
+    unidad: '',
+    cantidad: 1,
+    precioUnitario: 0,
+    moneda: 'USD',
+    aplicaIVA: true
+  })
+
+  const unidades = ['SG', 'DIA', 'M3', 'UNIDAD', 'H-H', 'ML', 'M2', 'KG', 'TON', 'LTS', 'GLN']
+
+  const handleContratoSubmit = (e) => {
+    e.preventDefault()
+    if (formData.contratoNumero && formData.nombreContrato) {
+      onSubmit(formData)
+    } else {
+      alert('Por favor complete todos los campos del contrato')
+    }
+  }
+
+  const handleItemSubmit = (e) => {
+    e.preventDefault()
+    
+    // Generar número de ítem automáticamente
+    const numeroItems = presupuesto.items.length
+    const nextItemNumber = `8.${numeroItems + 1}`
+    
+    const newItem = {
+      ...itemData,
+      item: nextItemNumber
+    }
+
+    onAddItem(newItem)
+
+    // Resetear formulario de ítem
+    setItemData({
+      item: '',
+      descripcion: '',
+      unidad: '',
+      cantidad: 1,
+      precioUnitario: 0,
+      moneda: 'USD',
+      aplicaIVA: true
+    })
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+  }
+
+  const handleItemChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setItemData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+  }
+
+  if (!showItemsForm) {
+    return (
+      <div className="presupuesto-form">
+        <form onSubmit={handleContratoSubmit}>
+          <div className="form-group">
+            <label htmlFor="contratoNumero">Contrato N° *</label>
+            <input
+              type="text"
+              id="contratoNumero"
+              name="contratoNumero"
+              value={formData.contratoNumero}
+              onChange={handleInputChange}
+              placeholder="Ej: 3N-069-035-D-24-S-0201 / SAP 4600139869"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="nombreContrato">Nombre Completo del Contrato *</label>
+            <textarea
+              id="nombreContrato"
+              name="nombreContrato"
+              value={formData.nombreContrato}
+              onChange={handleInputChange}
+              placeholder="Ej: MANTENIMIENTO CORRECTIVO A VÁLVULAS DE CONTROL, ON-OFF Y VÁLVULAS SP Y ACTUADORES DE LAS UNIDADES DE PROCESO..."
+              rows="3"
+              required
+            />
+          </div>
+
+          <div className="form-actions">
+            <button type="submit" className="btn-primary">
+              ➡️ Continuar a Agregar Ítems
+            </button>
+            <button type="button" className="btn-outline" onClick={onCancel}>
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    )
+  }
+
+  return (
+    <div className="presupuesto-form items-form">
+      <h4>Agregar Nuevo Ítem</h4>
+      <form onSubmit={handleItemSubmit}>
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="descripcion">Descripción *</label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              value={itemData.descripcion}
+              onChange={handleItemChange}
+              placeholder="Descripción detallada del ítem..."
+              rows="2"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="unidad">Unidad *</label>
+            <select
+              id="unidad"
+              name="unidad"
+              value={itemData.unidad}
+              onChange={handleItemChange}
+              required
+            >
+              <option value="">Seleccionar unidad...</option>
+              {unidades.map(unidad => (
+                <option key={unidad} value={unidad}>{unidad}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="cantidad">Cantidad *</label>
+            <input
+              type="number"
+              id="cantidad"
+              name="cantidad"
+              value={itemData.cantidad}
+              onChange={handleItemChange}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="precioUnitario">Precio Unitario *</label>
+            <input
+              type="number"
+              id="precioUnitario"
+              name="precioUnitario"
+              value={itemData.precioUnitario}
+              onChange={handleItemChange}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="moneda">Moneda *</label>
+            <select
+              id="moneda"
+              name="moneda"
+              value={itemData.moneda}
+              onChange={handleItemChange}
+              required
+            >
+              <option value="USD">USD$</option>
+              <option value="EUR">EURO</option>
+              <option value="BS">Bs</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="form-group checkbox-group">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              name="aplicaIVA"
+              checked={itemData.aplicaIVA}
+              onChange={handleItemChange}
+            />
+            <span className="checkmark"></span>
+            Aplicar IVA (16%) a este ítem
+          </label>
+        </div>
+
+        <div className="form-actions">
+          <button type="submit" className="btn-primary">
+            ➕ Agregar Ítem
+          </button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
+export default PresupuestoForm

@@ -1,0 +1,492 @@
+/* src/components/modules/contrato/submodules/presupuesto/PresupuestoMain.css */
+.presupuesto-main {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.back-button {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  color: #495057;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-button:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+  transform: translateX(-2px);
+}
+
+/* Indicador de pasos */
+.steps-indicator {
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+  position: relative;
+  gap: 40px;
+}
+
+.steps-indicator::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: #e9ecef;
+  z-index: 1;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  max-width: 200px;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e9ecef;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+  border: 3px solid white;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.step.active .step-number {
+  background: #007bff;
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+.step.completed .step-number {
+  background: #28a745;
+  color: white;
+}
+
+.step-label {
+  font-size: 12px;
+  text-align: center;
+  color: #6c757d;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.step.active .step-label {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.step.completed .step-label {
+  color: #28a745;
+}
+
+/* Contenido del presupuesto */
+.presupuesto-content {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.form-section {
+  padding: 40px;
+}
+
+.items-section {
+  padding: 0;
+}
+
+/* Header de sección */
+.section-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 30px 40px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.section-header h3 {
+  margin: 0 0 15px 0;
+  color: #495057;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.contrato-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.contrato-details {
+  color: #495057;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.contrato-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat-badge {
+  background: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.stat-badge.currency {
+  background: #e7f3ff;
+  border-color: #b3d7ff;
+  color: #0066cc;
+}
+
+.stat-badge.status {
+  background: #fff3cd;
+  border-color: #ffeaa7;
+  color: #856404;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-outline.small {
+  padding: 8px 12px;
+  font-size: 12px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+
+.btn-outline.small:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+/* Sección de agregar ítems */
+.add-item-section {
+  padding: 30px 40px;
+  border-bottom: 1px solid #e9ecef;
+  background: #fafbfc;
+}
+
+/* Sección de resultados */
+.results-section {
+  padding: 0;
+}
+
+/* Estados vacíos */
+.empty-state {
+  padding: 60px 40px;
+  text-align: center;
+  background: #f8f9fa;
+  margin: 20px 40px;
+  border-radius: 8px;
+  border: 2px dashed #dee2e6;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state h4 {
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #6c757d;
+  margin-bottom: 30px;
+}
+
+.empty-tips {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.empty-tips h5 {
+  color: #495057;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.empty-tips ul {
+  color: #6c757d;
+  font-size: 13px;
+  line-height: 1.6;
+  padding-left: 20px;
+}
+
+.empty-tips li {
+  margin-bottom: 8px;
+}
+
+/* Acciones */
+.actions-section {
+  padding: 30px 40px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+.progress-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.finalized-message {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.success-alert {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  color: #155724;
+}
+
+.alert-icon {
+  font-size: 24px;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-content strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.final-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Botones */
+.btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+}
+
+.btn-primary.large {
+  padding: 15px 30px;
+  font-size: 16px;
+}
+
+.btn-success {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-success:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: white;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-outline:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+}
+
+/* Footer de información del proyecto */
+.project-info-footer {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.project-info-footer small {
+  color: #6c757d;
+}
+
+.project-info-footer strong {
+  color: #495057;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .presupuesto-main {
+    padding: 15px;
+  }
+  
+  .steps-indicator {
+    gap: 20px;
+  }
+  
+  .steps-indicator::before {
+    left: 15%;
+    right: 15%;
+  }
+}
+
+@media (max-width: 768px) {
+  .presupuesto-main {
+    padding: 10px;
+  }
+  
+  .steps-indicator {
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  
+  .steps-indicator::before {
+    display: none;
+  }
+  
+  .step {
+    flex-direction: row;
+    gap: 15px;
+    max-width: none;
+  }
+  
+  .step-number {
+    margin-bottom: 0;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+  }
+  
+  .form-section,
+  .add-item-section {
+    padding: 20px;
+  }
+  
+  .actions-section {
+    padding: 20px;
+  }
+  
+  .progress-actions,
+  .final-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary,
+  .btn-success,
+  .btn-outline {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .empty-state {
+    margin: 10px 20px;
+    padding: 40px 20px;
+  }
+  
+  .contrato-stats {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-header h3 {
+    font-size: 20px;
+  }
+  
+  .empty-icon {
+    font-size: 3rem;
+  }
+  
+  .project-info-footer {
+    text-align: left;
+  }
+}

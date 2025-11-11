@@ -1,0 +1,226 @@
+/* IngresosComisionesMain.css */
+.ingresos-comisiones-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Back button - usando los mismos estilos que GastosAdminMain */
+.back-button {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary, #2d3748);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-bottom: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.back-button:hover {
+  background: var(--background-color, #f8f9fa);
+  border-color: var(--primary-color, #007bff);
+  transform: translateX(-2px);
+}
+
+/* Grid principal - estilos consistentes */
+.ingresos-comisiones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Tarjetas principales - mismas animaciones y efectos */
+.ingresos-comisiones-card {
+  background: var(--surface-color, #ffffff);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  min-height: 200px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.ingresos-comisiones-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color, #007bff),
+    var(--secondary-color, #6c757d)
+  );
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.ingresos-comisiones-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md, 0 8px 15px rgba(0, 0, 0, 0.15));
+  border-color: var(--primary-color, #007bff);
+}
+
+.ingresos-comisiones-card:hover::before {
+  transform: scaleX(1);
+}
+
+.ingresos-comisiones-card:active {
+  transform: translateY(-2px);
+  transition: transform 0.1s ease;
+}
+
+.ingresos-card-icon {
+  font-size: clamp(2.4rem, 6vw, 3.5rem);
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.ingresos-comisiones-card:hover .ingresos-card-icon {
+  transform: scale(1.1);
+}
+
+.ingresos-card-content {
+  width: 100%;
+}
+
+.ingresos-card-content h3 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ingresos-card-content p {
+  color: var(--text-secondary, #718096);
+  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.8vw, 1rem);
+  margin: 0 0 1rem 0;
+}
+
+.ingresos-card-content small {
+  color: var(--text-tertiary, #a0aec0);
+  font-size: 0.875rem;
+  display: block;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .ingresos-comisiones-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ingresos-comisiones-card {
+    padding: 1.25rem;
+  }
+
+  .ingresos-card-icon {
+    font-size: 3rem;
+  }
+
+  .ingresos-card-content h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Móviles grandes */
+@media (max-width: 639px) {
+  .ingresos-comisiones-main {
+    padding: 0 0.75rem;
+  }
+
+  .ingresos-comisiones-grid {
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .ingresos-comisiones-card {
+    padding: 1rem;
+    min-height: 160px;
+  }
+
+  .ingresos-card-icon {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .ingresos-card-content h3 {
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .ingresos-card-content p {
+    font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .ingresos-comisiones-card {
+    transition: none;
+  }
+
+  .ingresos-comisiones-card:hover {
+    transform: none;
+  }
+
+  .ingresos-comisiones-card:hover .ingresos-card-icon {
+    transform: none;
+  }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .ingresos-comisiones-card {
+    background: var(--surface-color, #2d3748);
+  }
+
+  .ingresos-card-content h3 {
+    color: var(--text-primary, #e2e8f0);
+  }
+
+  .ingresos-card-content p {
+    color: var(--text-secondary, #cbd5e0);
+  }
+
+  .ingresos-card-content small {
+    color: var(--text-tertiary, #a0aec0);
+    border-top-color: var(--border-light, #4a5568);
+  }
+
+  .back-button {
+    background: var(--surface-color, #2d3748);
+    color: var(--text-primary, #e2e8f0);
+    border-color: var(--border-color, #4a5568);
+  }
+
+  .back-button:hover {
+    background: var(--background-color, #4a5568);
+  }
+}

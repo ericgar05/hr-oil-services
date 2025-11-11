@@ -1,0 +1,287 @@
+/* CompanyDeductionsForm.css */
+.company-deductions-form h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.daily-summary-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 25px;
+}
+
+.daily-summary-card h3 {
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 1.3em;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.95);
+  color: #2c3e50;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.summary-card.primary {
+  border-left: 4px solid #28a745;
+}
+
+.summary-card.secondary {
+  border-left: 4px solid #17a2b8;
+}
+
+.summary-card label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #495057;
+  font-size: 0.9em;
+}
+
+.amount-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.amount-bs {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #28a745;
+  font-family: 'Courier New', monospace;
+}
+
+.amount-usd {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #17a2b8;
+  font-family: 'Courier New', monospace;
+}
+
+.summary-card small {
+  color: #6c757d;
+  font-size: 0.8em;
+}
+
+.date-selection {
+  margin-bottom: 25px;
+}
+
+.date-selection label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.date-selection input {
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 200px;
+}
+
+.deductions-section {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 25px;
+}
+
+.info-message {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.info-message p {
+  margin: 0;
+  color: #1565c0;
+  font-size: 0.9em;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h3 {
+  color: #2c3e50;
+  margin: 0;
+}
+
+.add-button {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.add-button:hover {
+  background: #218838;
+}
+
+.deduction-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+}
+
+.deduction-inputs {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex: 1;
+}
+
+.deduction-inputs input[type="text"] {
+  flex: 2;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.deduction-inputs input[type="number"] {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.deduction-amount {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  color: #dc3545;
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  font-family: 'Courier New', monospace;
+}
+
+.remove-button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.remove-button:hover {
+  background: #c82333;
+}
+
+.deductions-totals {
+  margin: 30px 0;
+  padding: 25px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.total-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  position: relative;
+}
+
+.total-item.highlight {
+  background: #d4edda;
+  border-color: #c3e6cb;
+  font-weight: bold;
+}
+
+.total-item label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 1em;
+}
+
+.total-amount {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  color: #28a745;
+  font-size: 1.1em;
+}
+
+.total-item small {
+  position: absolute;
+  bottom: -18px;
+  left: 15px;
+  color: #6c757d;
+  font-size: 0.8em;
+}
+
+.save-section {
+  text-align: center;
+}
+
+.submit-button {
+  width: 100%;
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: #138496;
+}
+
+.submit-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+}
+
+.validation-message {
+  color: #dc3545;
+  margin-top: 10px;
+  font-size: 0.9em;
+  font-weight: 500;
+}

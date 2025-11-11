@@ -1,0 +1,45 @@
+/* src/components/modules/operaciones/submodules/compras/ComprasTable.css */
+.compras-table-container {
+  margin-top: 30px;
+}
+
+.compras-table-container h3 {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.compras-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.compras-table th,
+.compras-table td {
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  text-align: left;
+}
+
+.compras-table thead {
+  background-color: #f8f9fa;
+}
+
+.compras-table th {
+  font-weight: 600;
+}
+
+.btn-edit {
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  background-color: #e0a800;
+}

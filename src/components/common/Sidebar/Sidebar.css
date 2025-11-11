@@ -1,0 +1,482 @@
+/* Sidebar principal */
+.sidebar {
+  width: 250px;
+  /* CAMBIO: Color de fondo oscuro de la imagen */
+  background-color: #24294e;
+  /* CAMBIO: Esquinas redondeadas a la derecha */
+  border-radius: 0 1rem 1rem 0;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  transition: transform 0.3s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  /* Estilo visual sutil */
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* En desktop siempre visible, en móvil se controla con transform */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+.sidebar.open {
+  transform: translateX(0);
+  /* Asegura que el fondo sea el oscuro cuando está abierto */
+  background-color: #24294e;
+}
+
+.sidebar-content {
+  padding: 1rem 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header del sidebar con logo */
+.sidebar-header {
+  padding: 0 1.5rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.sidebar-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sidebar-title-container {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.sidebar-subtitle {
+  margin: 0;
+  font-size: 0.7rem;
+  color: #fff;
+  line-height: 1.2;
+}
+
+/* Información del usuario en sidebar */
+.sidebar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--background-color);
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.user-details {
+  min-width: 0;
+  flex: 1;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  color: var(--text-secondary);
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+.hamburger-icon {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 20px;
+  height: 20px;
+}
+
+.hamburger-line {
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+}
+
+/* Navegación */
+.sidebar-nav {
+  padding: 1rem 1rem; /* Añadido padding lateral para centrar botones */
+  flex: 1;
+  overflow: auto;
+}
+
+.sidebar-menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Items del sidebar */
+.sidebar-item {
+  margin-bottom: 0.25rem;
+}
+
+/* Color de los enlaces normales - deben ser claros */
+.sidebar-button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1.5rem; /* Ajustado para nuevo look */
+  border: none;
+  background: none;
+  text-decoration: none;
+  color: #e0e0e0; /* Color de texto claro para items inactivos */
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-button:hover {
+  /* CAMBIO: Efecto de hover sutil */
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: none; /* Look más estático */
+  color: #ffffff;
+  border-radius: 0.5rem;
+}
+
+/* Item ACTIVO */
+.sidebar-button.active {
+  background-color: #f7f9fc;
+  border-radius: 0.5rem;
+  color: #384098;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Iconos y labels de los items */
+.sidebar-icon {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  font-size: 1.1rem;
+  min-width: 20px;
+  color: inherit;
+}
+
+.sidebar-button.active .sidebar-icon {
+  color: #384098; /* Alineado con el texto activo */
+  transform: none;
+}
+
+.sidebar-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Footer de la sidebar */
+.sidebar-footer {
+  padding: 1rem 0.5rem 0;
+  margin-top: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-action-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  border-radius: 0.5rem; /* CAMBIO: borde más redondeado */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  color: #e0e0e0; /* Texto claro */
+  text-decoration: none;
+  gap: 0.75rem;
+}
+
+.sidebar-action-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+/* Estilos específicos para el botón de volver a proyectos */
+.back-to-projects:hover {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+/* Estilos específicos para el botón de cerrar sesión */
+.logout-btn:hover {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.sidebar-action-icon {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  min-width: 20px;
+}
+
+.sidebar-action-label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botón flotante para abrir sidebar cuando está cerrada - SOLO MÓVIL */
+.sidebar-floating-toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.sidebar-floating-toggle:hover {
+  background: var(--primary-dark);
+  transform: scale(1.05);
+}
+
+/* Overlay para móviles - SOLO MÓVIL */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: none;
+}
+
+.sidebar.open ~ .sidebar-overlay {
+  display: block;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Móviles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 280px;
+  }
+
+  .sidebar-header {
+    padding: 0 1rem 1rem;
+  }
+
+  .sidebar-logo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .sidebar-title {
+    font-size: 1rem;
+  }
+
+  .sidebar-subtitle {
+    font-size: 0.65rem;
+  }
+
+  /* Información del usuario en móvil */
+  .sidebar-user-info {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .user-avatar {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+
+  .user-name {
+    font-size: 0.85rem;
+  }
+
+  .user-role {
+    font-size: 0.7rem;
+  }
+
+  .sidebar-button {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .sidebar-action-btn {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .sidebar-floating-toggle {
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 35px;
+    height: 35px;
+  }
+
+  .hamburger-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Desktop - ocultar elementos móviles */
+@media (min-width: 769px) {
+  .sidebar.closed {
+    transform: translateX(0); /* Siempre visible en desktop */
+  }
+
+  .sidebar-floating-toggle {
+    display: none;
+  }
+
+  .sidebar-overlay {
+    display: none;
+  }
+
+  .sidebar-toggle {
+    display: none; /* Ocultar botón de cerrar en desktop */
+  }
+}
+
+/* Scrollbar personalizado para la sidebar */
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 2px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* Estados de focus para accesibilidad */
+.sidebar-action-btn:focus,
+.sidebar-toggle:focus,
+.sidebar-floating-toggle:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 1px;
+}
+
+/* Animación suave para todos los elementos interactivos */
+.sidebar-button,
+.sidebar-action-btn,
+.sidebar-toggle,
+.sidebar-floating-toggle {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Mejora visual para items activos */
+.sidebar-button.active .sidebar-icon {
+  transform: none; /* Se elimina el scale para un look más estable */
+}
+
+/* asegurar que los SVGs hereden el color del contenedor */
+.sidebar-icon svg,
+.sidebar-action-icon svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  display: inline-block;
+  vertical-align: middle;
+  color: inherit;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+/* forzar color del svg dentro de un item activo (contraste con fondo blanco) */
+.sidebar-button.active .sidebar-icon,
+.sidebar-button.active .sidebar-icon svg {
+  color: #384098;
+  fill: #384098 !important;
+  stroke: #384098 !important;
+}
+
+/* Ajustes para pantallas muy altas */
+@media (min-height: 800px) {
+  .sidebar-footer {
+    padding-bottom: 1rem;
+  }
+}

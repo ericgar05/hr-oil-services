@@ -1,0 +1,236 @@
+/* src/components/modules/contrato/submodules/presupuesto/components/ItemsTable.css */
+.items-table {
+  margin: 30px 0;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-header {
+  padding: 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.table-header h4 {
+  margin: 0;
+  color: #495057;
+}
+
+.table-info {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+th {
+  background: #e9ecef;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+tr:hover {
+  background: #f8f9fa;
+}
+
+tr.editing {
+  background: #fff3cd !important;
+}
+
+/* Column widths */
+.col-item { width: 80px; }
+.col-unidad { width: 100px; }
+.col-cantidad { width: 100px; }
+.col-precio { width: 150px; }
+.col-monto { width: 150px; }
+.col-iva { width: 100px; }
+.col-acciones { width: 120px; }
+.col-descripcion { min-width: 300px; }
+
+/* Descripción styling */
+.descripcion-text {
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+}
+
+/* Inputs de edición */
+.edit-input, .edit-textarea, .edit-select {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.edit-input.number {
+  text-align: right;
+}
+
+.edit-textarea {
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+}
+
+.price-edit {
+  display: flex;
+  gap: 5px;
+}
+
+.currency-select {
+  width: 60px;
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* IVA styling */
+.iva-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.iva-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.iva-badge.with-iva {
+  background: #d4edda;
+  color: #155724;
+}
+
+.iva-badge.without-iva {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Botones de acción */
+.action-buttons, .edit-actions {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.btn-edit, .btn-delete, .btn-save, .btn-cancel {
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-edit {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.btn-edit:hover {
+  background: #ffeaa7;
+}
+
+.btn-delete {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.btn-delete:hover {
+  background: #f1b0b7;
+}
+
+.btn-save {
+  background: #d4edda;
+  color: #155724;
+}
+
+.btn-save:hover {
+  background: #c3e6cb;
+}
+
+.btn-cancel {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.btn-cancel:hover {
+  background: #f1b0b7;
+}
+
+/* Estados especiales */
+.no-items {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 40px !important;
+}
+
+.table-footer {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+.footer-stats {
+  display: flex;
+  gap: 20px;
+  font-size: 14px;
+  color: #495057;
+}
+
+.footer-stats span {
+  padding: 4px 8px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .table-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .footer-stats {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

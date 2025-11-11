@@ -1,0 +1,206 @@
+.resumen-main__container {
+  display: flex;
+  flex-direction: column; /* Apilar verticalmente por defecto */
+  gap: 2rem;
+  padding: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.resume-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.valuaciones-resumen-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+}
+
+.section-header h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary, #1e293b);
+  margin: 0;
+}
+
+.badge {
+  background: var(--primary-color, #3b82f6);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Contenedor principal del carrusel */
+.valuaciones-carousel-container {
+  width: 100%;
+  position: relative;
+}
+
+/* Viewport del carrusel */
+.valuaciones-carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+/* Grid que contiene las tarjetas del carrusel */
+.valuaciones-carousel-grid {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+/* Cada tarjeta dentro del carrusel */
+.valuacion-card-carousel {
+  width: 100%;
+  flex-shrink: 0;
+  padding: 0.5rem; /* Espacio para que la sombra no se corte */
+  box-sizing: border-box;
+}
+
+/* Controles de navegación del carrusel */
+.carousel-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.carousel-btn {
+  background: var(--surface-color, #ffffff);
+  color: var(--text-primary, #374151);
+  border: 1px solid var(--border-color, #d1d5db);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--surface-hover, #f9fafb);
+  border-color: var(--primary-color, #3b82f6);
+  color: var(--primary-color, #3b82f6);
+}
+
+.carousel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.carousel-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Indicadores de puntos */
+.carousel-indicators {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.carousel-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-color, #d1d5db);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  padding: 0;
+}
+
+.carousel-indicator:hover {
+  background: var(--primary-light, #93c5fd);
+}
+
+.carousel-indicator.active {
+  background: var(--primary-color, #3b82f6);
+  transform: scale(1.2);
+}
+
+/* Contador de slides */
+.carousel-counter {
+  font-size: 0.875rem;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 500;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #64748b;
+  background: var(--surface-light, #f8fafc);
+  border-radius: var(--border-radius-lg, 12px);
+  border: 1px dashed var(--border-color, #e2e8f0);
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+/* Loading Skeleton */
+.loading-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.skeleton-card {
+  background: var(--surface-color, white);
+  padding: 1.5rem;
+  border-radius: var(--border-radius-lg, 12px);
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton-line {
+  height: 1rem;
+  background: #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.skeleton-line:last-child {
+  width: 60%;
+}
+
+/* Responsive */
+@media (min-width: 1024px) {
+  .resumen-main__container {
+    /* flex-direction: row; */
+    /* align-items: flex-start; */
+  }
+
+  .resume-cards-container {
+    width: 100%;
+  }
+
+  .valuaciones-resumen-container {
+    /* flex: 1; */ /* El carrusel ocupa el resto del espacio */
+  }
+}

@@ -1,0 +1,51 @@
+.retiro-form {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+
+.retiro-form h3 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/* Reusing form-group and submit-btn styles from ComprasForm.css or a global stylesheet is recommended */
+/* For now, defining them here for completeness */
+.retiro-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.retiro-form .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-weight: bold;
+}
+
+.retiro-form .form-group input,
+.retiro-form .form-group textarea,
+.retiro-form .form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.retiro-form .submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745; /* Green for withdrawal */
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retiro-form .submit-btn:hover {
+  background-color: #218838;
+}

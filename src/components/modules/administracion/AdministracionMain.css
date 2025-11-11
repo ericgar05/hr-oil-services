@@ -1,0 +1,473 @@
+/* src/components/modules/administracion/AdministracionMain.css */
+
+/* Container */
+.administracion-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Fluid typography */
+.module-description h2 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.module-description p {
+  color: var(--text-secondary, #718096);
+  font-size: clamp(0.95rem, 1.6vw, 1.125rem);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* Admin Main Grid - Tarjetas principales */
+.admin-main-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Tarjetas principales de administración */
+.admin-main-card {
+  background: var(--surface-color, #ffffff);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  min-height: 200px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-main-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color, #007bff),
+    var(--secondary-color, #6c757d)
+  );
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.admin-main-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md, 0 8px 15px rgba(0, 0, 0, 0.15));
+  border-color: var(--primary-color, #007bff);
+}
+
+.admin-main-card:hover::before {
+  transform: scaleX(1);
+}
+
+.admin-main-card:active {
+  transform: translateY(-2px);
+  transition: transform 0.1s ease;
+}
+
+.admin-card-icon {
+  font-size: clamp(2.4rem, 6vw, 3.5rem);
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.admin-main-card:hover .admin-card-icon {
+  transform: scale(1.1);
+}
+
+.admin-card-content {
+  width: 100%;
+}
+
+.admin-card-content h3 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.admin-card-content p {
+  color: var(--text-secondary, #718096);
+  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.8vw, 1rem);
+  margin: 0 0 1rem 0;
+}
+
+.admin-card-content small {
+  color: var(--text-tertiary, #a0aec0);
+  font-size: 0.875rem;
+  display: block;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+}
+
+/* Submodules grid - para contenido adicional si es necesario */
+.submodules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  grid-auto-rows: 1fr;
+}
+
+.submodule-card {
+  background: var(--surface-color, #ffffff);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  box-sizing: border-box;
+  min-height: 110px;
+  word-break: break-word;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.submodule-card:hover:not(.disabled) {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md, 0 8px 15px rgba(0, 0, 0, 0.15));
+  border-color: var(--primary-color, #007bff);
+}
+
+.submodule-card.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submodule-icon {
+  font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+  margin-bottom: 1rem;
+  flex: 0 0 auto;
+}
+
+.submodule-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.submodule-content h3 {
+  color: var(--text-primary, #2d3748);
+  margin: 0 0 0.35rem 0;
+  line-height: 1.2;
+  word-break: break-word;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+}
+
+.submodule-content p {
+  color: var(--text-secondary, #718096);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  font-size: clamp(0.9rem, 1.6vw, 1rem);
+}
+
+/* Financial summary/cards */
+.financial-summary {
+  background: var(--surface-color, #ffffff);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.financial-summary h3 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 1rem;
+  font-size: clamp(1.05rem, 1.9vw, 1.25rem);
+}
+
+.financial-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.financial-card {
+  background: var(--background-color, #f8f9fa);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  text-align: center;
+  border-left: 4px solid var(--primary-color, #007bff);
+}
+
+.financial-value {
+  color: var(--text-primary, #2d3748);
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.financial-label {
+  color: var(--text-secondary, #718096);
+  font-size: 0.875rem;
+}
+
+.access-label {
+  display: inline-block;
+  background: var(--background-color, #f8f9fa);
+  color: var(--text-secondary, #718096);
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Acciones / footer dentro de la card */
+.submodule-card .card-actions,
+.submodule-card .actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets grandes y laptops pequeños */
+@media (max-width: 1024px) {
+  .administracion-main {
+    padding: 0 1rem;
+  }
+
+  .admin-main-grid {
+    gap: 1.25rem;
+  }
+
+  .submodules-grid {
+    gap: 1rem;
+  }
+
+  .admin-main-card {
+    padding: 1.25rem;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .admin-main-grid,
+  .submodules-grid,
+  .financial-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-main-card,
+  .submodule-card {
+    padding: 1.25rem;
+  }
+
+  .admin-card-icon {
+    font-size: 3rem;
+  }
+
+  .admin-card-content h3 {
+    font-size: 1.25rem;
+  }
+
+  /* Layout en fila para tablets en submodules */
+  .submodule-card {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .submodule-icon {
+    margin-bottom: 0;
+    margin-right: 0.75rem;
+  }
+
+  .submodule-content p {
+    margin: 0;
+  }
+}
+
+/* Móviles grandes */
+@media (max-width: 639px) {
+  .administracion-main {
+    padding: 0 0.75rem;
+  }
+
+  .admin-main-grid {
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .admin-main-card {
+    padding: 1rem;
+    min-height: 160px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-card-icon {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .admin-card-content h3 {
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .admin-card-content p {
+    font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .submodule-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.9rem;
+  }
+
+  .submodule-icon {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    margin-right: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .submodule-content h3 {
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+  }
+
+  .submodule-content p {
+    font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+  }
+}
+
+/* Móviles pequeños */
+@media (max-width: 420px) {
+  .administracion-main {
+    padding: 0 0.5rem;
+  }
+
+  .module-description p,
+  .admin-card-content p,
+  .submodule-content p {
+    font-size: 0.95rem;
+  }
+
+  .admin-card-icon {
+    font-size: 2.4rem;
+  }
+
+  .admin-main-card {
+    padding: 0.875rem;
+    min-height: 150px;
+  }
+
+  .admin-card-content h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 320px) {
+  .admin-main-card {
+    padding: 0.75rem;
+  }
+
+  .admin-card-icon {
+    font-size: 2rem;
+  }
+
+  .admin-card-content h3 {
+    font-size: 1rem;
+  }
+
+  .admin-card-content p {
+    font-size: 0.85rem;
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .admin-main-card,
+  .submodule-card,
+  .financial-summary {
+    transition: none;
+  }
+
+  .admin-main-card:hover,
+  .submodule-card:hover:not(.disabled) {
+    transform: none;
+  }
+
+  .admin-main-card:hover .admin-card-icon {
+    transform: none;
+  }
+}
+
+/* Solo mostrar efectos hover en dispositivos con puntero fino */
+@media (hover: hover) and (pointer: fine) {
+  .admin-main-card:hover,
+  .submodule-card:hover:not(.disabled) {
+    transform: translateY(-5px);
+  }
+}
+
+/* Modo oscuro opcional */
+@media (prefers-color-scheme: dark) {
+  .admin-main-card,
+  .submodule-card,
+  .financial-summary {
+    background: var(--surface-color, #2d3748);
+    color: white;
+  }
+
+  .admin-card-content h3,
+  .submodule-content h3,
+  .financial-summary h3 {
+    color: var(--text-primary, #e2e8f0);
+  }
+
+  .admin-card-content p,
+  .submodule-content p,
+  .financial-label {
+    color: var(--text-secondary, #cbd5e0);
+  }
+
+  .admin-card-content small {
+    color: var(--text-tertiary, #a0aec0);
+    border-top-color: var(--border-light, #4a5568);
+  }
+
+  .financial-card {
+    background: var(--background-color, #4a5568);
+  }
+}

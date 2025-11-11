@@ -1,0 +1,24 @@
+.btn-notifications {
+  cursor: pointer;
+  background: none;
+  border: none;
+  position: relative;
+  color: #555; /* Color por defecto para el ícono */
+}
+
+.badge {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+/* Ajustamos el tamaño del ícono directamente en el SVG dentro del botón */
+.btn-notifications svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff; /* El ícono tomará el color del botón */
+}

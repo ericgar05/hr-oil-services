@@ -1,0 +1,353 @@
+.requerimientos-main {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.requerimientos-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.stat-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid #007bff;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card.pending {
+  border-left-color: #ffc107;
+}
+
+.stat-card.progress {
+  border-left-color: #17a2b8;
+}
+
+.stat-card.completed {
+  border-left-color: #28a745;
+}
+
+.stat-card.canceled {
+  border-left-color: #dc3545;
+}
+
+.stat-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.stat-card h4 {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #6c757d;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  display: block;
+  color: #007bff;
+}
+
+.stat-card.pending .stat-number {
+  color: #ffc107;
+}
+
+.stat-card.progress .stat-number {
+  color: #17a2b8;
+}
+
+.stat-card.completed .stat-number {
+  color: #28a745;
+}
+
+.stat-card.canceled .stat-number {
+  color: #dc3545;
+}
+
+.requerimientos-form {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.requerimientos-form h4 {
+  color: #007bff;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.form-group input[type="date"],
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.requerimiento-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) auto;
+  gap: 15px;
+  align-items: flex-end;
+  margin-bottom: 15px;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+  background-color: #ffffff;
+  transition: border-color 0.3s ease;
+}
+
+.requerimiento-item-grid:hover {
+  border-color: #007bff;
+}
+
+.btn-remove-item {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 40px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-remove-item:hover {
+  background-color: #c82333;
+}
+
+.btn-add-item {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-add-item:hover {
+  background-color: #218838;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.btn-primary:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.filter-controls {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-controls label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.filter-controls select {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.requerimientos-list h3 {
+  color: #007bff;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+  margin-top: 40px;
+}
+
+.requerimiento-group {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.requerimiento-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.requerimiento-header h4 {
+  margin: 0;
+  color: #495057;
+}
+
+.requerimientos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.requerimientos-table th,
+.requerimientos-table td {
+  border: 1px solid #dee2e6;
+  padding: 10px;
+  text-align: left;
+}
+
+.requerimientos-table thead {
+  background-color: #f8f9fa;
+}
+
+.requerimientos-table th {
+  font-weight: 600;
+  background-color: #007bff;
+  color: white;
+}
+
+.status-pendiente {
+  background-color: #fff3cd;
+}
+
+.status-en_progreso {
+  background-color: #d1ecf1;
+}
+
+.status-completado {
+  background-color: #d4edda;
+}
+
+.status-cancelado {
+  background-color: #f8d7da;
+}
+
+.status-badge.pendiente {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.en_progreso {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge.completado {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.cancelado {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.btn-cancel-item {
+  background-color: #ffc107;
+  color: #212529;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cancel-item:hover {
+  background-color: #e0a800;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  background: white;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .requerimientos-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .requerimiento-item-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn-remove-item {
+    justify-self: start;
+  }
+  
+  .requerimiento-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .requerimientos-table {
+    font-size: 12px;
+  }
+  
+  .requerimientos-table th,
+  .requerimientos-table td {
+    padding: 8px;
+  }
+}

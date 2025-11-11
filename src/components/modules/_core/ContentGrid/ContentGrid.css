@@ -1,0 +1,19 @@
+.content-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+}
+
+.content-grid.reverse {
+  grid-template-columns: 1fr 2fr;
+}
+
+@media (max-width: 768px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .content-grid.reverse {
+    grid-template-columns: 1fr;
+  }
+}

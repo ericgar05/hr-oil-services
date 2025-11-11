@@ -1,0 +1,307 @@
+/* src/components/modules/contrato/submodules/valuaciones/components/ValuacionDetail.css */
+.valuacion-detail {
+  padding: 30px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.back-button {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #495057;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background: #e9ecef;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-edit {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-edit:hover {
+  background: #ffeaa7;
+}
+
+.btn-delete {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f1b0b7;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-delete:hover {
+  background: #f1b0b7;
+}
+
+.info-section {
+  margin-bottom: 30px;
+}
+
+.info-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-left: 4px solid #007bff;
+}
+
+.info-card h3 {
+  margin: 0 0 20px 0;
+  color: #495057;
+  font-size: 24px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 15px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.info-item label {
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item span {
+  color: #495057;
+  font-size: 14px;
+}
+
+.partidas-section {
+  margin-bottom: 30px;
+}
+
+.partidas-section h4 {
+  margin: 0 0 20px 0;
+  color: #495057;
+  font-size: 18px;
+}
+
+.partidas-table {
+  overflow-x: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.partidas-table table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.partidas-table th {
+  background: #e9ecef;
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.partidas-table td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #dee2e6;
+  vertical-align: top;
+}
+
+.col-item { width: 80px; }
+.col-descripcion { min-width: 300px; }
+.col-unidad { width: 100px; }
+.col-cantidad { width: 100px; }
+.col-precio { width: 150px; }
+.col-monto { width: 150px; }
+.col-iva { width: 80px; }
+
+.iva-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.iva-badge.with-iva {
+  background: #d4edda;
+  color: #155724;
+}
+
+.iva-badge.without-iva {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.no-data {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 40px !important;
+}
+
+.resumen-section {
+  margin-bottom: 30px;
+}
+
+.resumen-totales {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.totales-grid {
+  display: flex;
+  justify-content: flex-end;
+  gap: 40px;
+}
+
+.total-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.total-item.final {
+  border-left: 2px solid #007bff;
+  padding-left: 40px;
+}
+
+.total-label {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.total-value {
+  font-size: 18px;
+  font-weight: bold;
+  color: #495057;
+}
+
+.total-item.final .total-value {
+  color: #007bff;
+  font-size: 22px;
+}
+
+.estadisticas-section {
+  margin-bottom: 30px;
+}
+
+.estadisticas-section h4 {
+  margin: 0 0 20px 0;
+  color: #495057;
+  font-size: 18px;
+}
+
+.estadisticas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.estadistica {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+}
+
+.estadistica-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #007bff;
+  margin-bottom: 8px;
+}
+
+.estadistica-label {
+  font-size: 13px;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .valuacion-detail {
+    padding: 20px;
+  }
+  
+  .detail-header {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    align-self: flex-end;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .totales-grid {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  
+  .total-item {
+    align-items: flex-start;
+  }
+  
+  .total-item.final {
+    border-left: none;
+    border-top: 2px solid #007bff;
+    padding-left: 0;
+    padding-top: 20px;
+    width: 100%;
+  }
+  
+  .estadisticas-grid {
+    grid-template-columns: 1fr;
+  }
+}

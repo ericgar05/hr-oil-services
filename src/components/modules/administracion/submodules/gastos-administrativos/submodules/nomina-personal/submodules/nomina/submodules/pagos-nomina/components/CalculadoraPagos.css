@@ -1,0 +1,270 @@
+.calculadora-pagos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.calculadora-header {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.calculadora-header h3 {
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.mes-info {
+  margin-bottom: 1rem;
+}
+
+.mes-info small {
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.deducciones-ley h4 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.deducciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.deduccion-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.deduccion-item label {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.deduccion-item input {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+}
+
+.deduccion-item small {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.nomina-section {
+  background: var(--surface-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.nomina-section h4 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.employees-pagos-list {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.employees-pagos-list.quincenal .list-header {
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.employees-pagos-list.quincenal .pago-row {
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.list-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  padding: 1rem 1.5rem;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  color: var(--text-primary);
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.pago-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  gap: 1rem;
+}
+
+.pago-row:last-child {
+  border-bottom: none;
+}
+
+.employee-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.employee-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.employee-details {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.tipo-nomina {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nomina-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.deducciones-info {
+  font-size: 0.65rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.nomina-badge.Administrativa {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.nomina-badge.Ejecucion {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.nomina-badge.Tecnica-Operativa {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.nomina-badge.Tecnica-Operativa-Administrativa–Trabajos-Especiales {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.dias-trabajados {
+  text-align: center;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.mitad-pago-input select,
+.dias-pago-input input,
+.horas-extra-input input,
+.deduccion-manual-input input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.mitad-pago-input select {
+  text-align-last: center;
+}
+
+.calculadora-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.btn-primary.large {
+  padding: 1.25rem 2.5rem;
+  font-size: 1.1rem;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary:disabled {
+  background: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.no-employees {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@media (max-width: 1024px) {
+  .list-header,
+  .pago-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .employees-pagos-list.quincenal .list-header,
+  .employees-pagos-list.quincenal .pago-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .list-header {
+    display: none;
+  }
+  
+  .pago-row {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .deducciones-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Agregar al archivo CalculadoraPagos.css */
+.info-adicional {
+  background: #e8f4fd;
+  border: 1px solid #b3d9ff;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  color: #1e40af;
+}
+
+.info-adicional small {
+  color: #1e40af;
+}

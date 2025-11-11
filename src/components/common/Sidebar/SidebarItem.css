@@ -1,0 +1,39 @@
+.sidebar-item {
+  margin: 0.25rem 1rem;
+}
+
+.sidebar-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.sidebar-button:hover {
+  background-color: var(--background-color);
+  color: var(--text-primary);
+}
+
+.sidebar-button.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.sidebar-icon {
+  font-size: 1.25rem;
+  width: 1.5rem;
+  text-align: center;
+}
+
+.sidebar-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+}

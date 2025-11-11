@@ -1,0 +1,330 @@
+/* src/components/modules/contrato/submodules/presupuesto/components/CurrencyConfig.css */
+.currency-config {
+  position: relative;
+  display: inline-block;
+}
+
+.config-trigger-btn {
+  background: white;
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #495057;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.config-trigger-btn:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  color: #007bff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.currency-config-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.currency-config-modal {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  z-index: 1000;
+  min-width: 380px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.config-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0 20px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 15px;
+}
+
+.config-header h4 {
+  margin: 0;
+  color: #495057;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #6c757d;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover {
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.config-description {
+  padding: 0 20px 15px 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.config-description p {
+  margin: 0 0 5px 0;
+  color: #495057;
+  font-size: 14px;
+}
+
+.config-description small {
+  color: #6c757d;
+  font-size: 12px;
+}
+
+.rate-inputs {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rate-input-group {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.currency-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.currency-flag {
+  font-size: 16px;
+}
+
+.currency-header strong {
+  color: #495057;
+  font-size: 14px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.input-row label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 13px;
+  min-width: 50px;
+}
+
+.input-row input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: right;
+}
+
+.input-row input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+}
+
+.currency-symbol {
+  font-weight: 600;
+  color: #495057;
+  min-width: 40px;
+  font-size: 13px;
+}
+
+.rate-info {
+  text-align: center;
+}
+
+.rate-info small {
+  color: #6c757d;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.current-rates {
+  padding: 15px 20px;
+  background: #e7f3ff;
+  border-top: 1px solid #b3d7ff;
+  border-bottom: 1px solid #b3d7ff;
+}
+
+.current-rates h5 {
+  margin: 0 0 10px 0;
+  color: #0056b3;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rates-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.rate-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #495057;
+}
+
+.rate-display span:first-child {
+  font-weight: 500;
+}
+
+.rate-display span:last-child {
+  font-weight: 600;
+  color: #007bff;
+}
+
+.config-actions {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.config-actions .btn-primary {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.config-actions .btn-primary:hover {
+  background: #0056b3;
+}
+
+.config-actions .btn-reset {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.config-actions .btn-reset:hover {
+  background: #5a6268;
+}
+
+.config-actions .btn-cancel {
+  background: white;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+
+.config-actions .btn-cancel:hover {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.config-footer {
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+.config-footer small {
+  color: #6c757d;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .currency-config-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 95%;
+    max-width: 400px;
+    right: auto;
+    margin-top: 0;
+  }
+  
+  .rates-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .input-row {
+    flex-wrap: wrap;
+  }
+  
+  .input-row label {
+    min-width: auto;
+    flex: 0 0 100%;
+    margin-bottom: 5px;
+  }
+}
+
+/* Animaciones */
+.currency-config-modal {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

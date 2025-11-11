@@ -1,0 +1,262 @@
+/* src/components/modules/coordinaciones/CoordinacionesMain.css */
+
+/* Container */
+.coordinaciones-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Fluid typography */
+.module-description h2 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.25rem, 2.2vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.module-description p {
+  color: var(--text-secondary, #718096);
+  font-size: clamp(0.95rem, 1.6vw, 1.125rem);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+/* Coordinaciones Main Grid */
+.coordinaciones-main-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Tarjetas principales de coordinaciones */
+.coordinaciones-main-card {
+  background: var(--surface-color, #ffffff);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
+  border: 1px solid var(--border-color, #e2e8f0);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100%;
+  min-height: 200px;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.coordinaciones-main-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--primary-color, #007bff),
+    var(--secondary-color, #6c757d)
+  );
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.coordinaciones-main-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md, 0 8px 15px rgba(0, 0, 0, 0.15));
+  border-color: var(--primary-color, #007bff);
+}
+
+.coordinaciones-main-card:hover::before {
+  transform: scaleX(1);
+}
+
+.coordinaciones-main-card:active {
+  transform: translateY(-2px);
+  transition: transform 0.1s ease;
+}
+
+.coordinaciones-card-icon {
+  font-size: clamp(2.4rem, 6vw, 3.5rem);
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.coordinaciones-main-card:hover .coordinaciones-card-icon {
+  transform: scale(1.1);
+}
+
+.coordinaciones-card-content {
+  width: 100%;
+}
+
+.coordinaciones-card-content h3 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 0.75rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.coordinaciones-card-content p {
+  color: var(--text-secondary, #718096);
+  line-height: 1.6;
+  font-size: clamp(0.95rem, 1.8vw, 1rem);
+  margin: 0 0 1rem 0;
+}
+
+.coordinaciones-card-content small {
+  color: var(--text-tertiary, #a0aec0);
+  font-size: 0.875rem;
+  display: block;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+}
+
+/* Sección de acciones rápidas */
+.quick-actions-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-light, #f1f5f9);
+}
+
+.quick-actions-section h3 {
+  color: var(--text-primary, #2d3748);
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.quick-action-btn {
+  background: var(--surface-color, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: var(--text-primary, #2d3748);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.quick-action-btn:hover {
+  background: var(--background-color, #f8f9fa);
+  border-color: var(--primary-color, #007bff);
+  transform: translateY(-2px);
+}
+
+.action-icon {
+  font-size: 1.5rem;
+}
+
+.quick-action-btn span:last-child {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .coordinaciones-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .coordinaciones-main-card {
+    padding: 1.25rem;
+  }
+
+  .coordinaciones-card-icon {
+    font-size: 3rem;
+  }
+
+  .coordinaciones-card-content h3 {
+    font-size: 1.25rem;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Móviles grandes */
+@media (max-width: 639px) {
+  .coordinaciones-main {
+    padding: 0 0.75rem;
+  }
+
+  .coordinaciones-main-grid {
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .coordinaciones-main-card {
+    padding: 1rem;
+    min-height: 160px;
+  }
+
+  .coordinaciones-card-icon {
+    font-size: clamp(1.6rem, 6vw, 2.2rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .coordinaciones-card-content h3 {
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .coordinaciones-card-content p {
+    font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .coordinaciones-main-card,
+  .quick-action-btn {
+    background: var(--surface-color, #2d3748);
+  }
+
+  .coordinaciones-card-content h3,
+  .quick-actions-section h3 {
+    color: var(--text-primary, #e2e8f0);
+  }
+
+  .coordinaciones-card-content p,
+  .quick-action-btn {
+    color: var(--text-secondary, #cbd5e0);
+  }
+
+  .coordinaciones-card-content small {
+    color: var(--text-tertiary, #a0aec0);
+    border-top-color: var(--border-light, #4a5568);
+  }
+
+  .quick-actions-section {
+    border-top-color: var(--border-light, #4a5568);
+  }
+
+  .quick-action-btn:hover {
+    background: var(--background-color, #4a5568);
+  }
+}

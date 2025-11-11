@@ -1,0 +1,353 @@
+.resumen-pagos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.resumen-header {
+  background: var(--background-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.resumen-header h3 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.resumen-info {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.nomina-summary {
+  background: var(--surface-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.nomina-summary h4 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.nomina-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.nomina-card {
+  background: var(--background-color);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.nomina-type {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.nomina-count {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.nomina-total {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 1rem;
+}
+
+.totales-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.total-card {
+  background: var(--surface-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.total-card.highlight {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.total-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.total-card.highlight .total-label {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.total-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.total-card.highlight .total-value {
+  color: white;
+}
+
+.deducciones-desglose {
+  background: var(--surface-color);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.deducciones-desglose h4 {
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.deducciones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.deduccion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--background-color);
+  border-radius: 0.375rem;
+}
+
+.deduccion-label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.deduccion-value {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.pagos-table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.pagos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.pagos-table th {
+  background: var(--background-color);
+  padding: 1rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.pagos-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.pagos-table tr.even {
+  background: var(--surface-color);
+}
+
+.pagos-table tr.odd {
+  background: white;
+}
+
+.pagos-table tr:hover {
+  background: #f8fafc;
+}
+
+.pagos-table tfoot {
+  background: var(--background-color);
+  font-weight: 600;
+}
+
+.pagos-table tfoot td {
+  border-top: 2px solid var(--border-color);
+  border-bottom: none;
+}
+
+.employee-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.nomina-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nomina-badge.Administrativa {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.nomina-badge.Ejecucion {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.nomina-badge.Tecnica-Operativa {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.nomina-badge.Tecnica-Operativa-Administrativa–Trabajos-Especiales {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.total-pagar {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.resumen-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.action-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--background-color);
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #4b5563;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+@media (max-width: 1024px) {
+  .resumen-info {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .nomina-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .totales-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .pagos-table {
+    font-size: 0.75rem;
+  }
+  
+  .pagos-table th,
+  .pagos-table td {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .resumen-actions {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .action-group {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .nomina-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .totales-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .deducciones-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .pagos-table-container {
+    font-size: 0.7rem;
+  }
+}

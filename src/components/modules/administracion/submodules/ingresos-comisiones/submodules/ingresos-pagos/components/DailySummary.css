@@ -1,0 +1,182 @@
+/* DailySummary.css */
+.daily-summary h2 {
+  color: #2c3e50;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.date-selector {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.date-selector label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #495057;
+  font-size: 1.1em;
+}
+
+.date-selector input {
+  padding: 12px 20px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+  text-align: center;
+}
+
+.summary-card.primary {
+  border-top: 5px solid #28a745;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.summary-card.deductions {
+  border-top: 5px solid #dc3545;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffe3e3 100%);
+}
+
+.summary-card.final {
+  border-top: 5px solid #007bff;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+}
+
+.summary-card h3 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 1.2em;
+}
+
+.amounts {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.currency {
+  font-weight: 600;
+  color: #495057;
+}
+
+.value {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.summary-card.primary .value {
+  color: #28a745;
+}
+
+.summary-card.deductions .value {
+  color: #dc3545;
+}
+
+.summary-card.final .value {
+  color: #007bff;
+}
+
+.date-indicator {
+  margin-top: 15px;
+  padding: 8px;
+  background: #e9ecef;
+  border-radius: 6px;
+  font-size: 0.9em;
+  color: #6c757d;
+}
+
+.deductions-list {
+  margin-top: 10px;
+}
+
+.profit-indicator {
+  margin-top: 15px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+
+.summary-card.final .profit-indicator {
+  background: #d4edda;
+  color: #155724;
+}
+
+.deductions-detail {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border: 1px solid #e9ecef;
+}
+
+.deductions-detail h4 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.deductions-table {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1px;
+}
+
+.table-header span,
+.table-row span {
+  padding: 15px;
+  background: white;
+  font-weight: 600;
+}
+
+.table-header {
+  background: #343a40 !important;
+  color: white;
+}
+
+.table-header span {
+  background: #343a40;
+  text-align: center;
+}
+
+.table-row span {
+  text-align: center;
+  font-family: 'Courier New', monospace;
+}
