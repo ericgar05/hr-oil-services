@@ -1,63 +1,4 @@
-//  import React from 'react'
-// import { Routes, Route, Navigate } from 'react-router-dom'
-// import { useAuth } from '../../../../contexts/AuthContext'
-// import './ModulePage.css'
-
-// const ModulePage = ({
-//   children,
-//   moduleName,
-//   moduleDescription,
-//   moduleId,
-//   showSubRoutes = false,
-//   customContent = null
-// }) => {
-//   const { hasPermission } = useAuth()
-
-//   if (!hasPermission(moduleId, 'read')) {
-//     return (
-//       <div className="module-container">
-//         <div className="permission-denied">
-//           <h2>Acceso Denegado</h2>
-//           <p>No tienes permisos para acceder al módulo de {moduleName}.</p>
-//         </div>
-//       </div>
-//     )
-//   }
-
-//   const renderContent = () => {
-//     if (customContent) {
-//       return customContent
-//     }
-
-//     if (showSubRoutes) {
-//       return (
-//         <Routes>
-//           <Route path="*" element={children} />
-//           <Route path="*" element={<Navigate to="" replace />} />
-//         </Routes>
-//       )
-//     }
-
-//     return children
-//   }
-
-//   return (
-//     <div className="module-container">
-//       <div className="module-header">
-//         <h1>{moduleName}</h1>
-//         <p>{moduleDescription}</p>
-//       </div>
-
-//       <div className="module-content">
-//         {renderContent()}
-//       </div>
-//     </div>
-//   )
-// }
-
-// export default ModulePage
-
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../../../../contexts/AuthContext";
 import "./ModulePage.css";
@@ -71,14 +12,14 @@ const ModulePage = ({
   customContent = null,
 }) => {
   const { hasPermission, hasPermissionSync } = useAuth();
-  const [hasAccess, setHasAccess] = useState(null); // null = loading, true/false = resultado
+  const [hasAccess, setHasAccess] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkPermission = async () => {
       try {
         setLoading(true);
-        // Usar la versión asíncrona para verificar permisos reales
+
         const permission = await hasPermission(moduleId, "read");
         setHasAccess(permission);
       } catch (error) {

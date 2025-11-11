@@ -36,7 +36,7 @@
 }
 
 .steps-indicator::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 20px;
   left: 20%;
@@ -76,7 +76,7 @@
   background: #007bff;
   color: white;
   transform: scale(1.1);
-  box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
 .step.completed .step-number {
@@ -106,7 +106,7 @@
   background: white;
   border-radius: 12px;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
 }
 
@@ -119,10 +119,12 @@
 }
 
 /* Header de sección */
+
 .section-header {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  /* background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); */
   padding: 30px 40px;
-  border-bottom: 1px solid #dee2e6;
+  color: #fff;
+  /* border-bottom: 1px solid #dee2e6; */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -135,7 +137,7 @@
 
 .section-header h3 {
   margin: 0 0 15px 0;
-  color: #495057;
+  color: #fff;
   font-size: 24px;
   font-weight: 600;
 }
@@ -334,7 +336,7 @@
 .btn-primary:hover {
   background: #0056b3;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
 .btn-primary.large {
@@ -403,11 +405,11 @@
   .presupuesto-main {
     padding: 15px;
   }
-  
+
   .steps-indicator {
     gap: 20px;
   }
-  
+
   .steps-indicator::before {
     left: 15%;
     right: 15%;
@@ -418,59 +420,59 @@
   .presupuesto-main {
     padding: 10px;
   }
-  
+
   .steps-indicator {
     flex-direction: column;
     gap: 15px;
     margin: 20px 0;
   }
-  
+
   .steps-indicator::before {
     display: none;
   }
-  
+
   .step {
     flex-direction: row;
     gap: 15px;
     max-width: none;
   }
-  
+
   .step-number {
     margin-bottom: 0;
   }
-  
+
   .section-header {
     flex-direction: column;
     padding: 20px;
     gap: 15px;
   }
-  
+
   .form-section,
   .add-item-section {
     padding: 20px;
   }
-  
+
   .actions-section {
     padding: 20px;
   }
-  
+
   .progress-actions,
   .final-actions {
     flex-direction: column;
   }
-  
+
   .btn-primary,
   .btn-success,
   .btn-outline {
     width: 100%;
     justify-content: center;
   }
-  
+
   .empty-state {
     margin: 10px 20px;
     padding: 40px 20px;
   }
-  
+
   .contrato-stats {
     flex-direction: column;
     align-items: flex-start;
@@ -481,11 +483,11 @@
   .section-header h3 {
     font-size: 20px;
   }
-  
+
   .empty-icon {
     font-size: 3rem;
   }
-  
+
   .project-info-footer {
     text-align: left;
   }

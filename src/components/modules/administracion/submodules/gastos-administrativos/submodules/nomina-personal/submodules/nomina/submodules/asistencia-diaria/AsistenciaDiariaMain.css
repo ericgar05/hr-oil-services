@@ -10,7 +10,7 @@
   align-items: center;
   margin-bottom: 2rem;
   padding: 1.5rem;
-  background: var(--surface-color);
+  background: #2d3748;
   border-radius: 0.5rem;
   box-shadow: var(--shadow);
 }
@@ -23,14 +23,16 @@
 
 .date-selector label {
   font-weight: 500;
-  color: var(--text-primary);
+  color: #e2e8f0;
 }
 
 .date-selector input {
   padding: 0.5rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid #4a5568;
   border-radius: 0.375rem;
   font-size: 0.9rem;
+  background-color: #4a5568;
+  color: #e2e8f0;
 }
 
 .view-toggle {
@@ -41,8 +43,8 @@
 .view-toggle button {
   padding: 0.75rem 1.5rem;
   border: 1px solid var(--border-color);
-  background: var(--background-color);
-  color: var(--text-primary);
+  background: #4a5568;
+  color: #e2e8f0;
   border-radius: 0.375rem;
   cursor: pointer;
   font-weight: 500;
@@ -95,28 +97,36 @@
   margin-bottom: 0.5rem;
 }
 
-.stat-card.total .stat-number { color: #0ea5e9; }
-.stat-card.present .stat-number { color: #10b981; }
-.stat-card.absent .stat-number { color: #ef4444; }
-.stat-card.percentage .stat-number { color: #eab308; }
+.stat-card.total .stat-number {
+  color: #0ea5e9;
+}
+.stat-card.present .stat-number {
+  color: #10b981;
+}
+.stat-card.absent .stat-number {
+  color: #ef4444;
+}
+.stat-card.percentage .stat-number {
+  color: #eab308;
+}
 
 .stat-label {
   color: var(--text-secondary);
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
-.module-content {
+/* .module-content {
   background: var(--surface-color);
   border-radius: 0.5rem;
   padding: 2rem;
   box-shadow: var(--shadow);
-}
+} */
 
 .back-button {
   background: none;
   border: none;
-  color: var(--primary-color);
+  color: #63b3ed;
   cursor: pointer;
   padding: 0.5rem 0;
   margin-bottom: 1rem;
@@ -129,7 +139,7 @@
 }
 
 .back-button:hover {
-  color: var(--primary-dark);
+  color: #90cdf4;
 }
 
 @media (max-width: 768px) {
@@ -138,11 +148,11 @@
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .date-selector {
     justify-content: space-between;
   }
-  
+
   .stats-cards {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -151,19 +161,20 @@
 .no-employees-warning {
   text-align: center;
   padding: 3rem 2rem;
-  background: var(--surface-color);
+  background: #2d3748;
   border-radius: 0.5rem;
-  border: 2px dashed var(--border-color);
+  border: 2px dashed #4a5568;
   margin-top: 2rem;
 }
 
 .warning-icon {
   font-size: 4rem;
   margin-bottom: 1.5rem;
+  color: #eab308;
 }
 
 .no-employees-warning h4 {
-  color: var(--text-primary);
+  color: #e2e8f0;
   margin-bottom: 1rem;
   font-size: 1.5rem;
 }

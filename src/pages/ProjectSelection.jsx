@@ -98,7 +98,7 @@ const ProjectSelection = () => {
   return (
     <section className="project-selection">
       <header className="project-selection-header">
-        <h1>Proyectos</h1>
+        <h1>PROYECTOS</h1>
         <Button onClick={logout} className="btn-outline">
           <OutIcon className="icon-logout" />
         </Button>

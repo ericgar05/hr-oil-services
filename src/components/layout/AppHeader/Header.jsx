@@ -11,7 +11,7 @@ export const Header = () => {
   return (
     <header className="app-header">
       <article className="info-users">
-        <h2>Bienvenido, {userData.username}</h2>
+        <h2 className="info-welcome">Bienvenido, {userData.username}</h2>
         <h2>Resumen del Proyecto: {selectedProject?.name}</h2>
       </article>
       <div className="header-actions">

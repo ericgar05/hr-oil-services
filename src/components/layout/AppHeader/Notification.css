@@ -3,22 +3,22 @@
   background: none;
   border: none;
   position: relative;
-  color: #555; /* Color por defecto para el ícono */
+  /* color: #555;  */
 }
 
-.badge {
+/* .badge {
   position: absolute;
-  top: 0px;
-  right: 0px;
-  width: 8px;
-  height: 8px;
+  top: 0;
+  right: 0;
+  width: 9px;
+  height: 9px;
   background-color: red;
   border-radius: 50%;
-}
+  border: 2px solid #2d3748; /* Borde del color del fondo para crear separación */
 
 /* Ajustamos el tamaño del ícono directamente en el SVG dentro del botón */
 .btn-notifications svg {
   width: 24px;
   height: 24px;
-  fill: #fff; /* El ícono tomará el color del botón */
+  fill: #fff;
 }

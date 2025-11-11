@@ -1,53 +1,60 @@
 // src/components/modules/administracion/AdministracionMain.jsx
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useProjects } from '../../../contexts/ProjectContext'
-import ModuleDescription from '../_core/ModuleDescription/ModuleDescription'
-import './AdministracionMain.css'
+import { useNavigate } from "react-router-dom";
+import { useProjects } from "../../../contexts/ProjectContext";
+import ModuleDescription from "../_core/ModuleDescription/ModuleDescription";
+import "./AdministracionMain.css";
+import {
+  BankIcon,
+  BudgetIcon,
+  DashboarddIcon,
+} from "../../../assets/icons/Icons";
 
 const AdministracionMain = ({ projectId }) => {
-  const navigate = useNavigate()
-  const { selectedProject } = useProjects()
-  
+  const navigate = useNavigate();
+  const { selectedProject } = useProjects();
+
   const mainCards = [
-    { 
-      id: 'gastos-administrativos', 
-      title: 'GASTOS ADMINISTRATIVOS', 
-      description: 'Gestión de nómina, logística, suministros y servicios generales',
-      icon: '💰',
-      path: 'gastos-administrativos'
+    {
+      id: "gastos-administrativos",
+      title: "GASTOS ADMINISTRATIVOS",
+      description:
+        "Gestión de nómina, logística, suministros y servicios generales",
+      icon: <BudgetIcon />,
+      path: "gastos-administrativos",
     },
-    { 
-      id: 'ingresos-comisiones', 
-      title: 'INGRESOS & COMISIONES', 
-      description: 'Facturación, comisiones y distribución de dividendos',
-      icon: '📈',
-      path: 'ingresos-comisiones'
+    {
+      id: "ingresos-comisiones",
+      title: "INGRESOS & COMISIONES",
+      description: "Facturación, comisiones y distribución de dividendos",
+      icon: <DashboarddIcon />,
+      path: "ingresos-comisiones",
     },
-    { 
-      id: 'gastos-financieros', 
-      title: 'GASTOS FINANCIEROS & BANCARIOS', 
-      description: 'Conciliación bancaria y control de gastos financieros',
-      icon: '🏦',
-      path: 'gastos-financieros'
-    }
-  ]
+    {
+      id: "gastos-financieros",
+      title: "GASTOS FINANCIEROS & BANCARIOS",
+      description: "Conciliación bancaria y control de gastos financieros",
+      icon: <BankIcon />,
+      path: "gastos-financieros",
+    },
+  ];
 
   const handleCardClick = (path) => {
-    console.log('Navegando desde proyecto:', projectId, 'a:', path)
-    navigate(path)
-  }
+    console.log("Navegando desde proyecto:", projectId, "a:", path);
+    navigate(path);
+  };
 
   return (
     <div className="administracion-main">
-      <ModuleDescription 
+      <ModuleDescription
         title="Módulo de Administración"
-        description={`Gestión integral de los aspectos administrativos y financieros del proyecto ${selectedProject?.name || ''}`}
+        description={`Gestión integral de los aspectos administrativos y financieros del proyecto ${
+          selectedProject?.name || ""
+        }`}
       />
 
       <div className="admin-main-grid">
-        {mainCards.map(card => (
-          <div 
+        {mainCards.map((card) => (
+          <div
             key={card.id}
             className="admin-main-card"
             onClick={() => handleCardClick(card.path)}
@@ -56,13 +63,13 @@ const AdministracionMain = ({ projectId }) => {
             <div className="admin-card-content">
               <h3>{card.title}</h3>
               <p>{card.description}</p>
-              <small>Proyecto: {selectedProject?.name || ''}</small>
+              <small>Proyecto: {selectedProject?.name || ""}</small>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdministracionMain
+export default AdministracionMain;

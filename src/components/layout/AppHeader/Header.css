@@ -1,15 +1,30 @@
 header > h1 {
   font-size: 20px;
 }
+.info-users {
+  padding: 10px;
+  font-family: sans-serif;
+  color: #fff;
+}
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
+  background-color: #0f172a;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .info-users {
+    text-align: center;
+  }
+  .info-welcome {
+    display: none;
+  }
 }

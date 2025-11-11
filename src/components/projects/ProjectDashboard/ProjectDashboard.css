@@ -26,10 +26,10 @@
 
 .project-info span {
   padding: 0.5rem 1rem;
-  background: var(--background-color);
+  /* background: var(--background-color); */
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  /* color: var(--text-secondary); */
 }
 
 .welcome-message {
@@ -82,7 +82,15 @@
 }
 
 /* Puedes añadir más estilos para otros estados */
-.stat-value.active { color: var(--success-color); }
-.stat-value.completed { color: var(--primary-color); }
-.stat-value.on-hold { color: var(--warning-color); }
-.stat-value.cancelled { color: var(--danger-color); }
+.stat-value.active {
+  color: var(--success-color);
+}
+.stat-value.completed {
+  color: var(--primary-color);
+}
+.stat-value.on-hold {
+  color: var(--warning-color);
+}
+.stat-value.cancelled {
+  color: var(--danger-color);
+}

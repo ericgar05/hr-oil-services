@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { useCurrency } from '../../../../contexts/CurrencyContext';
-import { useOperaciones } from '../../../../contexts/OperacionesContext';
-import { usePersonal } from '../../../../contexts/PersonalContext';
-import './ValuacionResumenCard.css';
+import React, { useState, useEffect } from "react";
+import { useCurrency } from "../../../../contexts/CurrencyContext";
+import { useOperaciones } from "../../../../contexts/OperacionesContext";
+import { usePersonal } from "../../../../contexts/PersonalContext";
+import "./ValuacionResumenCard.css";
 
-const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulativeProgressUSD }) => {
+const ValuacionResumenCard = ({
+  valuacion,
+  mainCurrency,
+  budgetTotalUSD,
+  cumulativeProgressUSD,
+}) => {
   const { formatCurrency, convertToUSD } = useCurrency();
   const { compras } = useOperaciones();
   const { getPagosByProject } = usePersonal();
@@ -45,36 +50,44 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
   const subtotalValuacion = totales?.subtotal || 0;
   const currencyValuacion = totales?.currency || mainCurrency;
 
-  const subtotalValuacionUSD = convertToUSD(subtotalValuacion, currencyValuacion);
-  const porcentajeEjecutado = budgetTotalUSD > 0 ? (cumulativeProgressUSD / budgetTotalUSD) * 100 : 0;
+  const subtotalValuacionUSD = convertToUSD(
+    subtotalValuacion,
+    currencyValuacion
+  );
+  const porcentajeEjecutado =
+    budgetTotalUSD > 0 ? (cumulativeProgressUSD / budgetTotalUSD) * 100 : 0;
 
   const filterDataByPeriod = (data, dateField) => {
     if (!data) return [];
     const startDate = new Date(periodo_inicio);
     const endDate = new Date(periodo_fin);
-    return data.filter(item => {
+    return data.filter((item) => {
       const itemDate = new Date(item[dateField]);
       return itemDate >= startDate && itemDate <= endDate;
     });
   };
 
-  const comprasPeriodo = filterDataByPeriod(compras, 'created_at');
-  const pagosPeriodo = filterDataByPeriod(pagos, 'fechaPago');
+  const comprasPeriodo = filterDataByPeriod(compras, "created_at");
+  const pagosPeriodo = filterDataByPeriod(pagos, "fechaPago");
 
   const totalComprasConFacturaUSD = comprasPeriodo
-    .filter(c => c.numero_factura)
+    .filter((c) => c.numero_factura)
     .reduce((acc, curr) => acc + parseFloat(curr.total_usd || 0), 0);
 
   const totalComprasSinFacturaUSD = comprasPeriodo
-    .filter(c => !c.numero_factura)
+    .filter((c) => !c.numero_factura)
     .reduce((acc, curr) => acc + parseFloat(curr.total_usd || 0), 0);
 
   const totalPagosNominaUSD = pagosPeriodo.reduce((acc, curr) => {
-    const totalPagoUSD = curr.pagos.reduce((pagoAcc, pago) => pagoAcc + parseFloat(pago.subtotalUSD || 0), 0);
+    const totalPagoUSD = curr.pagos.reduce(
+      (pagoAcc, pago) => pagoAcc + parseFloat(pago.subtotalUSD || 0),
+      0
+    );
     return acc + totalPagoUSD;
   }, 0);
 
-  const totalGastosUSD = totalComprasConFacturaUSD + totalComprasSinFacturaUSD + totalPagosNominaUSD;
+  const totalGastosUSD =
+    totalComprasConFacturaUSD + totalComprasSinFacturaUSD + totalPagosNominaUSD;
 
   const deducciones = {
     arrendamiento: subtotalValuacionUSD * 0.05,
@@ -83,17 +96,24 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
     ejecucionObras: subtotalValuacionUSD * 0.02,
   };
 
-  const totalDeducciones = Object.values(deducciones).reduce((acc, curr) => acc + curr, 0);
+  const totalDeducciones = Object.values(deducciones).reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
 
-  const montoARecibir = subtotalValuacionUSD - totalGastosUSD - totalDeducciones;
+  const montoARecibir =
+    subtotalValuacionUSD - totalGastosUSD - totalDeducciones;
 
   const deduccionesEmpresa = {
     alcaldia: montoARecibir * 0.03,
     anticipoIslr: montoARecibir * 0.01,
-    seniat: montoARecibir * 0.10,
+    seniat: montoARecibir * 0.1,
   };
 
-  const totalDeduccionesEmpresa = Object.values(deduccionesEmpresa).reduce((acc, curr) => acc + curr, 0);
+  const totalDeduccionesEmpresa = Object.values(deduccionesEmpresa).reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
 
   const utilidadNeta = montoARecibir - totalDeduccionesEmpresa;
 
@@ -103,17 +123,17 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
         <h4>Valuación #{numero_valuacion}</h4>
         <div className="header-details">
           <span className="periodo">
-            {new Date(periodo_inicio).toLocaleDateString()} - {new Date(periodo_fin).toLocaleDateString()}
+            {new Date(periodo_inicio).toLocaleDateString()} -{" "}
+            {new Date(periodo_fin).toLocaleDateString()}
           </span>
           <span className="porcentaje-ejecutado">
             {porcentajeEjecutado.toFixed(1)}% Ejecutado
           </span>
         </div>
       </div>
-      
+
       <div className="card-body">
         <div className="financial-grid">
-          {/* Columna 1: Totales y Gastos */}
           <div className="financial-column">
             <div className="financial-section">
               <h5>Totales Valuación</h5>
@@ -126,7 +146,7 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
               <div className="financial-item subtotal">
                 <span className="financial-item-label">Subtotal (USD)</span>
                 <span className="financial-item-value">
-                  {formatCurrency(subtotalValuacionUSD, 'USD')}
+                  {formatCurrency(subtotalValuacionUSD, "USD")}
                 </span>
               </div>
               <div className="financial-item">
@@ -135,8 +155,8 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
                   {porcentajeEjecutado.toFixed(1)}%
                 </span>
                 <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
+                  <div
+                    className="progress-fill"
                     style={{ width: `${Math.min(porcentajeEjecutado, 100)}%` }}
                   ></div>
                 </div>
@@ -146,64 +166,71 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
             <div className="financial-section">
               <h5>Gastos del Período</h5>
               <div className="financial-item gastos">
-                <span className="financial-item-label">Compras con Factura</span>
+                <span className="financial-item-label">
+                  Compras con Factura
+                </span>
                 <span className="financial-item-value">
-                  {formatCurrency(totalComprasConFacturaUSD, 'USD')}
+                  {formatCurrency(totalComprasConFacturaUSD, "USD")}
                 </span>
               </div>
               <div className="financial-item gastos">
-                <span className="financial-item-label">Compras sin Factura</span>
+                <span className="financial-item-label">
+                  Compras sin Factura
+                </span>
                 <span className="financial-item-value">
-                  {formatCurrency(totalComprasSinFacturaUSD, 'USD')}
+                  {formatCurrency(totalComprasSinFacturaUSD, "USD")}
                 </span>
               </div>
               <div className="financial-item gastos">
                 <span className="financial-item-label">Nómina</span>
                 <span className="financial-item-value">
-                  {formatCurrency(totalPagosNominaUSD, 'USD')}
+                  {formatCurrency(totalPagosNominaUSD, "USD")}
                 </span>
               </div>
               <div className="financial-item gastos destacado">
                 <span className="financial-item-label">Total Gastos</span>
                 <span className="financial-item-value">
-                  {formatCurrency(totalGastosUSD, 'USD')}
+                  {formatCurrency(totalGastosUSD, "USD")}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Columna 2: Deducciones y Resultados */}
           <div className="financial-column">
             <div className="financial-section">
               <h5>Deducciones</h5>
               <div className="financial-item deducciones">
                 <span className="financial-item-label">Arrendamiento (5%)</span>
                 <span className="financial-item-value">
-                  {formatCurrency(deducciones.arrendamiento, 'USD')}
+                  {formatCurrency(deducciones.arrendamiento, "USD")}
                 </span>
               </div>
               <div className="financial-item deducciones">
                 <span className="financial-item-label">Aporte EPS (3%)</span>
                 <span className="financial-item-value">
-                  {formatCurrency(deducciones.aporteEPS, 'USD')}
+                  {formatCurrency(deducciones.aporteEPS, "USD")}
                 </span>
               </div>
               <div className="financial-item deducciones">
-                <span className="financial-item-label">Timbre Fiscal (0.1%)</span>
+                <span className="financial-item-label">
+                  Timbre Fiscal (0.1%)
+                </span>
                 <span className="financial-item-value">
-                  {formatCurrency(deducciones.timbreFiscal, 'USD')}
+                  {formatCurrency(deducciones.timbreFiscal, "USD")}
                 </span>
               </div>
               <div className="financial-item deducciones">
-                <span className="financial-item-label">Ejecución Obras (2%)</span>
+                <span className="financial-item-label">
+                  Ejecución Obras (2%)
+                </span>
                 <span className="financial-item-value">
-                  {formatCurrency(deducciones.ejecucionObras, 'USD')}
+                  {formatCurrency(deducciones.ejecucionObras, "USD")}
                 </span>
               </div>
               <div className="financial-item deducciones destacado">
                 <span className="financial-item-label">Total Deducciones</span>
                 <span className="financial-item-value">
-                  {formatCurrency(totalDeducciones, 'USD')}
+                  {formatCurrency(totalDeducciones, "USD")}
                 </span>
               </div>
             </div>
@@ -213,33 +240,33 @@ const ValuacionResumenCard = ({ valuacion, mainCurrency, budgetTotalUSD, cumulat
               <div className="financial-item destacado">
                 <span className="financial-item-label">Monto a Recibir</span>
                 <span className="financial-item-value">
-                  {formatCurrency(montoARecibir, 'USD')}
+                  {formatCurrency(montoARecibir, "USD")}
                 </span>
               </div>
-              
+
               <div className="financial-item deducciones">
                 <span className="financial-item-label">Alcaldía (3%)</span>
                 <span className="financial-item-value">
-                  {formatCurrency(deduccionesEmpresa.alcaldia, 'USD')}
+                  {formatCurrency(deduccionesEmpresa.alcaldia, "USD")}
                 </span>
               </div>
               <div className="financial-item deducciones">
                 <span className="financial-item-label">Anticipo ISLR (1%)</span>
                 <span className="financial-item-value">
-                  {formatCurrency(deduccionesEmpresa.anticipoIslr, 'USD')}
+                  {formatCurrency(deduccionesEmpresa.anticipoIslr, "USD")}
                 </span>
               </div>
               <div className="financial-item deducciones">
                 <span className="financial-item-label">SENIAT (10%)</span>
                 <span className="financial-item-value">
-                  {formatCurrency(deduccionesEmpresa.seniat, 'USD')}
+                  {formatCurrency(deduccionesEmpresa.seniat, "USD")}
                 </span>
               </div>
-              
+
               <div className="financial-item final">
                 <span className="financial-item-label">UTILIDAD NETA</span>
                 <span className="financial-item-value">
-                  {formatCurrency(utilidadNeta, 'USD')}
+                  {formatCurrency(utilidadNeta, "USD")}
                 </span>
               </div>
             </div>

@@ -1,21 +1,18 @@
 .project-card {
-
-  margin:auto;
+  margin: auto;
+  width: auto;
   background: var(--surface-color);
   border-radius: 0.5rem;
   box-shadow: var(--shadow);
   padding: 1.5rem;
   transition: transform 0.2s, box-shadow 0.2s;
   margin-bottom: 20px;
-  max-width: 50vh;
-
 }
 
 .project-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
-
 
 .project-card-header {
   display: flex;
@@ -53,18 +50,14 @@
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: row;
-
 }
 
 .project-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  
   gap: 0.75rem;
 }
-
-
 
 .info-item strong {
   color: var(--text-primary);
@@ -78,14 +71,20 @@
 
 .project-card-actions {
   display: flex;
-  justify-content: space-between;
+  width: 80px;
+
+  flex-direction: row;
+  width: fit-content;
+  justify-content: flex-start;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  flex-grow: 1; /* Se estiran para llenar el espacio */
+  flex-shrink: 1; /* Se encogen si no hay espacio */
+  min-width: 100px; /* Opcional: Establece un tamaño mínimo para que no desaparezcan */
 }
 
 .delete-confirm-overlay {
@@ -127,35 +126,30 @@
   gap: 1rem;
   justify-content: flex-end;
 }
-.icon{
+.icon {
   width: 20px;
-  
 }
-.icon-item{
+.icon-item {
   width: 20px;
   margin-right: 5px;
- 
 }
-div>h3{
-  white-space: nowrap; 
-  overflow: hidden;    
+div > h3 {
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
-  flex-grow: 1; 
+  flex-grow: 1;
   flex-shrink: 1;
   font-size: 1em;
   margin-bottom: 8px;
   flex: 1 1 auto;
-  
 }
 
 @media (max-width: 768px) {
   .project-card-actions {
-    flex-direction: column;
-    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
-  
-  .action-buttons {
-    justify-content: space-between;
+  .project-card-actions > .btn-primary {
+    flex-grow: 1;
   }
-
 }

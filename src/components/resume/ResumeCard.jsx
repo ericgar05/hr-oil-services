@@ -3,10 +3,12 @@ import "./ResumeCard.css";
 export const ResumeCard = ({ title, items, icon }) => {
   return (
     <article className="resume-card">
-      <h4>
-        {icon && <span className="icon">{icon}</span>}
-        {title}
-      </h4>
+      <article className="content-resume-icon">
+        <h4>
+          {icon}
+          {title}
+        </h4>
+      </article>
 
       <div className="resume-card-content">
         {Array.isArray(items) &&
@@ -20,18 +22,20 @@ export const ResumeCard = ({ title, items, icon }) => {
                 <span className="value">{item.value}</span>
                 {item.equivalentValue && (
                   <span className="equivalent-value">
-                    {item.equivalentValue}
+                    ≈ {item.equivalentValue}
                   </span>
                 )}
               </div>
-              {item.progress !== undefined && (
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${item.progress}%` }}
-                  ></div>
-                </div>
-              )}
+              <article className="container-bar">
+                {item.progress !== undefined && (
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${item.progress}%` }}
+                    ></div>
+                  </div>
+                )}
+              </article>
             </div>
           ))}
       </div>

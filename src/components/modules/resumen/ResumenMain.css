@@ -1,6 +1,7 @@
 .resumen-main__container {
+  background-color: #0f172a;
   display: flex;
-  flex-direction: column; /* Apilar verticalmente por defecto */
+  flex-direction: column;
   gap: 2rem;
   padding: 1.5rem;
   width: 100%;
@@ -26,7 +27,7 @@
   align-items: center;
   gap: 0.75rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-light, #e2e8f0);
+  /* border-bottom: 1px solid var(--border-light, #e2e8f0); */
 }
 
 .section-header h3 {
@@ -34,15 +35,6 @@
   font-weight: 700;
   color: var(--text-primary, #1e293b);
   margin: 0;
-}
-
-.badge {
-  background: var(--primary-color, #3b82f6);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 600;
 }
 
 /* Contenedor principal del carrusel */

@@ -8,11 +8,19 @@
 .project-selection-header {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #24294e;
   width: 100%;
-  background: var(--surface-color);
   box-shadow: var(--shadow);
   padding: 20px;
   margin-bottom: 2rem;
+  color: #fff;
+}
+header > h1 {
+  font-family: sans-serif;
+  font-size: 30px !important;
+  padding: 20px;
 }
 
 main > p {
@@ -20,6 +28,7 @@ main > p {
   font-weight: bold;
   font-size: 4vh;
   margin-bottom: 30px;
+  color: white;
 }
 .icon-add {
   width: 50px;
@@ -28,12 +37,16 @@ main > p {
 
 .icon-logout {
   max-width: 30px;
-  fill: #000;
+  fill: #ffffff;
 }
 
 @media (max-width: 768px) {
   .project-selection-header {
     width: 100%;
+    justify-content: space-between;
+  }
+  header > h1 {
+    font-size: 20px !important;
   }
 
   .header-actions {

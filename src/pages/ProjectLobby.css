@@ -25,10 +25,10 @@
 
 .project-info span {
   padding: 0.5rem 1rem;
-  background: var(--background-color);
+  /* background: var(--background-color); */
   border-radius: 0.375rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  /* color: var(--text-secondary); */
 }
 
 .welcome-message {

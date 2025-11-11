@@ -1,5 +1,5 @@
 .app-header {
-  background: var(--surface-color);
+  background: #2d3748; /* Fondo oscuro por defecto */
   box-shadow: var(--shadow);
 
   min-height: 70px;
@@ -49,7 +49,7 @@
 
 .project-name {
   margin: 0;
-  color: var(--text-primary);
+  color: #e2e8f0; /* Texto claro */
   font-size: 1.5rem;
   font-weight: 700;
   white-space: nowrap;
@@ -60,7 +60,7 @@
 }
 
 .project-client {
-  color: var(--text-secondary);
+  color: #cbd5e0; /* Texto claro */
   font-size: 0.9rem;
   white-space: nowrap;
   overflow: hidden;
@@ -86,12 +86,12 @@
 
 .module-name {
   font-weight: 600;
-  color: var(--text-primary);
+  color: #e2e8f0; /* Texto claro */
   font-size: 0.95rem;
-  background: var(--background-color);
+  background: #4a5568; /* Fondo oscuro para el badge */
   padding: 0.4rem 0.8rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid #4a5568;
 }
 
 /* ===== RESPONSIVE ===== */

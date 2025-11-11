@@ -89,7 +89,7 @@
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   margin-bottom: 0.5rem;
-  background: var(--background-color);
+  background: #2d3748; /* Fondo oscuro por defecto */
 }
 
 .user-avatar {
@@ -113,7 +113,7 @@
 
 .user-name {
   font-weight: 600;
-  color: var(--text-primary);
+  color: #e2e8f0; /* Texto claro */
   font-size: 0.9rem;
   white-space: nowrap;
   overflow: hidden;
@@ -122,7 +122,7 @@
 
 .user-role {
   font-size: 0.75rem;
-  color: var(--text-secondary);
+  color: #cbd5e0; /* Texto claro */
   text-transform: capitalize;
   white-space: nowrap;
   overflow: hidden;

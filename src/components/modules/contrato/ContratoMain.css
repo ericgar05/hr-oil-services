@@ -11,7 +11,7 @@
 
 /* Fluid typography */
 .module-description h2 {
-  color: var(--text-primary, #2d3748);
+  color: #fff;
   margin-bottom: 0.5rem;
   font-size: clamp(1.25rem, 2.2vw, 1.75rem);
   font-weight: 700;
@@ -35,11 +35,11 @@
 
 /* Tarjetas principales de contrato */
 .contrato-main-card {
-  background: var(--surface-color, #ffffff);
+  background: var(--surface-color, #2d3748);
   border-radius: 0.75rem;
   padding: 1.5rem;
   box-shadow: var(--shadow, 0 4px 6px rgba(0, 0, 0, 0.1));
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: 1px solid var(--border-color, #4a5568);
   transition: all 0.25s ease;
   cursor: pointer;
   display: flex;
@@ -100,7 +100,7 @@
 }
 
 .contrato-card-content h3 {
-  color: var(--text-primary, #2d3748);
+  color: var(--text-primary, #e2e8f0);
   margin-bottom: 0.75rem;
   font-size: clamp(1.1rem, 2.2vw, 1.5rem);
   font-weight: 700;
@@ -108,7 +108,7 @@
 }
 
 .contrato-card-content p {
-  color: var(--text-secondary, #718096);
+  color: var(--text-secondary, #cbd5e0);
   line-height: 1.6;
   font-size: clamp(0.95rem, 1.8vw, 1rem);
   margin: 0 0 1rem 0;
@@ -173,25 +173,5 @@
   .contrato-card-content p {
     font-size: clamp(0.88rem, 3.2vw, 0.98rem);
     margin-bottom: 0.75rem;
-  }
-}
-
-/* Modo oscuro */
-@media (prefers-color-scheme: dark) {
-  .contrato-main-card {
-    background: var(--surface-color, #2d3748);
-  }
-
-  .contrato-card-content h3 {
-    color: var(--text-primary, #e2e8f0);
-  }
-
-  .contrato-card-content p {
-    color: var(--text-secondary, #cbd5e0);
-  }
-
-  .contrato-card-content small {
-    color: var(--text-tertiary, #a0aec0);
-    border-top-color: var(--border-light, #4a5568);
   }
 }

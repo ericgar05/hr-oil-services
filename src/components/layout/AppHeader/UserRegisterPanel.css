@@ -4,10 +4,10 @@
   top: 100%;
   right: 0;
   margin-top: 8px;
-  background-color: white;
-  border: 1px solid #e0e0e0;
+  background-color: #2d3748; /* Fondo oscuro */
+  border: 1px solid #4a5568; /* Borde oscuro */
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   min-width: 220px;
   display: flex;
@@ -16,18 +16,19 @@
 
 .user-profile-panel .panel-header {
   padding: 12px 16px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #4a5568; /* Borde oscuro */
   display: flex;
   flex-direction: column;
 }
 
 .user-profile-panel .panel-header strong {
   font-weight: 600;
+  color: #e2e8f0; /* Texto claro */
 }
 
 .user-profile-panel .panel-header small {
   font-size: 0.8rem;
-  color: #666;
+  color: #cbd5e0; /* Texto claro */
   text-transform: capitalize;
 }
 
@@ -36,17 +37,17 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  color: #333;
+  color: #e2e8f0; /* Texto claro */
   background: none;
   border: none;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #4a5568; /* Borde oscuro */
   cursor: pointer;
   text-align: left;
   width: 100%;
   font-weight: 500;
 }
 .panel-action-button:hover {
-  background-color: #f5f5f5;
+  background-color: #4a5568; /* Hover oscuro */
 }
 .logout-button {
   display: flex;
@@ -63,5 +64,5 @@
 }
 
 .logout-button:hover {
-  background-color: #ffebee;
+  background-color: rgba(211, 47, 47, 0.2); /* Hover rojo oscuro */
 }
