@@ -1,39 +1,46 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/GastosAdminMain.jsx
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import ModuleDescription from '../../../_core/ModuleDescription/ModuleDescription'
-import './GastosAdminMain.css'
-import { useProjects } from '../../../../../contexts/ProjectContext'
-
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import ModuleDescription from "../../../_core/ModuleDescription/ModuleDescription";
+import "./GastosAdminMain.css";
+import { useProjects } from "../../../../../contexts/ProjectContext";
+import { UserIcon } from "../../../../../assets/icons/Icons";
 const GastosAdminMain = ({ projectId }) => {
-  const navigate = useNavigate()
-  const { selectedProject } = useProjects()
+  const navigate = useNavigate();
+  const { selectedProject } = useProjects();
 
   const submodules = [
-    { 
-      id: 'nomina-personal', 
-      title: 'Nómina & Personal', 
-      description: 'Gestión de nómina, servicios médicos y dotaciones del personal',
-      icon: '👥',
-      path: 'nomina-personal'
+    {
+      id: "nomina-personal",
+      title: "Nómina & Personal",
+      description:
+        "Gestión de nómina, servicios médicos y dotaciones del personal",
+      icon: <UserIcon />,
+      path: "nomina-personal",
     },
-    { 
-      id: 'compra-facturacion', 
-      title: 'Compra & Facturación', 
-      description: 'Gestión de compras con y sin factura, control de proveedores y retenciones',
-      icon: '🧾',
-      path: 'compra-facturacion'
-    }
-  ]
+    {
+      id: "compra-facturacion",
+      title: "Compra & Facturación",
+      description:
+        "Gestión de compras con y sin factura, control de proveedores y retenciones",
+      icon: "🧾",
+      path: "compra-facturacion",
+    },
+  ];
 
   const handleCardClick = (path) => {
-    console.log('Navegando desde Gastos Admin, proyecto:', projectId, 'a:', path)
-    navigate(path, { state: { projectId } })
-  }
+    console.log(
+      "Navegando desde Gastos Admin, proyecto:",
+      projectId,
+      "a:",
+      path
+    );
+    navigate(path, { state: { projectId } });
+  };
 
   const handleBack = () => {
-    navigate('../../../administracion') // Navega al root de administración
-  }
+    navigate("../../../administracion"); // Navega al root de administración
+  };
 
   return (
     <div className="gastos-admin-main">
@@ -41,14 +48,16 @@ const GastosAdminMain = ({ projectId }) => {
         ← Volver a Administración
       </button>
 
-      <ModuleDescription 
+      <ModuleDescription
         title="GASTOS ADMINISTRATIVOS"
-        description={`Gestión integral de todos los gastos administrativos del proyecto ${selectedProject?.name || ''}`}
+        description={`Gestión integral de todos los gastos administrativos del proyecto ${
+          selectedProject?.name || ""
+        }`}
       />
 
       <div className="gastos-admin-grid">
-        {submodules.map(submodule => (
-          <div 
+        {submodules.map((submodule) => (
+          <div
             key={submodule.id}
             className="gastos-admin-card"
             onClick={() => handleCardClick(submodule.path)}
@@ -57,13 +66,13 @@ const GastosAdminMain = ({ projectId }) => {
             <div className="gastos-card-content">
               <h3>{submodule.title}</h3>
               <p>{submodule.description}</p>
-              <small>Proyecto: {selectedProject?.name || ''}</small>
+              <small>Proyecto: {selectedProject?.name || ""}</small>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default GastosAdminMain
+export default GastosAdminMain;

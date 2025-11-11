@@ -7,8 +7,8 @@ import {
   BankIcon,
   BudgetIcon,
   DashboarddIcon,
+  SackDollarIcon,
 } from "../../../assets/icons/Icons";
-
 const AdministracionMain = ({ projectId }) => {
   const navigate = useNavigate();
   const { selectedProject } = useProjects();
@@ -19,7 +19,7 @@ const AdministracionMain = ({ projectId }) => {
       title: "GASTOS ADMINISTRATIVOS",
       description:
         "Gestión de nómina, logística, suministros y servicios generales",
-      icon: <BudgetIcon />,
+      icon: <SackDollarIcon />,
       path: "gastos-administrativos",
     },
     {

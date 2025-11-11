@@ -86,9 +86,11 @@
 }
 
 .contrato-card-icon {
+  width: 60px;
   font-size: clamp(2.4rem, 6vw, 3.5rem);
   margin-bottom: 1rem;
   transition: transform 0.3s ease;
+  fill: #394bd3;
 }
 
 .contrato-main-card:hover .contrato-card-icon {

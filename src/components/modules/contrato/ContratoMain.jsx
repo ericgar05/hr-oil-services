@@ -1,45 +1,48 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useProjects } from '../../../contexts/ProjectContext'
-import ModuleDescription from '../_core/ModuleDescription/ModuleDescription'
-import './ContratoMain.css'
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useProjects } from "../../../contexts/ProjectContext";
+import ModuleDescription from "../_core/ModuleDescription/ModuleDescription";
+import "./ContratoMain.css";
+import { PagesIcon, SackDollarIcon } from "../../../assets/icons/Icons";
 
 const ContratoMain = ({ projectId }) => {
-  const navigate = useNavigate()
-  const { selectedProject } = useProjects()
-  
+  const navigate = useNavigate();
+  const { selectedProject } = useProjects();
+
   const mainCards = [
-    { 
-      id: 'valuaciones', 
-      title: 'VALUACIONES', 
-      description: 'Administración y control de valuaciones del proyecto',
-      icon: '📑',
-      path: 'valuaciones'
+    {
+      id: "valuaciones",
+      title: "VALUACIONES",
+      description: "Administración y control de valuaciones del proyecto",
+      icon: <PagesIcon />,
+      path: "valuaciones",
     },
-    { 
-      id: 'presupuesto', 
-      title: 'PRESUPUESTO', 
-      description: 'Administración de presupuesto y partidas del contrato',
-      icon: '💰',
-      path: 'presupuesto'
-    }
-  ]
+    {
+      id: "presupuesto",
+      title: "PRESUPUESTO",
+      description: "Administración de presupuesto y partidas del contrato",
+      icon: <SackDollarIcon />,
+      path: "presupuesto",
+    },
+  ];
 
   const handleCardClick = (path) => {
-    console.log('Navegando desde proyecto:', projectId, 'a:', path)
-    navigate(path)
-  }
+    console.log("Navegando desde proyecto:", projectId, "a:", path);
+    navigate(path);
+  };
 
   return (
     <div className="contrato-main">
-      <ModuleDescription 
+      <ModuleDescription
         title="Módulo de Contrato"
-        description={`Gestión integral de la documentación contractual del proyecto ${selectedProject?.name || ''}`}
+        description={`Gestión integral de la documentación contractual del proyecto ${
+          selectedProject?.name || ""
+        }`}
       />
 
       <div className="contrato-main-grid">
-        {mainCards.map(card => (
-          <div 
+        {mainCards.map((card) => (
+          <div
             key={card.id}
             className="contrato-main-card"
             onClick={() => handleCardClick(card.path)}
@@ -48,13 +51,13 @@ const ContratoMain = ({ projectId }) => {
             <div className="contrato-card-content">
               <h3>{card.title}</h3>
               <p>{card.description}</p>
-              <small>Proyecto: {selectedProject?.name || ''}</small>
+              <small>Proyecto: {selectedProject?.name || ""}</small>
             </div>
           </div>
         ))}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ContratoMain
+export default ContratoMain;

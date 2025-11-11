@@ -1,20 +1,17 @@
 /* Sidebar principal */
 .sidebar {
   width: 250px;
-  /* CAMBIO: Color de fondo oscuro de la imagen */
   background-color: #24294e;
-  /* CAMBIO: Esquinas redondeadas a la derecha */
   border-radius: 0 1rem 1rem 0;
   height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
-  overflow: visible;
+  overflow: hidden; /* Evita que el contenido interno se desborde del sidebar */
   transition: transform 0.3s ease;
   z-index: 999;
   display: flex;
   flex-direction: column;
-  /* Estilo visual sutil */
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -165,7 +162,7 @@
 .sidebar-nav {
   padding: 1rem 1rem; /* Añadido padding lateral para centrar botones */
   flex: 1;
-  overflow: auto;
+  overflow-y: auto; /* Permite el scroll vertical solo en esta sección si es necesario */
 }
 
 .sidebar-menu {

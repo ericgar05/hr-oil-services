@@ -13,13 +13,6 @@
   font-size: 1.125rem;
 }
 
-/* .module-content {
-  background: var(--surface-color);
-  border-radius: 0.5rem;
-  padding: 2rem;
-  min-height: 400px;
-} */
-
 .permission-denied {
   text-align: center;
   padding: 4rem 2rem;

@@ -31,7 +31,7 @@
   padding: 0;
   overflow-y: auto;
   height: calc(100vh - 70px);
-  background-color: #f8fafc; /* Cambié a un color más moderno */
+  background-color: #0f172a;
   position: relative;
 }
 
@@ -68,7 +68,7 @@
   .main-layout.sidebar-open {
     overflow: hidden;
   }
-  
+
   /* Mejorar el scroll en móviles */
   .content-area {
     -webkit-overflow-scrolling: touch;
@@ -87,11 +87,11 @@
   .main-layout {
     background-color: var(--background-dark, #0f172a);
   }
-  
+
   .main-content {
     background-color: var(--background-dark, #0f172a);
   }
-  
+
   .content-area {
     background-color: var(--background-dark, #0f172a);
   }
