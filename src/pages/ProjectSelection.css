@@ -48,11 +48,6 @@ main > p {
   header > h1 {
     font-size: 20px !important;
   }
-
-  .header-actions {
-    width: 100%;
-    justify-content: center;
-  }
 }
 
 /* ProjectSelection.css - Añade estas clases */

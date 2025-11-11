@@ -12,8 +12,8 @@ import { ResumeCard } from "../../resume/ResumeCard";
 import ValuacionResumenCard from "./components/ValuacionResumenCard";
 import { Header } from "../../layout/AppHeader/Header";
 
-import "./ResumenMain.css";
 import { DashboarddIcon, SackDollarIcon } from "../../../assets/icons/Icons";
+import "./ResumenMain.css";
 
 const ResumenMain = () => {
   const { selectedProject } = useProjects();

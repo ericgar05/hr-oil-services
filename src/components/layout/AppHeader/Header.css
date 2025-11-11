@@ -1,29 +1,48 @@
-header > h1 {
-  font-size: 20px;
-}
-.info-users {
-  padding: 10px;
-  font-family: sans-serif;
-  color: #fff;
-}
 .app-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 0.75rem 1.5rem;
   background-color: #0f172a;
+  color: #e2e8f0;
+  min-height: 70px;
+  gap: 1rem;
+}
+
+.info-users {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex-grow: 1; /* Hace que este elemento ocupe el espacio sobrante */
+}
+
+.info-welcome,
+.project-title {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.info-welcome {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #94a3b8;
+}
+
+.project-title {
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
-  .info-users {
-    text-align: center;
-  }
   .info-welcome {
     display: none;
   }

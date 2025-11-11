@@ -127,8 +127,8 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
           </div>
         </div>
       </aside>
-
-      {isMobile && !isOpen && (
+      {/* Aqui es la vista de telefono */}
+      {/* {isMobile && !isOpen && (
         <button
           className="sidebar-floating-toggle"
           onClick={() => onToggle(true)}
@@ -140,7 +140,7 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
             <div className="hamburger-line"></div>
           </div>
         </button>
-      )}
+      )} */}
     </>
   );
 };
