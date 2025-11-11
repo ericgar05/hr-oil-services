@@ -3,6 +3,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { ArrowIcon } from "/src/assets/icons/Icons.jsx";
 import { OutIcon } from "/src/assets/icons/Icons.jsx";
 import SidebarItem from "./SidebarItem";
+import { useSidebar } from "../../../hooks/useSidebar";
 import "./Sidebar.css";
 
 const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
@@ -43,6 +44,8 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
       onToggle(false);
     }
   };
+
+  const handleOpenSidebar = () => {};
 
   return (
     <>
@@ -127,7 +130,7 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
           </div>
         </div>
       </aside>
-      {/* Aqui es la vista de telefono */}
+
       {/* {isMobile && !isOpen && (
         <button
           className="sidebar-floating-toggle"
