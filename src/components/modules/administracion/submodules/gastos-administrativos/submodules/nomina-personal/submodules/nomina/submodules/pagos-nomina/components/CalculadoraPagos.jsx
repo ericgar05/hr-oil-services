@@ -807,7 +807,7 @@ const CalculadoraPagos = ({
             </small>
           </div>
           <div className="employees-pagos-list quincenal">
-            <div className="list-header">
+            <div className="list-header-pagos-nomina">
               <span>Empleado</span>
               <span>Tipo Nómina</span>
               <span>Mitad</span>

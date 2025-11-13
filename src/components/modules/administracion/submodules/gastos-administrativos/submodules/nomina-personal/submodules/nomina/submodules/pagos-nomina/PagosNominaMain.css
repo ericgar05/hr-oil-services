@@ -49,6 +49,9 @@
 }
 
 .view-toggle button {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   padding: 0.75rem 1.5rem;
   border: 1px solid var(--border-color);
   background: #4a5568;
@@ -108,6 +111,9 @@
   .view-toggle {
     width: 100%;
     justify-content: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 
   .view-toggle button {
