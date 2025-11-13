@@ -58,7 +58,7 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
           <div className="sidebar-header">
             <div className="sidebar-header-content">
               <img
-                src="/src/assets/logo-hyr.png"
+                src="/logo-hyr.png"
                 alt="H&R Oil Services"
                 className="sidebar-logo"
               />
