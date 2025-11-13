@@ -11,7 +11,7 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
   const { projectId } = useParams();
   const navigate = useNavigate();
 
-  // Usar la versión síncrona para el filtrado
+
   const filteredItems = items
     .filter((item) => {
       return hasPermissionSync(item.id, "read");
@@ -82,18 +82,6 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
               </button>
             )}
           </div>
-
-          {/* <div className="sidebar-user-info">
-            <div className="user-avatar">
-              {currentUser?.username?.charAt(0)?.toUpperCase() || "U"}
-            </div>
-            <div className="user-details">
-              <div className="user-name">
-                {currentUser?.username || "Usuario"}
-              </div>
-              <div className="user-role">{currentUser?.role || "Sin rol"}</div>
-            </div>
-          </div> */}
 
           <nav className="sidebar-nav" aria-label="Navegación principal">
             <ul className="sidebar-menu">

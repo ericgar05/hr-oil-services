@@ -78,7 +78,7 @@
 .employees-pagos-list {
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .employees-pagos-list.quincenal .list-header {
@@ -89,11 +89,13 @@
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
-.list-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+.list-header-pagos-nomina {
+  display: flex;
+  flex-direction: row;
+  width: auto;
   padding: 1rem 1.5rem;
-  background: var(--background-color);
+
+  
   border-bottom: 1px solid var(--border-color);
   font-weight: 600;
   color: var(--text-primary);
@@ -102,8 +104,8 @@
 }
 
 .pago-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+display: flex;
+flex-direction: row;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
   align-items: center;
