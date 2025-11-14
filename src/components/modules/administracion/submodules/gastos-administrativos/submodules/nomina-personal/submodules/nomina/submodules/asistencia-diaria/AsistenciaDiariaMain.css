@@ -74,22 +74,22 @@
 }
 
 .stat-card.total-asistencia {
-  background: #7cc0ee;
+  background: #ffffff;
   border: none;
 }
 
 .stat-card.present-asistencia {
-  background: #99fdbc;
+  background: #ffffff;
   border: none;
 }
 
 .stat-card.absent-asistencia {
-  background: #f5a0a0;
+  background: #ffffff;
   border: none;
 }
 
 .stat-card.percentage-asistencia {
-  background: #fff678;
+  background: #fffffe;
   border: none;
 }
 

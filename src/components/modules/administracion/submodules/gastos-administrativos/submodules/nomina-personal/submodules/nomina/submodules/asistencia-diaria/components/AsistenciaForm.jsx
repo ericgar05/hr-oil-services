@@ -469,9 +469,9 @@ const AsistenciaForm = ({
         <div className="header-title">
           <h3>Registro de Asistencia</h3>
           <h3>{formatDate(selectedDate)}</h3>
-          {isEditing && (
+          {/* {isEditing && (
             <span className="edit-badge">📝 Editando registro existente</span>
-          )}
+          )} */}
         </div>
         <div className="quick-actions">
           <button
@@ -533,15 +533,15 @@ const AsistenciaForm = ({
         </div>
       </div>
 
-      <div className="employees-list">
-        <div className="list-header">
+      <div className="employees-list-asistencia-form">
+        <div className="list-header-asistencia-form">
           <span className="col-employee">Empleado</span>
           <span className="col-status">Estado</span>
           <span className="col-hours">Horas</span>
           <span className="col-observations">Observaciones</span>
         </div>
 
-        <div className="employees-scroll-container">
+        <div className="employees-scroll-container-asistencia-form">
           {asistencias.map((registro) => (
             <div
               key={registro.empleadoId}

@@ -143,29 +143,33 @@
   font-weight: 500;
 }
 
-.employees-list {
-  background: white;
+.employees-list-asistencia-form {
   border-radius: 0.5rem;
   border: 1px solid var(--border-color);
-  overflow: hidden;
-  margin-bottom: 2rem;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 60vh;
 }
 
-.list-header {
+.list-header-asistencia-form {
   display: grid;
   grid-template-columns: 2fr 1fr 0.8fr 1.5fr;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  background: var(--background-color);
-  border-bottom: 1px solid var(--border-color);
+  border: 3px solid #394bd3;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #fff;
   font-size: 0.9rem;
+  min-width: 800px; /* Añadido para forzar el scroll horizontal */
+}
+.list-header-asistencia-form span {
+  border-right: 3px solid #394bd3;
 }
 
-.employees-scroll-container {
+.employees-scroll-container-asistencia-form {
   max-height: 60vh;
-  overflow-y: auto;
+
+  background-color: red;
 }
 
 .employee-row {
@@ -176,6 +180,7 @@
   border-bottom: 1px solid var(--border-color);
   align-items: center;
   transition: background-color 0.2s;
+  min-width: 800px; /* Añadido para forzar el scroll horizontal */
 }
 
 .employee-row:hover {
@@ -183,16 +188,17 @@
 }
 
 .employee-row.present {
-  background: #f0fdf4;
+  background: #b8ffce;
 }
 
 .employee-row.absent {
-  background: #fef2f2;
+  background: #f8b1b1;
 }
 
 .employee-info {
   display: flex;
   flex-direction: column;
+  grid-column: 1 / 2; /* Asigna a la primera columna */
 }
 
 .employee-name {
@@ -223,6 +229,8 @@
 .attendance-controls {
   display: flex;
   justify-content: center;
+  grid-column: 2 / 3; /* Asigna a la segunda columna */
+  white-space: nowrap; /* Evita que los controles se envuelvan */
 }
 
 .toggle-switch {
@@ -283,6 +291,7 @@ input:checked + .slider:before {
 .hours-control {
   display: flex;
   align-items: center;
+  grid-column: 3 / 4; /* Asigna a la tercera columna */
   gap: 0.5rem;
 }
 
@@ -306,6 +315,7 @@ input:checked + .slider:before {
 }
 
 .observations-control input {
+  grid-column: 4 / 5; /* Asigna a la cuarta columna */
   width: 100%;
   padding: 0.5rem;
   border: 1px solid var(--border-color);
@@ -393,23 +403,6 @@ input:checked + .slider:before {
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .list-header,
-  .employee-row {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .col-employee,
-  .col-status,
-  .col-hours,
-  .col-observations {
-    display: none;
-  }
-
-  .employee-row {
-    padding: 1rem;
-  }
-
   .attendance-controls,
   .hours-control,
   .observations-control {

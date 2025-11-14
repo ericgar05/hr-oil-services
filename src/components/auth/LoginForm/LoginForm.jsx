@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../../common/Button/Button";
-import "./LoginForm.css";
 import { useAuth } from "../../../contexts/AuthContext";
+import "./LoginForm.css";
 
 const LoginForm = () => {
   const { handleLogin } = useAuth();
@@ -12,17 +12,14 @@ const LoginForm = () => {
 
   const handleChange = (e) => {
     setCredentials({
-      //Aqui agarra todos los los datos correspondientes
       ...credentials,
       [e.target.name]: e.target.value,
     });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //Agregado para la base de datos / en handleLogin le estoy pasando ya el formulario a la base de datos
 
     handleLogin(credentials);
-    // onSubmit(credentials)
   };
 
   return (
@@ -39,7 +36,6 @@ const LoginForm = () => {
           onChange={handleChange}
           className="form-input"
           required
-          // disabled={loading}
         />
       </div>
 
@@ -55,16 +51,10 @@ const LoginForm = () => {
           onChange={handleChange}
           className="form-input"
           required
-          // disabled={loading}
         />
       </div>
 
-      <Button
-        type="submit"
-        className="btn-primary login-submit"
-        // loading={loading}
-        // disabled={loading}
-      >
+      <Button type="submit" className="btn-primary login-submit">
         Iniciar Sesión
       </Button>
     </form>

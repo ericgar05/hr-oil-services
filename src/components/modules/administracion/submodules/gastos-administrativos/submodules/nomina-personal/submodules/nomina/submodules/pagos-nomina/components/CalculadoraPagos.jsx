@@ -606,7 +606,7 @@ const CalculadoraPagos = ({
 
   // Obtener nombre del mes actual
   const nombreMes = fechaPago
-    ? new Date(fechaPago.replace(/-/g, '\/')).toLocaleDateString("es-ES", {
+    ? new Date(fechaPago.replace(/-/g, "/")).toLocaleDateString("es-ES", {
         month: "long",
         year: "numeric",
       })
@@ -618,12 +618,15 @@ const CalculadoraPagos = ({
         <h3>
           Calculadora de Pagos -{" "}
           {fechaPago
-            ? new Date(fechaPago.replace(/-/g, '\/')).toLocaleDateString("es-ES", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
+            ? new Date(fechaPago.replace(/-/g, "/")).toLocaleDateString(
+                "es-ES",
+                {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }
+              )
             : "Fecha no válida"}
         </h3>
         <div className="mes-info">

@@ -160,13 +160,13 @@
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .suggestion-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .btn-use-suggestion {
     align-self: flex-end;
   }
