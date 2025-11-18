@@ -22,7 +22,6 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
         {
           id: "admin",
           label: "Administración",
-
           path: "/administracion",
         },
       ];
