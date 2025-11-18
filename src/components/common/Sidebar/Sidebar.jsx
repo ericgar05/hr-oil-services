@@ -12,24 +12,11 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
 
   // Lógica de filtrado ajustada según el rol del usuario
   const getMenuItems = () => {
-    if (!currentUser) return [];
+    // Si no hay items o usuario, no mostrar nada.
+    if (!items || !currentUser) return [];
 
-    const { role } = currentUser;
-
-    // Caso 1: El usuario es 'editor'. Solo debe ver "Administración".
-    if (role === "editor") {
-      return [
-        {
-          id: "admin",
-          label: "Administración",
-          path: "/administracion",
-        },
-      ];
-    }
-
-    // Caso 2: Otros roles (admin, viewer, etc.).
-    // Filtramos los módulos del proyecto según sus permisos.
-    const projectItems = items
+    // Filtramos los módulos del proyecto según los permisos de lectura del usuario.
+    return items
       ? items
           .filter((item) => hasPermissionSync(item.id, "read"))
           .map((item) => ({
@@ -37,8 +24,6 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
             path: `/project/${projectId}${item.path}`,
           }))
       : [];
-
-    return projectItems;
   };
   const filteredItems = getMenuItems();
 
