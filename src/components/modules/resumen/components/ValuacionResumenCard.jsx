@@ -11,9 +11,10 @@ const ValuacionResumenCard = ({
   cumulativeProgressUSD,
 }) => {
   const { formatCurrency, convertToUSD } = useCurrency();
-  const { compras } = useOperaciones();
+  const { facturas, comprasSinFactura } = useOperaciones();
+  // console.log("Las compras sin factura son", comprasSinFactura)
   const { getPagosByProject } = usePersonal();
-
+  
   const [pagos, setPagos] = useState([]);
   const [loadingPagos, setLoadingPagos] = useState(true);
 
@@ -60,23 +61,26 @@ const ValuacionResumenCard = ({
   const filterDataByPeriod = (data, dateField) => {
     if (!data) return [];
     const startDate = new Date(periodo_inicio);
+    startDate.setHours(0, 0, 0, 0);
+    
     const endDate = new Date(periodo_fin);
+    endDate.setHours(23, 59, 59, 999);
+
     return data.filter((item) => {
       const itemDate = new Date(item[dateField]);
       return itemDate >= startDate && itemDate <= endDate;
     });
   };
 
-  const comprasPeriodo = filterDataByPeriod(compras, "created_at");
+  const facturasPeriodo = filterDataByPeriod(facturas, "fechaFactura");
+  const comprasSinFacturaPeriodo = filterDataByPeriod(comprasSinFactura, "fechaCompra");
   const pagosPeriodo = filterDataByPeriod(pagos, "fechaPago");
 
-  const totalComprasConFacturaUSD = comprasPeriodo
-    .filter((c) => c.numero_factura)
-    .reduce((acc, curr) => acc + parseFloat(curr.total_usd || 0), 0);
+  const totalComprasConFacturaUSD = facturasPeriodo
+    .reduce((acc, curr) => acc + parseFloat(curr.pagadoDolares || 0), 0);
 
-  const totalComprasSinFacturaUSD = comprasPeriodo
-    .filter((c) => !c.numero_factura)
-    .reduce((acc, curr) => acc + parseFloat(curr.total_usd || 0), 0);
+  const totalComprasSinFacturaUSD = comprasSinFacturaPeriodo
+    .reduce((acc, curr) => acc + parseFloat(curr.totalDolares || 0), 0);
 
   const totalPagosNominaUSD = pagosPeriodo.reduce((acc, curr) => {
     const totalPagoUSD = curr.pagos.reduce(

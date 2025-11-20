@@ -1,11 +1,11 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/CompraSinFacturaForm.jsx
-import React, { useState, useEffect } from 'react'
+import  { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 
 const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
   const [formData, setFormData] = useState({
     categoria: '',
-    subcategorias: [''], // Cambiado a array
+    subcategorias: [''], 
     proveedor: '',
     tipoRif: 'J-',
     rif: '',
@@ -28,7 +28,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
   const [nuevoModoPago, setNuevoModoPago] = useState('')
   const tiposRif = ['J-', 'V-', 'E-', 'P-', 'G-']
 
-  // Cargar datos de edición si existe
+
   useEffect(() => {
     if (compraEdit) {
       console.log('Cargando datos de edición:', compraEdit)
@@ -39,7 +39,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
           : (compraEdit.subcategoria ? [compraEdit.subcategoria] : [''])
       })
     } else {
-      // Resetear formulario para nueva compra
+    
       setFormData({
         categoria: '',
         subcategorias: [''],
@@ -146,7 +146,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
     
     try {
       const cleanedFormData = { ...formData }
-      // Eliminar propiedades que no deben guardarse directamente
+     
       delete cleanedFormData.id
       delete cleanedFormData.createdAt
       delete cleanedFormData.updatedAt
@@ -155,7 +155,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
       let data, error
 
       if (compraEdit) {
-        // Modo edición
+      
         ({ data, error } = await supabase
           .from('compras_sin_factura')
           .update({ ...cleanedFormData, updatedAt: new Date().toISOString() })
@@ -163,6 +163,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
       } else {
         // Modo creación
         ({ data, error } = await supabase
+          //Aqui se insertan los datos de la compra-sin-factura
           .from('compras_sin_factura')
           .insert({
             ...cleanedFormData,

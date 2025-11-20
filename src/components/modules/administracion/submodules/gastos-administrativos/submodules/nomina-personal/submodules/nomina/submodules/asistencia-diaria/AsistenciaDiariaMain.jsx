@@ -15,6 +15,7 @@ const AsistenciaDiariaMain = () => {
     saveAsistencia,
     getAsistenciaByFechaAndProject,
     getAsistenciasByProject,
+    deleteAsistencia,
   } = usePersonal();
 
   const [selectedDate, setSelectedDate] = useState(
@@ -64,6 +65,18 @@ const AsistenciaDiariaMain = () => {
       alert("Asistencia guardada exitosamente");
     } catch (error) {
       alert("Error al guardar asistencia: " + error.message);
+    }
+  };
+
+  const handleDeleteAsistencia = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro de asistencia?")) {
+      try {
+        await deleteAsistencia(id); // Asumiendo que deleteAsistencia está disponible en usePersonal
+        await loadData(); // Recargar datos
+        alert("Asistencia eliminada exitosamente");
+      } catch (error) {
+        alert("Error al eliminar asistencia: " + error.message);
+      }
     }
   };
 
@@ -172,6 +185,7 @@ const AsistenciaDiariaMain = () => {
                   setSelectedDate(fecha);
                   setCurrentView("registrar");
                 }}
+                onDelete={handleDeleteAsistencia}
               />
             )}
           </div>

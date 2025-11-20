@@ -15,6 +15,7 @@ import { IncomeProvider } from "./contexts/IncomeContext.jsx";
 import { PlanningProvider } from "./contexts/PlanningContext.jsx";
 import { ExecutionProvider } from "./contexts/ExecutionContext";
 
+import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import App from "./App.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -22,25 +23,27 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <AuthProvider>
         <UiProvider>
-          <ProjectProvider>
-            <CurrencyProvider>
-              <BudgetProvider>
-                <IncomeProvider>
-                  <ValuationProvider>
-                    <PlanningProvider>
-                      <ExecutionProvider>
-                        <PersonalProvider>
-                          <OperacionesProvider>
-                            <App />
-                          </OperacionesProvider>
-                        </PersonalProvider>
-                      </ExecutionProvider>
-                    </PlanningProvider>
-                  </ValuationProvider>
-                </IncomeProvider>
-              </BudgetProvider>
-            </CurrencyProvider>
-          </ProjectProvider>
+          <NotificationProvider>
+            <ProjectProvider>
+              <CurrencyProvider>
+                <BudgetProvider>
+                  <IncomeProvider>
+                    <ValuationProvider>
+                      <PlanningProvider>
+                        <ExecutionProvider>
+                          <PersonalProvider>
+                            <OperacionesProvider>
+                              <App />
+                            </OperacionesProvider>
+                          </PersonalProvider>
+                        </ExecutionProvider>
+                      </PlanningProvider>
+                    </ValuationProvider>
+                  </IncomeProvider>
+                </BudgetProvider>
+              </CurrencyProvider>
+            </ProjectProvider>
+          </NotificationProvider>
         </UiProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -4,7 +4,6 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useBudget } from "../../../contexts/BudgetContext";
 import { useCurrency } from "../../../contexts/CurrencyContext";
 import { useValuation } from "../../../contexts/ValuationContext";
-//import { usePlanificacion } from "../../../contexts/PlanificacionContext";
 import { useOperaciones } from "../../../contexts/OperacionesContext";
 import { usePersonal } from "../../../contexts/PersonalContext";
 import { getMainCurrency } from "../../../utils/mainCurrency";
@@ -20,13 +19,9 @@ const ResumenMain = () => {
   const { budget, loading: budgetLoading } = useBudget();
   const { valuations, loading: valuationsLoading } = useValuation();
   const { formatCurrency, convertToUSD, customRates } = useCurrency();
-  // const {
-  //   totalTareas,
-  //   tareasCompletadas,
-  //   loading: planificacionLoading,
-  // } = usePlanificacion();
 
-  const { compras } = useOperaciones();
+
+  const { compras, facturas, comprasSinFactura } = useOperaciones();
   const { getPagosByProject } = usePersonal();
 
   const [allPagos, setAllPagos] = useState([]);
@@ -165,23 +160,27 @@ const ResumenMain = () => {
       const filterDataByPeriod = (data, dateField) => {
         if (!data) return [];
         const startDate = new Date(periodo_inicio);
+        startDate.setHours(0, 0, 0, 0);
+        
         const endDate = new Date(periodo_fin);
+        endDate.setHours(23, 59, 59, 999);
+
         return data.filter((item) => {
           const itemDate = new Date(item[dateField]);
           return itemDate >= startDate && itemDate <= endDate;
         });
       };
 
-      const comprasPeriodo = filterDataByPeriod(compras, "created_at");
+      // Usar facturas y comprasSinFactura en lugar de compras (inventario)
+      const facturasPeriodo = filterDataByPeriod(facturas, "fechaFactura");
+      const comprasSinFacturaPeriodo = filterDataByPeriod(comprasSinFactura, "fechaCompra");
       const pagosPeriodo = filterDataByPeriod(allPagos, "fechaPago");
 
-      const totalComprasConFacturaUSD = comprasPeriodo
-        .filter((c) => c.numero_factura)
-        .reduce((acc, curr) => acc + parseFloat(curr.total_usd || 0), 0);
+      const totalComprasConFacturaUSD = facturasPeriodo
+        .reduce((acc, curr) => acc + parseFloat(curr.pagadoDolares || 0), 0);
 
-      const totalComprasSinFacturaUSD = comprasPeriodo
-        .filter((c) => !c.numero_factura)
-        .reduce((acc, curr) => acc + parseFloat(curr.total_usd || 0), 0);
+      const totalComprasSinFacturaUSD = comprasSinFacturaPeriodo
+        .reduce((acc, curr) => acc + parseFloat(curr.totalDolares || 0), 0);
 
       const totalPagosNominaUSD = pagosPeriodo.reduce((acc, curr) => {
         const totalPagoUSD = curr.pagos.reduce(
@@ -299,6 +298,8 @@ const ResumenMain = () => {
     customRates,
     safeConvertToUSD,
     compras,
+    facturas,
+    comprasSinFactura,
     allPagos,
   ]);
 
@@ -372,7 +373,7 @@ const ResumenMain = () => {
                           valuacion={valuacion}
                           mainCurrency={mainCurrency}
                           budgetTotalUSD={totalPresupuesto_USD}
-                          cumulativeProgressUSD={cumulativeValuationUSD} // New prop
+                          cumulativeProgressUSD={cumulativeValuationUSD}
                         />
                       </div>
                     );

@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect } from "react";
 import supabase from "../api/supaBase";
 import { useProjects } from "./ProjectContext";
+import { useNotification } from "./NotificationContext";
 
 const PersonalContext = createContext();
 
@@ -15,6 +16,7 @@ export const usePersonal = () => {
 
 export const PersonalProvider = ({ children }) => {
   const { selectedProject } = useProjects();
+  const { addNotification } = useNotification();
 
   // ========== EMPLEADOS ==========
   const getEmployeesByProject = async (projectId = null) => {
@@ -133,9 +135,11 @@ export const PersonalProvider = ({ children }) => {
       };
 
       console.log("✅ PersonalContext: Empleado agregado exitosamente");
+      addNotification("Empleado agregado exitosamente", "success");
       return newEmployee;
     } catch (error) {
       console.error("Error agregando empleado:", error);
+      addNotification("Error al agregar empleado", "error");
       throw error;
     }
   };
@@ -194,9 +198,11 @@ export const PersonalProvider = ({ children }) => {
       };
 
       console.log("✅ PersonalContext: Empleado actualizado exitosamente");
+      addNotification("Empleado actualizado exitosamente", "success");
       return updatedEmployee;
     } catch (error) {
       console.error("Error actualizando empleado:", error);
+      addNotification("Error al actualizar empleado", "error");
       throw error;
     }
   };
@@ -210,9 +216,11 @@ export const PersonalProvider = ({ children }) => {
       if (error) throw error;
 
       console.log("✅ PersonalContext: Empleado eliminado exitosamente");
+      addNotification("Empleado eliminado exitosamente", "success");
       return true;
     } catch (error) {
       console.error("Error eliminando empleado:", error);
+      addNotification("Error al eliminar empleado", "error");
       throw error;
     }
   };
@@ -313,9 +321,11 @@ export const PersonalProvider = ({ children }) => {
       if (recordsError) throw recordsError;
 
       console.log("✅ PersonalContext: Asistencia guardada exitosamente");
+      addNotification("Asistencia guardada exitosamente", "success");
       return attendance;
     } catch (error) {
       console.error("Error guardando asistencia:", error);
+      addNotification("Error al guardar asistencia", "error");
       throw error;
     }
   };
@@ -398,6 +408,36 @@ export const PersonalProvider = ({ children }) => {
     } catch (error) {
       console.error("Error cargando asistencias:", error);
       return [];
+    }
+  };
+
+  const deleteAsistencia = async (id) => {
+    console.log("🗑️ PersonalContext: Eliminando asistencia:", id);
+
+    try {
+      // Eliminar registros asociados primero (aunque cascade delete debería encargarse, es más seguro)
+      const { error: recordsError } = await supabase
+        .from("attendance_records")
+        .delete()
+        .eq("attendance_id", id);
+
+      if (recordsError) throw recordsError;
+
+      // Eliminar el registro principal
+      const { error } = await supabase
+        .from("attendances")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      console.log("✅ PersonalContext: Asistencia eliminada exitosamente");
+      addNotification("Asistencia eliminada exitosamente", "success");
+      return true;
+    } catch (error) {
+      console.error("Error eliminando asistencia:", error);
+      addNotification("Error al eliminar asistencia", "error");
+      throw error;
     }
   };
 
@@ -592,6 +632,7 @@ export const PersonalProvider = ({ children }) => {
     saveAsistencia,
     getAsistenciaByFechaAndProject,
     getAsistenciasByProject,
+    deleteAsistencia, // Exportar nueva función
 
     // Pagos
     savePagos,

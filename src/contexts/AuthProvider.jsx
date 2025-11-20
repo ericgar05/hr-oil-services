@@ -75,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         .select("can_read, can_write, can_delete")
         .eq("user_id", userData.id)
         .single();
-
+//Es aqui donde se verifica si el usuario tiene permisos
       if (error) {
         console.error("Error al cargar permisos:", error);
         return hasPermissionSync(module, action);

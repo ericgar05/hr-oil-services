@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import supabase from '../api/supaBase';
 import { useProjects } from './ProjectContext';
 
@@ -236,7 +236,7 @@ export const OperacionesProvider = ({ children }) => {
       return;
     }
 
-    // Validar stock suficiente
+   
     if (item.cantidad_disponible < cantidad_retirada) {
       alert('No hay suficiente stock para retirar.');
       setLoading(false);
@@ -297,7 +297,6 @@ export const OperacionesProvider = ({ children }) => {
       project_id: selectedProject.id
     };
 
-    // Insertar compra
     const { error: purchaseError } = await supabase
       .from('compras')
       .insert([purchasePayload]);
@@ -459,6 +458,45 @@ export const OperacionesProvider = ({ children }) => {
     setLoading(false);
   }, [getInventory]);
 
+  const [facturas, setFacturas] = useState([]);
+  const [comprasSinFactura, setComprasSinFactura] = useState([]);
+
+  const getFacturas = useCallback(async () => {
+    if (!selectedProject) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('facturas')
+      .select('*')
+      .eq('projectId', selectedProject.id)
+      .neq('status', 'deleted')
+      .order('fechaFactura', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching facturas:', error);
+    } else {
+      setFacturas(data || []);
+    }
+    setLoading(false);
+  }, [selectedProject]);
+
+  const getComprasSinFactura = useCallback(async () => {
+    if (!selectedProject) return;
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('compras_sin_factura')
+      .select('*')
+      .eq('projectId', selectedProject.id)
+      .neq('status', 'deleted')
+      .order('fechaCompra', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching compras sin factura:', error);
+    } else {
+      setComprasSinFactura(data || []);
+    }
+    setLoading(false);
+  }, [selectedProject]);
+
   // Cargar datos cuando se selecciona un proyecto
   useEffect(() => {
     if (selectedProject) {
@@ -467,14 +505,18 @@ export const OperacionesProvider = ({ children }) => {
       getRetiros();
       getProductos();
       getRequerimientos();
+      getFacturas();
+      getComprasSinFactura();
     } else {
       // Limpiar datos cuando no hay proyecto seleccionado
       setInventory([]);
       setCompras([]);
       setRetiros([]);
       setRequerimientos([]);
+      setFacturas([]);
+      setComprasSinFactura([]);
     }
-  }, [selectedProject, getInventory, getCompras, getRetiros, getProductos, getRequerimientos]);
+  }, [selectedProject, getInventory, getCompras, getRetiros, getProductos, getRequerimientos, getFacturas, getComprasSinFactura]);
 
   const value = useMemo(() => ({
     inventory,
@@ -493,7 +535,12 @@ export const OperacionesProvider = ({ children }) => {
     cancelRequerimientoItem,
     getInventorySummary,
     getLowStockItems,
+    getLowStockItems,
     updateInventoryItem,
+    facturas,
+    comprasSinFactura,
+    getFacturas,
+    getComprasSinFactura,
   }), [
     inventory,
     compras,
@@ -512,6 +559,10 @@ export const OperacionesProvider = ({ children }) => {
     getInventorySummary,
     getLowStockItems,
     updateInventoryItem,
+    facturas,
+    comprasSinFactura,
+    getFacturas,
+    getComprasSinFactura,
   ]);
 
   return (
