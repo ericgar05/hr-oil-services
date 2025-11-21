@@ -22,7 +22,6 @@ const RegistroPersonalMain = () => {
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-<<<<<<< HEAD
   // Estados para configuración de nómina
   const [payrollSettings, setPayrollSettings] = useState({
     montoBaseIvss: 150,
@@ -34,8 +33,6 @@ const RegistroPersonalMain = () => {
   const [tempSettings, setTempSettings] = useState({});
   const [loadingSettings, setLoadingSettings] = useState(false);
 
-  // Cargar empleados y configuración del proyecto actual
-=======
   const [feedback, setFeedback] = useState({
     isOpen: false,
     type: 'success',
@@ -43,8 +40,7 @@ const RegistroPersonalMain = () => {
     message: ''
   });
 
-  // Cargar empleados del proyecto actual
->>>>>>> 0129045f59b27b07182412685149e629dc2de09a
+  // Cargar empleados y configuración del proyecto actual
   useEffect(() => {
     loadEmployees();
     loadSettings();
