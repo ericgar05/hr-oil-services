@@ -1,8 +1,8 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/components/FacturasList.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import supabase from "../../../../../../../../../../api/supaBase";
 import { useNotification } from "../../../../../../../../../../contexts/NotificationContext";
-import FeedbackModal from "../../../../../../../../../../common/FeedbackModal/FeedbackModal";
+import FeedbackModal from "../../../../../../../../../common/FeedbackModal/FeedbackModal";
 
 const FacturasList = ({ projectId, onEditFactura }) => {
   const { showToast } = useNotification();

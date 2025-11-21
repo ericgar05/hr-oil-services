@@ -7,7 +7,7 @@ import { useNotification } from "../../../../../../../../../../../contexts/Notif
 import ModuleDescription from "../../../../../../../../../_core/ModuleDescription/ModuleDescription";
 import PersonalForm from "./components/PersonalForm";
 import PersonalList from "./components/PersonalList";
-import FeedbackModal from "../../../../../../../../../common/FeedbackModal/FeedbackModal";
+import FeedbackModal from "../../../../../../../../../../common/FeedbackModal/FeedbackModal";
 import "./RegistroPersonalMain.css";
 
 const RegistroPersonalMain = () => {

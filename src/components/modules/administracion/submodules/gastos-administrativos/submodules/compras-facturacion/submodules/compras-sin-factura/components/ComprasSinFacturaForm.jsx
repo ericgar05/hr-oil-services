@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
-import FeedbackModal from '../../../../../../../../../../common/FeedbackModal/FeedbackModal'
+import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
 
-const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
+const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
   const [formData, setFormData] = useState({
     categoria: '',
@@ -601,4 +601,4 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
   )
 }
 
-export default CompraSinFacturaForm
+export default ComprasSinFacturaForm
