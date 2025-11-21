@@ -1,14 +1,18 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/CompraSinFacturaForm.jsx
-import  { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
+<<<<<<< HEAD
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
 import FeedbackModal from '../../../../../../../../../../common/FeedbackModal/FeedbackModal'
 
+=======
+//prueba
+>>>>>>> 3f245d04cba11fe840a4399a5325cacb49cb8fa0
 const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
   const [formData, setFormData] = useState({
     categoria: '',
-    subcategorias: [''], 
+    subcategorias: [''],
     proveedor: '',
     tipoRif: 'J-',
     rif: '',
@@ -49,7 +53,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
           : (compraEdit.subcategoria ? [compraEdit.subcategoria] : [''])
       })
     } else {
-    
+
       setFormData({
         categoria: '',
         subcategorias: [''],
@@ -249,7 +253,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
       }
 
       const cleanedFormData = { ...formData }
-     
+
       delete cleanedFormData.id
       delete cleanedFormData.createdAt
       delete cleanedFormData.updatedAt
@@ -258,7 +262,7 @@ const CompraSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEd
       let data, error
 
       if (compraEdit) {
-      
+
         ({ data, error } = await supabase
           .from('compras_sin_factura')
           .update({ ...cleanedFormData, updatedAt: new Date().toISOString() })
