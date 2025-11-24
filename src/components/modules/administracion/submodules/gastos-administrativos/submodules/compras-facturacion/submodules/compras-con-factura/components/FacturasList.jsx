@@ -254,6 +254,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
               <th>RIF</th>
               <th>N° Factura</th>
               <th>N° Control</th>
+              <th>Descripción</th>
               <th>Categoría</th>
               <th>Tasa de Pago (Bs/$)</th>
               <th>Subcategorías</th>
@@ -279,6 +280,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
                 </td>
                 <td>{factura.numeroFactura}</td>
                 <td>{factura.numeroControl || "-"}</td>
+                <td>{factura.descripcion || "-"}</td>
                 <td>{factura.categoria}</td>
                 <td>{factura.tasaPago?.toFixed(2) || "0.00"}</td>
                 <td>{formatSubcategorias(factura)}</td>

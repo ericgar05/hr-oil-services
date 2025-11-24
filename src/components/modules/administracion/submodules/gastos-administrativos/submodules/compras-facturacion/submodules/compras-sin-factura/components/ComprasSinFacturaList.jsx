@@ -1,8 +1,9 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/ComprasSinFacturaList.jsx
-import  { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
-import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'   
+import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
+
 const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
   const { showToast } = useNotification();
   const [compras, setCompras] = useState([])
@@ -144,6 +145,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
               <th>Proveedor</th>
               <th>RIF</th>
               <th>N° Nota Entrega</th>
+              <th>Descripción</th>
               <th>Categoría</th>
               <th>Subcategorías</th>
               <th>Total ($)</th>
@@ -163,6 +165,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
                 <td>{compra.proveedor}</td>
                 <td>{compra.tipoRif}{compra.rif}</td>
                 <td>{compra.numeroNotaEntrega || '-'}</td>
+                <td>{compra.descripcion || '-'}</td>
                 <td>{compra.categoria}</td>
                 <td>{formatSubcategorias(compra)}</td>
                 <td>$ {compra.totalDolares?.toFixed(2) || '0.00'}</td>
@@ -199,12 +202,6 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
           </tbody>
         </table>
       </div>
-
-      {comprasFiltradas.length === 0 && (
-        <div className="no-data">
-          <p>No se encontraron compras registradas</p>
-        </div>
-      )}
 
       <FeedbackModal
         isOpen={feedback.isOpen}

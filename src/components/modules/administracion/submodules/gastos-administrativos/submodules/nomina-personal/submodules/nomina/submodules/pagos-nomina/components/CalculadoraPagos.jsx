@@ -14,7 +14,6 @@ const CalculadoraPagos = ({
   selectedProject,
 }) => {
   const { selectedProject: contextProject } = useProjects();
-  const { getPayrollSettings } = usePersonal();
   const { showToast } = useNotification();
   const project = selectedProject || contextProject;
 
@@ -26,40 +25,40 @@ const CalculadoraPagos = ({
   const [observaciones, setObservaciones] = useState({});
   const [pagosCalculados, setPagosCalculados] = useState([]);
   const [diasHabilesMes, setDiasHabilesMes] = useState(0);
+
   const [diasRealesMes, setDiasRealesMes] = useState(0);
-  const [payrollSettings, setPayrollSettings] = useState({
-    montoBaseIvss: 150,
-    montoBaseParoForzoso: 150,
-    montoBaseFaov: 1300,
-    montoBaseIslr: 120,
-  });
+  const [incluirQuincenal, setIncluirQuincenal] = useState(false);
+  const [incluirSemanal, setIncluirSemanal] = useState(true);
+
 
   // CORRECCIÓN: Calcular días hábiles y días reales del mes automáticamente
+  // Se basa en el LUNES de la semana de pago para determinar el mes
   useEffect(() => {
     if (fechaPago && !isNaN(new Date(fechaPago).getTime())) {
-      const diasHabiles = calcularDiasHabilesMes(fechaPago);
+      const fechaPagoDate = new Date(fechaPago);
+      const diaSemana = fechaPagoDate.getDay();
+
+      // Calcular el lunes de la semana (si es domingo (0), restar 6; si es otro, restar diaSemana - 1)
+      const diffLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
+      const lunesSemana = new Date(fechaPagoDate);
+      lunesSemana.setDate(fechaPagoDate.getDate() + diffLunes);
+
+      console.log("Fecha Pago:", fechaPago, "Lunes Referencia:", lunesSemana.toISOString().split('T')[0]);
+
+      // Usar el lunes como fecha de referencia para el mes
+      const diasHabiles = calcularDiasHabilesMes(lunesSemana);
       const diasReales = new Date(
-        new Date(fechaPago).getFullYear(),
-        new Date(fechaPago).getMonth() + 1,
+        lunesSemana.getFullYear(),
+        lunesSemana.getMonth() + 1,
         0
       ).getDate();
+
       setDiasHabilesMes(diasHabiles);
       setDiasRealesMes(diasReales);
     }
   }, [fechaPago]);
 
-  // Cargar configuración de nómina
-  useEffect(() => {
-    const loadSettings = async () => {
-      if (project?.id) {
-        const settings = await getPayrollSettings(project.id);
-        if (settings) {
-          setPayrollSettings(settings);
-        }
-      }
-    };
-    loadSettings();
-  }, [project?.id]);
+
 
   // Inicializar días de pago quincenal y mitad
   useEffect(() => {
@@ -414,12 +413,11 @@ const CalculadoraPagos = ({
       return { total: 0, desglose: {} };
     }
 
-    // NUEVO: Usar valores por defecto del empleado o los valores por defecto generales
-    // NUEVO: Usar valores de la configuración global
-    const montoBaseIvss = parseFloat(payrollSettings.montoBaseIvss);
-    const montoBaseParoForzoso = parseFloat(payrollSettings.montoBaseParoForzoso);
-    const montoBaseFaov = parseFloat(payrollSettings.montoBaseFaov);
-    const montoBaseIslr = parseFloat(payrollSettings.montoBaseIslr);
+    // Usar valores individuales del empleado
+    const montoBaseIvss = parseFloat(empleado.montoBaseIvss || 0);
+    const montoBaseParoForzoso = parseFloat(empleado.montoBaseParoForzoso || 0);
+    const montoBaseFaov = parseFloat(empleado.montoBaseFaov || 0);
+    const montoBaseIslr = parseFloat(empleado.montoBaseIslr || 0);
     const porcentajeIslrIndividual =
       parseFloat(empleado.porcentajeIslr || 0) / 100;
 
@@ -428,11 +426,11 @@ const CalculadoraPagos = ({
 
     // CORRECCIÓN: Calcular días FAOV específicos para la mitad del pago
     const diasFAOV = calcularDiasPorMitad(fechaPago, mitadPago);
-
+    console.log("diasFAOV", diasFAOV);
     // FÓRMULAS CORRECTAS ACTUALIZADAS:
     const ivss = montoBaseIvss * lunesMitad * 0.04;
     const paroForzoso = montoBaseParoForzoso * lunesMitad * 0.005;
-    const faov = (montoBaseFaov / diasFAOV) * diasFAOV * 0.01;
+    const faov = (montoBaseFaov / diasRealesMes) * diasFAOV * 0.01;
 
     // NUEVO FÓRMULA ISLR: (Monto base ISLR / 2) * Tasa * Porcentaje individual
     const islr =
@@ -571,7 +569,21 @@ const CalculadoraPagos = ({
     }
 
     try {
-      const pagos = employees.map((empleado) => calcularPagoEmpleado(empleado));
+      // Filtrar empleados según las reglas de visualización
+      const empleadosACalcular = employees.filter(emp => {
+        // Excluir inactivos
+        if (emp.estado === "Inactivo") return false;
+
+        // Excluir quincenales si no está marcado el check
+        if (emp.frecuenciaPago === "Quincenal" && !incluirQuincenal) return false;
+
+        // Excluir semanales si no está marcado el check
+        if (emp.frecuenciaPago === "Semanal" && !incluirSemanal) return false;
+
+        return true;
+      });
+
+      const pagos = empleadosACalcular.map((empleado) => calcularPagoEmpleado(empleado));
       setPagosCalculados(pagos);
       onCalcular(pagos);
     } catch (error) {
@@ -659,30 +671,40 @@ const CalculadoraPagos = ({
 
   // Agrupar empleados por tipo de nómina y frecuencia
   const empleadosPorTipo = {
-    operativaSemanal: employees.filter(
-      (e) =>
-        e.tipoNomina === "Tecnica Operativa" && e.frecuenciaPago === "Semanal"
-    ),
-    operativaEspecialQuincenal: employees.filter(
+    operativaSemanal: incluirSemanal ? employees.filter(
+      (e) => e.frecuenciaPago === "Semanal" && e.estado !== "Inactivo"
+    ) : [],
+    operativaEspecialQuincenal: incluirQuincenal ? employees.filter(
       (e) =>
         e.tipoNomina ===
         "Tecnica Operativa Administrativa – Trabajos Especiales" &&
-        e.frecuenciaPago === "Quincenal"
-    ),
-    administrativaQuincenal: employees.filter(
+        e.frecuenciaPago === "Quincenal" &&
+        e.estado !== "Inactivo"
+    ) : [],
+    administrativaQuincenal: incluirQuincenal ? employees.filter(
       (e) =>
         (e.tipoNomina === "Administrativa" || e.tipoNomina === "Ejecucion") &&
-        e.frecuenciaPago === "Quincenal"
-    ),
+        e.frecuenciaPago === "Quincenal" &&
+        e.estado !== "Inactivo"
+    ) : [],
   };
 
-  // Obtener nombre del mes actual
-  const nombreMes = fechaPago
-    ? new Date(fechaPago.replace(/-/g, "/")).toLocaleDateString("es-ES", {
+  // Obtener nombre del mes actual (basado en el lunes de la semana)
+  const getNombreMesReferencia = () => {
+    if (!fechaPago) return "";
+    const fechaPagoDate = new Date(fechaPago.replace(/-/g, "/"));
+    const diaSemana = fechaPagoDate.getDay();
+    const diffLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
+    const lunesSemana = new Date(fechaPagoDate);
+    lunesSemana.setDate(fechaPagoDate.getDate() + diffLunes);
+
+    return lunesSemana.toLocaleDateString("es-ES", {
       month: "long",
       year: "numeric",
-    })
-    : "";
+    });
+  };
+
+  const nombreMes = getNombreMesReferencia();
 
   return (
     <div className="calculadora-pagos">
@@ -707,10 +729,7 @@ const CalculadoraPagos = ({
             {diasHabilesMes} días hábiles
           </small>
           <br />
-          <small style={{ color: "#059669", fontWeight: "500" }}>
-            💡 <strong>Montos base (Configuración Global):</strong> IVSS: {payrollSettings.montoBaseIvss} Bs, Paro
-            Forzoso: {payrollSettings.montoBaseParoForzoso} Bs, FAOV: {payrollSettings.montoBaseFaov} Bs, ISLR: {payrollSettings.montoBaseIslr} USD$
-          </small>
+
           <br />
           <small style={{ color: "#dc2626", fontWeight: "500" }}>
             📝 <strong>Pago Semanal:</strong> Salario mensual ÷ {diasHabilesMes}{" "}
@@ -720,11 +739,41 @@ const CalculadoraPagos = ({
         </div>
       </div>
 
+      {/* Toggle para incluir nómina quincenal y semanal */}
+      <div className="toggles-container" style={{ margin: "1rem 0", display: "flex", gap: "1rem" }}>
+        <div className="toggle-item" style={{ padding: "0.5rem", backgroundColor: "#f3f4f6", borderRadius: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <input
+            type="checkbox"
+            id="incluirSemanal"
+            checked={incluirSemanal}
+            onChange={(e) => setIncluirSemanal(e.target.checked)}
+            style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
+          />
+          <label htmlFor="incluirSemanal" style={{ cursor: "pointer", fontWeight: "500", userSelect: "none" }}>
+            Incluir Nómina Semanal
+          </label>
+        </div>
+
+        <div className="toggle-item" style={{ padding: "0.5rem", backgroundColor: "#f3f4f6", borderRadius: "0.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <input
+            type="checkbox"
+            id="incluirQuincenal"
+            checked={incluirQuincenal}
+            onChange={(e) => setIncluirQuincenal(e.target.checked)}
+            style={{ width: "1.2rem", height: "1.2rem", cursor: "pointer" }}
+          />
+          <label htmlFor="incluirQuincenal" style={{ cursor: "pointer", fontWeight: "500", userSelect: "none" }}>
+            Incluir Nómina Quincenal
+          </label>
+        </div>
+      </div>
+
       {/* Nómina Técnica Operativa (Semanal) */}
       {empleadosPorTipo.operativaSemanal.length > 0 && (
         <div className="nomina-section">
+
           <h4>
-            Nómina Técnica Operativa (Pago Semanal) - Días según asistencia
+            Nómina Semanal (Técnica Operativa y Otros) - Días según asistencia
           </h4>
           <div className="info-adicional">
             <small>
@@ -738,7 +787,7 @@ const CalculadoraPagos = ({
               <span>Días Asist.</span>
               <span>H. Extra D.</span>
               <span>H. Extra N.</span>
-              <span>Ded. Manual ($)</span>
+              <span>Deduc./Adel.($)</span>
               <span>Banco</span>
               <span>Observaciones</span>
             </div>
@@ -843,6 +892,13 @@ const CalculadoraPagos = ({
                       <option value="Banplus">Banplus</option>
                       <option value="Banco Socios">Banco Socios</option>
                       <option value="Banco Plaza">Banco Plaza</option>
+                      <option value="Banesco">Banesco</option>
+                      <option value="Banco Nacional de Creditos (BNC)">Banco Nacional de Creditos (BNC)</option>
+                      <option value="Mercantil">Mercantil</option>
+                      <option value="Venezolano de Credito">Venezolano de Credito</option>
+                      <option value="Banco Caroni">Banco Caroni</option>
+                      <option value="Banco del Caribe">Banco del Caribe</option>
+
                       <option value="Otro">Otro</option>
                     </select>
                   </div>
@@ -885,7 +941,7 @@ const CalculadoraPagos = ({
                 <span>Días a Pagar</span>
                 <span>H. Extra D.</span>
                 <span>H. Extra N.</span>
-                <span>Ded. Manual ($)</span>
+                <span>Deduc./Adel. ($)</span>
                 <span>Banco</span>
                 <span>Observaciones</span>
               </div>
@@ -1059,7 +1115,10 @@ const CalculadoraPagos = ({
                         <option value="Banco de Venezuela">Banco de Venezuela</option>
                         <option value="Banplus">Banplus</option>
                         <option value="Banco Socios">Banco Socios</option>
+                        <option value="Caja Chica Ing. German">Caja Chica Ing.German</option>
                         <option value="Banco Plaza">Banco Plaza</option>
+                        <option value="Mercantil">Mercantil</option>
+                        <option value="Venezolano de Credito">Venezolano de Credito</option>
                         <option value="Otro">Otro</option>
                       </select>
                     </div>

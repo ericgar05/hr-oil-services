@@ -55,6 +55,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(emp.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(emp.monto_base_faov),
         montoBaseIslr: parseFloat(emp.monto_base_islr),
+        montoBaseIslr: parseFloat(emp.monto_base_islr),
+        estado: emp.estado || "Activo",
+        fechaInactivo: emp.fecha_inactivo,
+        fechaReactivacion: emp.fecha_reactivacion,
         createdAt: emp.created_at,
         updatedAt: emp.updated_at,
       }));
@@ -97,12 +101,17 @@ export const PersonalProvider = ({ children }) => {
             ),
             porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
             fecha_ingreso: employeeData.fechaIngreso,
-            monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 150),
+            monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
             monto_base_paro_forzoso: parseFloat(
-              employeeData.montoBaseParoForzoso || 150
+              employeeData.montoBaseParoForzoso || 0
             ),
-            monto_base_faov: parseFloat(employeeData.montoBaseFaov || 1300),
-            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 120),
+            monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+            monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+            estado: employeeData.estado || "Activo",
+            fecha_inactivo: employeeData.fechaInactivo,
+            fecha_reactivacion: employeeData.fechaReactivacion,
           },
         ])
         .select()
@@ -130,6 +139,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(data.monto_base_faov),
         montoBaseIslr: parseFloat(data.monto_base_islr),
+        montoBaseIslr: parseFloat(data.monto_base_islr),
+        estado: data.estado || "Activo",
+        fechaInactivo: data.fecha_inactivo,
+        fechaReactivacion: data.fecha_reactivacion,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -165,6 +178,16 @@ export const PersonalProvider = ({ children }) => {
           ),
           porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
           fecha_ingreso: employeeData.fechaIngreso,
+          monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
+          monto_base_paro_forzoso: parseFloat(
+            employeeData.montoBaseParoForzoso || 0
+          ),
+          monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+          monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+          monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+          estado: employeeData.estado,
+          fecha_inactivo: employeeData.fechaInactivo,
+          fecha_reactivacion: employeeData.fechaReactivacion,
           updated_at: new Date().toISOString(),
         })
         .eq("id", id)
@@ -193,6 +216,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(data.monto_base_faov),
         montoBaseIslr: parseFloat(data.monto_base_islr),
+        montoBaseIslr: parseFloat(data.monto_base_islr),
+        estado: data.estado || "Activo",
+        fechaInactivo: data.fecha_inactivo,
+        fechaReactivacion: data.fecha_reactivacion,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -255,6 +282,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(data.monto_base_faov),
         montoBaseIslr: parseFloat(data.monto_base_islr),
+        montoBaseIslr: parseFloat(data.monto_base_islr),
+        estado: data.estado || "Activo",
+        fechaInactivo: data.fecha_inactivo,
+        fechaReactivacion: data.fecha_reactivacion,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -621,87 +652,7 @@ export const PersonalProvider = ({ children }) => {
   }, []);
 
   // ========== CONFIGURACIÓN NÓMINA ==========
-  const getPayrollSettings = useCallback(async (projectId = null) => {
-    const projectToUse = projectId || selectedProject?.id;
-    if (!projectToUse) return null;
 
-    try {
-      const { data, error } = await supabase
-        .from("payroll_settings")
-        .select("*")
-        .eq("project_id", projectToUse)
-        .single();
-
-      if (error && error.code !== "PGRST116") throw error;
-
-      if (!data) {
-        // Si no existe, retornar valores por defecto
-        return {
-          montoBaseIvss: 150,
-          montoBaseParoForzoso: 150,
-          montoBaseFaov: 1300,
-          montoBaseIslr: 120,
-        };
-      }
-
-      return {
-        id: data.id,
-        projectId: data.project_id,
-        montoBaseIvss: parseFloat(data.monto_base_ivss),
-        montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
-        montoBaseFaov: parseFloat(data.monto_base_faov),
-        montoBaseIslr: parseFloat(data.monto_base_islr),
-      };
-    } catch (error) {
-      console.error("Error cargando configuración de nómina:", error);
-      return {
-        montoBaseIvss: 150,
-        montoBaseParoForzoso: 150,
-        montoBaseFaov: 1300,
-        montoBaseIslr: 120,
-      };
-    }
-  }, [selectedProject?.id]);
-
-  const updatePayrollSettings = useCallback(async (projectId, settings) => {
-    if (!projectId) throw new Error("Project ID es requerido");
-
-    try {
-      const { data, error } = await supabase
-        .from("payroll_settings")
-        .upsert(
-          {
-            project_id: projectId,
-            monto_base_ivss: parseFloat(settings.montoBaseIvss),
-            monto_base_paro_forzoso: parseFloat(settings.montoBaseParoForzoso),
-            monto_base_faov: parseFloat(settings.montoBaseFaov),
-            monto_base_islr: parseFloat(settings.montoBaseIslr),
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "project_id" }
-        )
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      console.log("✅ PersonalContext: Configuración actualizada exitosamente");
-      addNotification("Configuración actualizada exitosamente", "success");
-
-      return {
-        id: data.id,
-        projectId: data.project_id,
-        montoBaseIvss: parseFloat(data.monto_base_ivss),
-        montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
-        montoBaseFaov: parseFloat(data.monto_base_faov),
-        montoBaseIslr: parseFloat(data.monto_base_islr),
-      };
-    } catch (error) {
-      console.error("Error actualizando configuración:", error);
-      addNotification("Error al actualizar configuración", "error");
-      throw error;
-    }
-  }, [addNotification]);
 
   const value = useMemo(() => ({
     // Empleados
@@ -723,8 +674,7 @@ export const PersonalProvider = ({ children }) => {
     getPagoById,
 
     // Configuración
-    getPayrollSettings,
-    updatePayrollSettings,
+
   }), [
     getEmployeesByProject,
     addEmployee,
@@ -738,8 +688,7 @@ export const PersonalProvider = ({ children }) => {
     savePagos,
     getPagosByProject,
     getPagoById,
-    getPayrollSettings,
-    updatePayrollSettings
+
   ]);
 
   return (

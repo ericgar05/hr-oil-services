@@ -13,53 +13,21 @@ import "./RegistroPersonalMain.css";
 const RegistroPersonalMain = () => {
   const navigate = useNavigate();
   const { selectedProject } = useProjects();
-  const { getEmployeesByProject, addEmployee, updateEmployee, deleteEmployee, getPayrollSettings, updatePayrollSettings } =
+  const { getEmployeesByProject, addEmployee, updateEmployee, deleteEmployee } =
     usePersonal();
   const { showToast } = useNotification();
 
   const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Estados para configuración de nómina
-  const [payrollSettings, setPayrollSettings] = useState({
-    montoBaseIvss: 150,
-    montoBaseParoForzoso: 150,
-    montoBaseFaov: 1300,
-    montoBaseIslr: 120,
-  });
-  const [isEditingSettings, setIsEditingSettings] = useState(false);
-  const [tempSettings, setTempSettings] = useState({});
-  const [loadingSettings, setLoadingSettings] = useState(false);
-
-  const [feedback, setFeedback] = useState({
-    isOpen: false,
-    type: 'success',
-    title: '',
-    message: ''
-  });
-
-  // Cargar empleados y configuración del proyecto actual
+  // Cargar empleados del proyecto actual
   useEffect(() => {
     loadEmployees();
-    loadSettings();
   }, [selectedProject?.id]);
-
-  const loadSettings = async () => {
-    if (!selectedProject?.id) return;
-    setLoadingSettings(true);
-    try {
-      const settings = await getPayrollSettings(selectedProject.id);
-      if (settings) {
-        setPayrollSettings(settings);
-      }
-    } catch (error) {
-      console.error("Error cargando configuración:", error);
-    } finally {
-      setLoadingSettings(false);
-    }
-  };
 
   const loadEmployees = async () => {
     if (!selectedProject?.id) return;
@@ -68,6 +36,7 @@ const RegistroPersonalMain = () => {
     try {
       const employeesData = await getEmployeesByProject(selectedProject.id);
       setEmployees(employeesData);
+      setFilteredEmployees(employeesData);
     } catch (error) {
       console.error("Error cargando empleados:", error);
       showToast("Error al cargar empleados: " + error.message, "error");
@@ -76,11 +45,24 @@ const RegistroPersonalMain = () => {
     }
   };
 
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredEmployees(employees);
+    } else {
+      const lowerTerm = searchTerm.toLowerCase();
+      const filtered = employees.filter(
+        (emp) =>
+          emp.nombre.toLowerCase().includes(lowerTerm) ||
+          emp.apellido.toLowerCase().includes(lowerTerm) ||
+          emp.cedula.includes(lowerTerm)
+      );
+      setFilteredEmployees(filtered);
+    }
+  }, [searchTerm, employees]);
+
   const handleBack = () => {
     navigate(-1);
   };
-
-
 
   const handleAddEmployee = async (employeeData) => {
     try {
@@ -90,9 +72,9 @@ const RegistroPersonalMain = () => {
       });
       await loadEmployees(); // Recargar la lista
       setShowForm(false);
-
+      showToast("Empleado agregado exitosamente", "success");
     } catch (error) {
-
+      showToast("Error al agregar empleado: " + error.message, "error");
     }
   };
 
@@ -102,18 +84,22 @@ const RegistroPersonalMain = () => {
       await loadEmployees(); // Recargar la lista
       setEditingEmployee(null);
       setShowForm(false);
-
+      showToast("Empleado actualizado exitosamente", "success");
     } catch (error) {
-
+      showToast("Error al actualizar empleado: " + error.message, "error");
     }
   };
 
   const handleDeleteEmployee = async (employeeId) => {
-    try {
-      await deleteEmployee(employeeId);
-      await loadEmployees(); // Recargar la lista
-    } catch (error) {
-      console.error("Error deleting employee:", error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este empleado?")) {
+      try {
+        await deleteEmployee(employeeId);
+        await loadEmployees(); // Recargar la lista
+        showToast("Empleado eliminado exitosamente", "success");
+      } catch (error) {
+        console.error("Error deleting employee:", error);
+        showToast("Error al eliminar empleado: " + error.message, "error");
+      }
     }
   };
 
@@ -127,36 +113,21 @@ const RegistroPersonalMain = () => {
     setShowForm(false);
   };
 
-  // Handlers para configuración
-  const handleEditSettings = () => {
-    setTempSettings({ ...payrollSettings });
-    setIsEditingSettings(true);
-  };
-
-  const handleCancelSettings = () => {
-    setIsEditingSettings(false);
-    setTempSettings({});
-  };
-
-  const handleSaveSettings = async () => {
+  const handleStatusChange = async (employee, newStatus) => {
     try {
-      setLoadingSettings(true);
-      const updated = await updatePayrollSettings(selectedProject.id, tempSettings);
-      setPayrollSettings(updated);
-      setIsEditingSettings(false);
-    } catch (error) {
-      console.error("Error guardando configuración:", error);
-    } finally {
-      setLoadingSettings(false);
-    }
-  };
+      const updateData = {
+        ...employee,
+        estado: newStatus,
+        fechaInactivo: newStatus === "Inactivo" ? new Date().toISOString().split('T')[0] : employee.fechaInactivo,
+        fechaReactivacion: newStatus === "Activo" ? new Date().toISOString().split('T')[0] : employee.fechaReactivacion,
+      };
 
-  const handleSettingChange = (e) => {
-    const { name, value } = e.target;
-    setTempSettings(prev => ({
-      ...prev,
-      [name]: value
-    }));
+      await updateEmployee(employee.id, updateData);
+      await loadEmployees();
+      showToast(`Estado actualizado a ${newStatus}`, "success");
+    } catch (error) {
+      showToast("Error al actualizar estado: " + error.message, "error");
+    }
   };
 
   return (
@@ -184,7 +155,6 @@ const RegistroPersonalMain = () => {
               <div className="header-actions">
                 <h3>Lista de Personal Registrado</h3>
                 <button
-                  // modificar al poner mejor los botones
                   className="btn-personal"
                   onClick={() => setShowForm(true)}
                   disabled={loading}
@@ -192,99 +162,24 @@ const RegistroPersonalMain = () => {
                   {loading ? "Cargando..." : "+ Nuevo Empleado"}
                 </button>
               </div>
-
-              {/* SECCIÓN DE CONFIGURACIÓN DE DEDUCCIONES */}
-              <div className="payroll-settings-header">
-                <div className="settings-title-row">
-                  <h4>⚙️ Configuración Deducciones de Ley (Administrativa/Ejecución)</h4>
-                  {!isEditingSettings ? (
-                    <button
-                      className="btn-edit-settings"
-                      onClick={handleEditSettings}
-                    >
-                      ✏️ Editar Montos
-                    </button>
-                  ) : (
-                    <div className="settings-actions">
-                      <button
-                        className="btn-cancel-settings"
-                        onClick={handleCancelSettings}
-                        disabled={loadingSettings}
-                      >
-                        Cancelar
-                      </button>
-                      <button
-                        className="btn-save-settings"
-                        onClick={handleSaveSettings}
-                        disabled={loadingSettings}
-                      >
-                        {loadingSettings ? "Guardando..." : "💾 Guardar Cambios"}
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="settings-grid">
-                  <div className="setting-item">
-                    <label>Monto Base IVSS (Bs)</label>
-                    {isEditingSettings ? (
-                      <input
-                        type="number"
-                        name="montoBaseIvss"
-                        value={tempSettings.montoBaseIvss}
-                        onChange={handleSettingChange}
-                        step="0.01"
-                      />
-                    ) : (
-                      <span className="setting-value">{payrollSettings.montoBaseIvss} Bs</span>
-                    )}
-                  </div>
-                  <div className="setting-item">
-                    <label>Monto Base Paro Forzoso (Bs)</label>
-                    {isEditingSettings ? (
-                      <input
-                        type="number"
-                        name="montoBaseParoForzoso"
-                        value={tempSettings.montoBaseParoForzoso}
-                        onChange={handleSettingChange}
-                        step="0.01"
-                      />
-                    ) : (
-                      <span className="setting-value">{payrollSettings.montoBaseParoForzoso} Bs</span>
-                    )}
-                  </div>
-                  <div className="setting-item">
-                    <label>Monto Base FAOV (Bs)</label>
-                    {isEditingSettings ? (
-                      <input
-                        type="number"
-                        name="montoBaseFaov"
-                        value={tempSettings.montoBaseFaov}
-                        onChange={handleSettingChange}
-                        step="0.01"
-                      />
-                    ) : (
-                      <span className="setting-value">{payrollSettings.montoBaseFaov} Bs</span>
-                    )}
-                  </div>
-                  <div className="setting-item">
-                    <label>Monto Base ISLR (USD$)</label>
-                    {isEditingSettings ? (
-                      <input
-                        type="number"
-                        name="montoBaseIslr"
-                        value={tempSettings.montoBaseIslr}
-                        onChange={handleSettingChange}
-                        step="0.01"
-                      />
-                    ) : (
-                      <span className="setting-value usd">${payrollSettings.montoBaseIslr}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-
               <p>Gestión integral de la información del personal</p>
+
+              <div className="search-container" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre, apellido o cédula..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="search-input"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: '1px solid #ddd',
+                    fontSize: '1rem'
+                  }}
+                />
+              </div>
             </div>
 
             {loading ? (
@@ -293,16 +188,15 @@ const RegistroPersonalMain = () => {
               </div>
             ) : (
               <PersonalList
-                employees={employees}
+                employees={filteredEmployees}
                 onEdit={handleEditClick}
                 onDelete={handleDeleteEmployee}
+                onStatusChange={handleStatusChange}
               />
             )}
           </>
         )}
       </div>
-
-
     </div>
   );
 };

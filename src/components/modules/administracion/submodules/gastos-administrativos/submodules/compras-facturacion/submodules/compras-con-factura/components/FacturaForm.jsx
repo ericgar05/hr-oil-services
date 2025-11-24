@@ -1,9 +1,9 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/components/FacturaForm.jsx
 import React, { useState, useEffect, useCallback } from 'react'
 import RetencionesCalculator from './RetencionesCalculator'
 import supabase from '../../../../../../../../../../api/supaBase.js'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
-import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'   
+import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
+
 const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
   const [formData, setFormData] = useState({
@@ -158,16 +158,6 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
     fetchData()
   }, [projectId])
 
-  // Cargar datos de edición si existe
-  useEffect(() => {
-    if (facturaEdit) {
-      setFormData({
-        ...facturaEdit,
-        subcategorias: Array.isArray(facturaEdit.subcategorias) ? facturaEdit.subcategorias : (facturaEdit.subcategoria ? [facturaEdit.subcategoria] : [''])
-      })
-    }
-  }, [facturaEdit])
-
   const handleCloseFeedback = () => {
     setFeedback(prev => ({ ...prev, isOpen: false }));
   };
@@ -245,51 +235,38 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
     }
   }
 
-  const handleRetencionesChange = useCallback((nuevasRetenciones) => {
-    console.log('Nuevas retenciones:', nuevasRetenciones)
-    setFormData(prev => ({
-      ...prev,
-      ...nuevasRetenciones
-    }))
-  }, [])
+  const handleRetencionesChange = (data) => {
+    setFormData(prev => ({ ...prev, ...data }))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!projectId) {
-      setFeedback({
-        isOpen: true,
-        type: 'error',
-        title: 'Error de Proyecto',
-        message: 'No se ha seleccionado un proyecto. Por favor, regrese y seleccione un proyecto.'
-      });
-      return
-    }
     try {
-      // Calcular nuevos totales para el proveedor
-      let newTotalFacturas = 0
-      let newTotalGastado = 0
+      // Validar duplicados
+      let query = supabase
+        .from('facturas')
+        .select('id')
+        .eq('projectId', projectId)
+        .eq('proveedor', formData.proveedor)
+        .eq('numeroFactura', formData.numeroFactura)
 
-      // Obtener datos actuales del proveedor si existe
-      const { data: existingProv } = await supabase
-        .from('proveedores')
-        .select('total_facturas, total_gastado_dolares')
-        .eq('projectid', projectId)
-        .eq('tiporif', formData.tipoRif)
-        .eq('rif', formData.rif)
-        .single()
-
-      if (existingProv) {
-        newTotalFacturas = existingProv.total_facturas || 0
-        newTotalGastado = existingProv.total_gastado_dolares || 0
+      if (facturaEdit) {
+        query = query.neq('id', facturaEdit.id)
       }
 
-      // Si es una nueva factura (no edición), incrementar contadores
-      if (!facturaEdit) {
-        newTotalFacturas += 1
-        newTotalGastado += (formData.subTotalDolares || 0)
+      const { data: existingFacturas, error: checkError } = await query
+
+      if (checkError) throw checkError
+
+      if (existingFacturas && existingFacturas.length > 0) {
+        showToast('Ya existe una factura con este número para este proveedor.', 'error')
+        return
       }
 
-      // Guardar o actualizar proveedor
+      const proveedorExistente = proveedores.find(p => p.nombre === formData.proveedor)
+      const newTotalFacturas = (proveedorExistente?.total_facturas || 0) + 1
+      const newTotalGastado = (proveedorExistente?.total_gastado_dolares || 0) + (formData.subTotalDolares || 0)
+
       const proveedorData = {
         projectid: projectId,
         nombre: formData.proveedor,

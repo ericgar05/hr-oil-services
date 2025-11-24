@@ -46,7 +46,7 @@
   border-radius: 0.5rem;
   padding: 1.5rem;
   background: var(--surface-color);
-  
+
 }
 
 .pago-header {
@@ -69,14 +69,14 @@
   text-align: left;
   font-size: 0.85rem;
   color: var(--text-secondary);
-  
+
 }
 
 .pago-totales {
   display: flex;
   gap: 1.5rem;
   text-align: left;
-  
+
 }
 
 .pago-total .label {
@@ -187,26 +187,26 @@
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .filter-controls {
     justify-content: space-between;
   }
-  
+
   .pago-header {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .pago-totales {
     justify-content: space-between;
     width: 100%;
     overflow: scroll;
   }
-  
+
   .pago-actions {
     flex-direction: column;
   }
-  
+
   .employees-grid {
     grid-template-columns: 1fr;
   }

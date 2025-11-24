@@ -33,8 +33,9 @@ const AsistenciaForm = ({
         setAsistencias(existingAsistencia.registros);
         setIsEditing(true);
       } else {
-        // Inicializar con todos los empleados como presentes por defecto
-        const inicialAsistencias = employees.map((emp) => ({
+        // Inicializar con todos los empleados ACTIVOS como presentes por defecto
+        const activeEmployees = employees.filter(emp => emp.estado !== "Inactivo");
+        const inicialAsistencias = activeEmployees.map((emp) => ({
           empleadoId: emp.id,
           nombre: `${emp.nombre} ${emp.apellido}`,
           cedula: emp.cedula,
@@ -48,7 +49,7 @@ const AsistenciaForm = ({
       }
     } catch (error) {
       console.error("Error cargando asistencia existente:", error);
-     
+
       const inicialAsistencias = employees.map((emp) => ({
         empleadoId: emp.id,
         nombre: `${emp.nombre} ${emp.apellido}`,
@@ -70,10 +71,10 @@ const AsistenciaForm = ({
       prev.map((registro) =>
         registro.empleadoId === empleadoId
           ? {
-              ...registro,
-              asistio: !registro.asistio,
-              horasTrabajadas: !registro.asistio ? 8 : 0,
-            }
+            ...registro,
+            asistio: !registro.asistio,
+            horasTrabajadas: !registro.asistio ? 8 : 0,
+          }
           : registro
       )
     );
@@ -95,10 +96,10 @@ const AsistenciaForm = ({
       prev.map((registro) =>
         registro.empleadoId === empleadoId
           ? {
-              ...registro,
-              horasTrabajadas: horasNum,
-              asistio: horasNum > 0, // Si tiene horas trabajadas, se considera presente
-            }
+            ...registro,
+            horasTrabajadas: horasNum,
+            asistio: horasNum > 0, // Si tiene horas trabajadas, se considera presente
+          }
           : registro
       )
     );
@@ -254,9 +255,8 @@ const AsistenciaForm = ({
           {asistencias.map((registro) => (
             <div
               key={registro.empleadoId}
-              className={`employee-row ${
-                registro.asistio ? "present" : "absent"
-              }`}
+              className={`employee-row ${registro.asistio ? "present" : "absent"
+                }`}
             >
               <div className="employee-info">
                 <div className="employee-name">{registro.nombre}</div>
