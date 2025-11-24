@@ -30,6 +30,79 @@ const CalculadoraPagos = ({
   const [incluirQuincenal, setIncluirQuincenal] = useState(false);
   const [incluirSemanal, setIncluirSemanal] = useState(true);
 
+  // Estado para bancos dinámicos
+  // Estado para bancos dinámicos
+  const [listaBancos, setListaBancos] = useState([]);
+  const [showBancoModal, setShowBancoModal] = useState(false);
+  const [nuevoBanco, setNuevoBanco] = useState("");
+  const [empleadoBancoPending, setEmpleadoBancoPending] = useState(null);
+
+  // Obtener funciones del contexto
+  const { getBancos, addBanco } = usePersonal();
+
+  // Cargar bancos al iniciar
+  useEffect(() => {
+    const cargarBancos = async () => {
+      const bancos = await getBancos();
+      setListaBancos(bancos);
+    };
+    cargarBancos();
+  }, [getBancos]);
+
+  const handleBancoChange = (empleadoId, valor) => {
+    if (valor === "Otro") {
+      setEmpleadoBancoPending(empleadoId);
+      setNuevoBanco("");
+      setShowBancoModal(true);
+    } else {
+      setBancosPago((prev) => ({
+        ...prev,
+        [empleadoId]: valor,
+      }));
+    }
+  };
+
+  const handleAddBanco = async () => {
+    if (!nuevoBanco.trim()) {
+      showToast("Por favor ingrese el nombre del banco", "warning");
+      return;
+    }
+
+    if (listaBancos.includes(nuevoBanco.trim())) {
+      showToast("Este banco ya existe en la lista", "warning");
+      return;
+    }
+
+    try {
+      const nuevoBancoTrimmed = nuevoBanco.trim();
+      await addBanco(nuevoBancoTrimmed);
+
+      // Actualizar lista local
+      setListaBancos((prev) => [...prev, nuevoBancoTrimmed].sort());
+
+      if (empleadoBancoPending) {
+        setBancosPago((prev) => ({
+          ...prev,
+          [empleadoBancoPending]: nuevoBancoTrimmed,
+        }));
+      }
+
+      setShowBancoModal(false);
+      setEmpleadoBancoPending(null);
+      setNuevoBanco("");
+      showToast("Banco agregado exitosamente", "success");
+    } catch (error) {
+      console.error("Error al agregar banco:", error);
+      showToast("Error al agregar el banco", "error");
+    }
+  };
+
+  const handleCloseBancoModal = () => {
+    setShowBancoModal(false);
+    setEmpleadoBancoPending(null);
+    setNuevoBanco("");
+  };
+
 
   // CORRECCIÓN: Calcular días hábiles y días reales del mes automáticamente
   // Se basa en el LUNES de la semana de pago para determinar el mes
@@ -655,12 +728,7 @@ const CalculadoraPagos = ({
   };
 
   // Handlers para banco y observaciones
-  const handleBancoChange = (empleadoId, banco) => {
-    setBancosPago((prev) => ({
-      ...prev,
-      [empleadoId]: banco,
-    }));
-  };
+
 
   const handleObservacionesChange = (empleadoId, obs) => {
     setObservaciones((prev) => ({
@@ -1111,15 +1179,13 @@ const CalculadoraPagos = ({
                           handleBancoChange(empleado.id, e.target.value)
                         }
                       >
-                        <option value="FondoComun(BFC)">Fondo Comun(BFC)</option>
-                        <option value="Banco de Venezuela">Banco de Venezuela</option>
-                        <option value="Banplus">Banplus</option>
-                        <option value="Banco Socios">Banco Socios</option>
-                        <option value="Caja Chica Ing. German">Caja Chica Ing.German</option>
-                        <option value="Banco Plaza">Banco Plaza</option>
-                        <option value="Mercantil">Mercantil</option>
-                        <option value="Venezolano de Credito">Venezolano de Credito</option>
-                        <option value="Otro">Otro</option>
+                        <option value="">Seleccionar Banco</option>
+                        {listaBancos.map((banco) => (
+                          <option key={banco} value={banco}>
+                            {banco}
+                          </option>
+                        ))}
+                        <option value="Otro">Otro (Agregar Nuevo)</option>
                       </select>
                     </div>
 
@@ -1140,6 +1206,7 @@ const CalculadoraPagos = ({
           </div>
         )}
 
+
       <div className="calculadora-actions">
         <button
           className="btn-primary large"
@@ -1150,9 +1217,30 @@ const CalculadoraPagos = ({
         </button>
       </div>
 
-      {employees.length === 0 && (
-        <div className="no-employees">
-          <p>No hay empleados registrados para calcular pagos</p>
+      {/* Modal para agregar nuevo banco */}
+      {showBancoModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Agregar Nuevo Banco</h3>
+            <div className="form-group">
+              <label>Nombre del Banco:</label>
+              <input
+                type="text"
+                value={nuevoBanco}
+                onChange={(e) => setNuevoBanco(e.target.value)}
+                placeholder="Ej: Banesco"
+                autoFocus
+              />
+            </div>
+            <div className="modal-actions">
+              <button className="btn-outline" onClick={handleCloseBancoModal}>
+                Cancelar
+              </button>
+              <button className="btn-primary" onClick={handleAddBanco}>
+                Agregar y Seleccionar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

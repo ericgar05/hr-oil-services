@@ -1,4 +1,3 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/CompraSinFacturaForm.jsx
 import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
@@ -6,6 +5,7 @@ import FeedbackModal from '../../../../../../../../../common/FeedbackModal/Feedb
 
 const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
+
   const [formData, setFormData] = useState({
     categoria: '',
     subcategorias: [''],
@@ -29,29 +29,30 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   const [modosPago, setModosPago] = useState([])
   const [proveedores, setProveedores] = useState([])
   const [availableSubcategorias, setAvailableSubcategorias] = useState([])
-
   const [nuevaCategoria, setNuevaCategoria] = useState('')
   const [nuevoModoPago, setNuevoModoPago] = useState('')
-  const tiposRif = ['J-', 'V-', 'E-', 'P-', 'G-']
+  const [feedback, setFeedback] = useState({ isOpen: false, type: '', title: '', message: '' })
 
-  const [feedback, setFeedback] = useState({
-    isOpen: false,
-    type: 'success',
-    title: '',
-    message: ''
-  });
+  const tiposRif = ['J-', 'V-', 'G-', 'E-', 'P-', 'N/A']
 
   useEffect(() => {
     if (compraEdit) {
-      console.log('Cargando datos de edición:', compraEdit)
       setFormData({
+        categoria: '',
+        subcategorias: [''],
+        proveedor: '',
+        tipoRif: 'J-',
+        rif: '',
+        direccion: '',
+        fechaCompra: '',
+        fechaRecibida: '',
+        numeroNotaEntrega: '',
         ...compraEdit,
         subcategorias: Array.isArray(compraEdit.subcategorias)
           ? compraEdit.subcategorias
           : (compraEdit.subcategoria ? [compraEdit.subcategoria] : [''])
       })
     } else {
-
       setFormData({
         categoria: '',
         subcategorias: [''],
@@ -126,12 +127,6 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
 
   const handleCloseFeedback = () => {
     setFeedback(prev => ({ ...prev, isOpen: false }));
-    if (feedback.type === 'success') {
-        // If success, we might want to trigger the parent callback after closing modal
-        // But onCompraSaved is called immediately in handleSubmit, which might refresh the list.
-        // If we want to wait for the modal to close before refreshing/closing form, we'd need to change logic.
-        // For now, let's keep it simple.
-    }
   };
 
   const handleInputChange = (e) => {
@@ -210,6 +205,8 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    const nuevasSubcategorias = formData.subcategorias.filter(sub => sub && !availableSubcategorias.includes(sub))
+
     try {
       // Calcular nuevos totales para el proveedor
       let newTotalFacturas = 0
@@ -230,71 +227,6 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
       }
 
       // Si es una nueva compra (no edición), incrementar contadores
-      if (!compraEdit) {
-        newTotalFacturas += 1
-        newTotalGastado += (formData.totalDolares || 0)
-      }
-
-      // Guardar o actualizar proveedor
-      const proveedorData = {
-        projectid: projectId,
-        nombre: formData.proveedor,
-        tiporif: formData.tipoRif,
-        rif: formData.rif,
-        direccion: formData.direccion,
-        total_facturas: newTotalFacturas,
-        total_gastado_dolares: newTotalGastado,
-        updatedat: new Date().toISOString()
-      }
-
-      // Upsert proveedor (inserta si no existe conflicto con projectid, tiporif, rif)
-      const { error: provError } = await supabase
-        .from('proveedores')
-        .upsert(proveedorData, { onConflict: 'projectid, tiporif, rif' })
-
-      if (provError) {
-        console.error('Error al guardar proveedor:', provError)
-      } else {
-        // Recargar proveedores
-        const { data: newProvs } = await supabase
-          .from('proveedores')
-          .select('*')
-          .eq('projectid', projectId)
-        if (newProvs) setProveedores(newProvs)
-      }
-
-      const cleanedFormData = { ...formData }
-
-      delete cleanedFormData.id
-      delete cleanedFormData.createdAt
-      delete cleanedFormData.updatedAt
-      delete cleanedFormData.status
-
-      let data, error
-
-      if (compraEdit) {
-
-        ({ data, error } = await supabase
-          .from('compras_sin_factura')
-          .update({ ...cleanedFormData, updatedAt: new Date().toISOString() })
-          .eq('id', compraEdit.id))
-      } else {
-        // Modo creación
-        ({ data, error } = await supabase
-          //Aqui se insertan los datos de la compra-sin-factura
-          .from('compras_sin_factura')
-          .insert({
-            ...cleanedFormData,
-            projectId: projectId,
-            createdAt: new Date().toISOString(),
-            status: 'active'
-          }))
-      }
-
-      if (error) throw error
-
-      // Actualizar lista de subcategorías disponibles
-      const nuevasSubcategorias = formData.subcategorias.filter(s => s && !availableSubcategorias.includes(s))
       if (nuevasSubcategorias.length > 0) {
         setAvailableSubcategorias(prev => [...prev, ...nuevasSubcategorias].sort())
       }

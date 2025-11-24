@@ -651,8 +651,70 @@ export const PersonalProvider = ({ children }) => {
     }
   }, []);
 
-  // ========== CONFIGURACIÓN NÓMINA ==========
+  const deletePago = useCallback(async (id) => {
+    console.log("🗑️ PersonalContext: Eliminando pago:", id);
 
+    try {
+      // Eliminar detalles de pago primero (aunque cascade delete debería encargarse)
+      const { error: detailsError } = await supabase
+        .from("payment_details")
+        .delete()
+        .eq("payroll_payment_id", id);
+
+      if (detailsError) throw detailsError;
+
+      // Eliminar el registro principal
+      const { error } = await supabase
+        .from("payroll_payments")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      console.log("✅ PersonalContext: Pago eliminado exitosamente");
+      addNotification("Pago eliminado exitosamente", "delete");
+      return true;
+    } catch (error) {
+      console.error("Error eliminando pago:", error);
+      addNotification("Error al eliminar pago", "error");
+      throw error;
+    }
+  }, [addNotification]);
+
+  // ========== BANCOS ==========
+  const getBancos = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("bancos_empresa")
+        .select("*")
+        .order("nombre", { ascending: true });
+
+      if (error) throw error;
+
+      return data.map((b) => b.nombre);
+    } catch (error) {
+      console.error("Error cargando bancos:", error);
+      return [];
+    }
+  }, []);
+
+  const addBanco = useCallback(async (nombre) => {
+    try {
+      const { data, error } = await supabase
+        .from("bancos_empresa")
+        .insert([{ nombre }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log("✅ PersonalContext: Banco agregado exitosamente");
+      return data.nombre;
+    } catch (error) {
+      console.error("Error agregando banco:", error);
+      throw error;
+    }
+  }, []);
 
   const value = useMemo(() => ({
     // Empleados
@@ -672,8 +734,11 @@ export const PersonalProvider = ({ children }) => {
     savePagos,
     getPagosByProject,
     getPagoById,
+    deletePago,
 
-    // Configuración
+    // Bancos
+    getBancos,
+    addBanco,
 
   }), [
     getEmployeesByProject,
@@ -688,7 +753,9 @@ export const PersonalProvider = ({ children }) => {
     savePagos,
     getPagosByProject,
     getPagoById,
-
+    deletePago,
+    getBancos,
+    addBanco,
   ]);
 
   return (

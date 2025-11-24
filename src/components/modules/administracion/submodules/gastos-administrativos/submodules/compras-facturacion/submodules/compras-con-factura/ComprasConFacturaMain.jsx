@@ -1,4 +1,4 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/ComprasConFacturaMain.jsx
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../../../../../../../../../contexts/ProjectContext'
@@ -7,6 +7,8 @@ import FacturaForm from './components/FacturaForm'
 import FacturasList from './components/FacturasList'
 import ProveedoresList from './components/ProveedoresList'
 import './ComprasConFacturaMain.css'
+
+import Configuraciones from '../../components/Configuraciones'
 
 const ComprasConFacturaMain = ({ projectId }) => {
   const { selectedProject } = useProjects()
@@ -40,42 +42,48 @@ const ComprasConFacturaMain = ({ projectId }) => {
       <button className="back-button" onClick={handleBack}>
         ← Volver a Compra & Facturación
       </button>
-      <ModuleDescription 
-        title="COMPRAS CON FACTURA" 
+      <ModuleDescription
+        title="COMPRAS CON FACTURA"
         description={`Gestión de compras formales con factura para el proyecto ${selectedProject?.name || ''}`}
       />
 
       <div className="factura-tabs">
-        <button 
+        <button
           className={`tab-button ${activeTab === 'lista-facturas' ? 'active' : ''}`}
           onClick={() => setActiveTab('lista-facturas')}
         >
           Lista de Facturas
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'nueva-factura' ? 'active' : ''}`}
           onClick={() => setActiveTab('nueva-factura')}
         >
           {facturaEdit ? 'Editar Factura' : 'Nueva Factura'}
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'proveedores' ? 'active' : ''}`}
           onClick={() => setActiveTab('proveedores')}
         >
           Proveedores y Retenciones
         </button>
+        <button
+          className={`tab-button ${activeTab === 'configuraciones' ? 'active' : ''}`}
+          onClick={() => setActiveTab('configuraciones')}
+        >
+          Configuraciones
+        </button>
       </div>
 
       <div className="tab-content">
         {activeTab === 'lista-facturas' && (
-          <FacturasList 
+          <FacturasList
             projectId={projectId}
             onEditFactura={handleEditFactura}
             refreshTrigger={refreshData}
           />
         )}
         {activeTab === 'nueva-factura' && (
-          <FacturaForm 
+          <FacturaForm
             projectId={projectId}
             onFacturaSaved={handleFacturaSaved}
             facturaEdit={facturaEdit}
@@ -83,10 +91,13 @@ const ComprasConFacturaMain = ({ projectId }) => {
           />
         )}
         {activeTab === 'proveedores' && (
-          <ProveedoresList 
+          <ProveedoresList
             projectId={projectId}
             refreshTrigger={refreshData}
           />
+        )}
+        {activeTab === 'configuraciones' && (
+          <Configuraciones projectId={projectId} />
         )}
       </div>
     </div>

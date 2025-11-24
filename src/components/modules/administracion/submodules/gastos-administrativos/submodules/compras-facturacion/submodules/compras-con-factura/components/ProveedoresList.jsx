@@ -37,7 +37,7 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
     const proveedoresMap = {}
 
     facturas.forEach(factura => {
-      const key = `${factura.tipoRif}${factura.rif}`
+      const key = `${factura.proveedor}_${factura.tipoRif}_${factura.rif || 'NA'}`
       if (!proveedoresMap[key]) {
         proveedoresMap[key] = {
           proveedor: factura.proveedor,
@@ -66,13 +66,13 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
       }
 
       proveedoresMap[key].facturas.push(factura)
-      
+
       // Sumar todos los montos en Bolívares
       proveedoresMap[key].totalBaseImponible += factura.baseImponible || 0
       proveedoresMap[key].totalIva += factura.iva || 0
       proveedoresMap[key].totalExcento += factura.excento || 0
       proveedoresMap[key].totalSubTotalPagar += factura.subTotalPagar || 0
-      
+
       // Calcular retenciones IVA
       let retencionIvaFactura = 0
       if (factura.retencionIva === 'IVA 75%') {
@@ -81,10 +81,10 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
         retencionIvaFactura = factura.iva
       }
       proveedoresMap[key].totalRetencionIva += retencionIvaFactura
-      
+
       // Retención ISLR
       proveedoresMap[key].totalRetencionIslr += factura.retencionIslr || 0
-      
+
       // Totales de pago
       proveedoresMap[key].totalPagar += factura.totalPagar || 0
       proveedoresMap[key].totalMontoPagado += factura.montoPagado || 0
@@ -138,8 +138,8 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
     if (!proveedorSeleccionado) return
 
     const facturasAActualizar = facturas
-      .filter(factura => 
-        factura.tipoRif === proveedorSeleccionado.tipoRif && 
+      .filter(factura =>
+        factura.tipoRif === proveedorSeleccionado.tipoRif &&
         factura.rif === proveedorSeleccionado.rif &&
         factura.retencionPorCobrar > 0
       )
@@ -263,7 +263,7 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
               <div className="proveedor-actions">
                 {getEstadoBadge(proveedor.estadoRetenciones)}
                 {proveedor.estadoRetenciones === 'pendiente' && (
-                  <button 
+                  <button
                     className="btn-pagar"
                     onClick={() => handleMarcarPago(proveedor)}
                   >
@@ -272,7 +272,7 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
                 )}
               </div>
             </div>
-            
+
             <div className="proveedor-info">
               <p><strong>Dirección:</strong> {proveedor.direccion || 'No especificada'}</p>
               <p><strong>Total Facturas:</strong> {proveedor.facturas.length}</p>
@@ -281,27 +281,27 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
 
             <div className="proveedor-totales">
               <h5>Totales en Bolívares</h5>
-              
+
               <div className="total-item">
                 <span>Base Imponible:</span>
                 <span>Bs {(Number(proveedor.totalBaseImponible) || 0).toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Excento:</span>
                 <span>Bs {(Number(proveedor.totalExcento) || 0).toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>IVA:</span>
                 <span>Bs {(Number(proveedor.totalIva) || 0).toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Total a Pagar:</span>
                 <span>Bs {(Number(proveedor.totalPagar) || 0).toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Pagado:</span>
                 <span>Bs {(Number(proveedor.totalMontoPagado) || 0).toFixed(2)}</span>
@@ -310,12 +310,12 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
 
             <div className="proveedor-totales">
               <h5>Totales en Dólares</h5>
-              
+
               <div className="total-item">
                 <span>Total a Pagar:</span>
                 <span>$ {(Number(proveedor.totalPagarDolares) || 0).toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Pagado:</span>
                 <span>$ {proveedor.totalPagadoDolares.toFixed(2)}</span>
@@ -324,18 +324,18 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
 
             <div className="retenciones-detalle">
               <h5>Detalle de Retenciones</h5>
-              
+
               <div className="retencion-tipo">
                 <h6>IVA</h6>
                 <div className="retencion-item">
                   <span>Por Cobrar:</span>
-                  <span className="estado-pendiente"> 
+                  <span className="estado-pendiente">
                     Bs {(Number(proveedor.retencionIvaPendiente) || 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="retencion-item">
                   <span>Cobrado:</span>
-                  <span className="estado-bueno"> 
+                  <span className="estado-bueno">
                     Bs {(Number(proveedor.retencionIvaCobrada) || 0).toFixed(2)}
                   </span>
                 </div>
@@ -345,13 +345,13 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
                 <h6>ISLR</h6>
                 <div className="retencion-item">
                   <span>Por Cobrar:</span>
-                  <span className="estado-pendiente"> 
+                  <span className="estado-pendiente">
                     Bs {(Number(proveedor.retencionIslrPendiente) || 0).toFixed(2)}
                   </span>
                 </div>
                 <div className="retencion-item">
                   <span>Cobrado:</span>
-                  <span className="estado-bueno"> 
+                  <span className="estado-bueno">
                     Bs {(Number(proveedor.retencionIslrCobrada) || 0).toFixed(2)}
                   </span>
                 </div>
@@ -360,13 +360,13 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
               <div className="retencion-total">
                 <div className="total-item">
                   <strong>Total por Cobrar:</strong>
-                  <strong className="estado-pendiente"> 
+                  <strong className="estado-pendiente">
                     Bs {(Number(proveedor.totalRetencionPorCobrar) || 0).toFixed(2)}
                   </strong>
                 </div>
                 <div className="total-item">
                   <strong>Total Cobrado:</strong>
-                  <strong className="estado-bueno"> 
+                  <strong className="estado-bueno">
                     Bs {(Number(proveedor.totalRetencionCobrada) || 0).toFixed(2)}
                   </strong>
                 </div>
@@ -381,7 +381,7 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
           <div className="modal-content">
             <h3>Marcar Pago de Retenciones</h3>
             <p>Seleccione el tipo de pago para {proveedorSeleccionado.proveedor}:</p>
-            
+
             <div className="detalle-pendiente">
               <p><strong>Retenciones Pendientes:</strong></p>
               <div className="detalle-montos">
@@ -390,21 +390,21 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
                 <span><strong>Total: Bs {proveedorSeleccionado.totalRetencionPorCobrar.toFixed(2)}</strong></span>
               </div>
             </div>
-            
+
             <div className="opciones-pago">
-              <button 
+              <button
                 className="btn-pago-option"
                 onClick={() => procesarPago('todo')}
               >
                 Pagar Todo (IVA + ISLR)
               </button>
-              <button 
+              <button
                 className="btn-pago-option"
                 onClick={() => procesarPago('iva')}
               >
                 Pagar Solo IVA (Bs {proveedorSeleccionado.retencionIvaPendiente.toFixed(2)})
               </button>
-              <button 
+              <button
                 className="btn-pago-option"
                 onClick={() => procesarPago('islr')}
               >
@@ -413,7 +413,7 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
             </div>
 
             <div className="modal-actions">
-              <button 
+              <button
                 className="btn-secondary"
                 onClick={() => setMostrarModalPago(false)}
               >

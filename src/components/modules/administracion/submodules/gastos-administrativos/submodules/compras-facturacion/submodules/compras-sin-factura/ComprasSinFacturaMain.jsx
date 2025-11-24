@@ -1,4 +1,3 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/ComprasSinFacturaMain.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../../../../../../../../../contexts/ProjectContext'
@@ -8,6 +7,8 @@ import ComprasSinFacturaList from './components/ComprasSinFacturaList'
 import ProveedoresSinFacturaList from './components/ProveedoresSinFacturaList'
 
 import './ComprasSinFacturaMain.css'
+import Configuraciones from '../../components/Configuraciones'
+
 const ComprasSinFacturaMain = ({ projectId }) => {
   const { selectedProject } = useProjects()
   const navigate = useNavigate();
@@ -40,43 +41,49 @@ const ComprasSinFacturaMain = ({ projectId }) => {
       <button className="back-button" onClick={handleBack}>
         ← Volver a Compra & Facturación
       </button>
-      <ModuleDescription 
+      <ModuleDescription
         title="COMPRAS SIN FACTURA"
         description={`Gestión de compras informales y gastos menores para el proyecto ${selectedProject?.name || ''}`}
       />
 
       <div className="compra-tabs">
-        <button 
+        <button
           className={`tab-button ${activeTab === 'lista-compras' ? 'active' : ''}`}
           onClick={() => setActiveTab('lista-compras')}
         >
           Lista de Compras
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'nueva-compra' ? 'active' : ''}`}
           onClick={() => setActiveTab('nueva-compra')}
         >
           {compraEdit ? 'Editar Compra' : 'Nueva Compra'}
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'proveedores' ? 'active' : ''}`}
           onClick={() => setActiveTab('proveedores')}
         >
           Proveedores
         </button>
+        <button
+          className={`tab-button ${activeTab === 'configuraciones' ? 'active' : ''}`}
+          onClick={() => setActiveTab('configuraciones')}
+        >
+          Configuraciones
+        </button>
       </div>
 
       <div className="tab-content">
         {activeTab === 'lista-compras' && (
-          <ComprasSinFacturaList 
+          <ComprasSinFacturaList
             projectId={projectId}
             onEditCompra={handleEditCompra}
             refreshTrigger={refreshData}
           />
         )}
-        
+
         {activeTab === 'nueva-compra' && (
-          <CompraSinFacturaForm 
+          <CompraSinFacturaForm
             projectId={projectId}
             onCompraSaved={handleCompraSaved}
             compraEdit={compraEdit}
@@ -84,10 +91,13 @@ const ComprasSinFacturaMain = ({ projectId }) => {
           />
         )}
         {activeTab === 'proveedores' && (
-          <ProveedoresSinFacturaList 
+          <ProveedoresSinFacturaList
             projectId={projectId}
             refreshTrigger={refreshData}
           />
+        )}
+        {activeTab === 'configuraciones' && (
+          <Configuraciones projectId={projectId} />
         )}
       </div>
     </div>
