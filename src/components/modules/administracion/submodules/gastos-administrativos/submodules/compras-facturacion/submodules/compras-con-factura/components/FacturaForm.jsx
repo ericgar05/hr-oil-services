@@ -249,65 +249,46 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
       }
     }
   }
-
-  const agregarProveedor = async () => {
-    if (!nuevoProveedor.nombre.trim() || !nuevoProveedor.rif.trim()) {
-      showToast('Por favor complete nombre y RIF del proveedor', 'error')
-      return
-    }
-
-    try {
-      const proveedorData = {
+const agregarProveedor = async () => {
+  if (nuevoProveedor.nombre) {
+    const { data, error } = await supabase
+      .from('proveedores')
+      .insert({
         projectid: projectId,
-        nombre: nuevoProveedor.nombre.trim(),
+        nombre: nuevoProveedor.nombre,
         tiporif: nuevoProveedor.tipoRif,
-        rif: nuevoProveedor.rif.trim(),
-        direccion: nuevoProveedor.direccion.trim()
-      }
+        rif: nuevoProveedor.rif,
+        direccion: nuevoProveedor.direccion,
+        total_facturas: 0,
+        total_gastado_dolares: 0
+      })
+      .select()
 
-      const { error } = await supabase
-        .from('proveedores')
-        .insert([proveedorData])
-
-      if (error) throw error
-
-      // Reload providers
-      console.log('Recargando proveedores para projectid:', projectId);
-      const { data: provData, error: reloadError } = await supabase
-        .from('proveedores')
-        .select('*')
-        .eq('projectid', projectId)
-      
-      if (reloadError) {
-        console.error('Error recargando proveedores:', reloadError);
-      } else {
-        console.log('Proveedores recargados:', provData);
-        if (provData) setProveedores(provData)
-      }
-
-      // Auto-fill form with new provider
+    if (error) {
+      showToast('Error al guardar el nuevo proveedor: ' + error.message, 'error')
+    } else {
+      const newProv = data[0]
+      setProveedores(prev => [...prev, newProv])
       setFormData(prev => ({
         ...prev,
-        proveedor: nuevoProveedor.nombre.trim(),
-        tipoRif: nuevoProveedor.tipoRif,
-        rif: nuevoProveedor.rif.trim(),
-        direccion: nuevoProveedor.direccion.trim()
+        proveedor: newProv.nombre,
+        tipoRif: newProv.tiporif,
+        rif: newProv.rif,
+        direccion: newProv.direccion || ''
       }))
-
-      // Reset and close modal
       setNuevoProveedor({
         nombre: '',
         tipoRif: 'J-',
         rif: '',
         direccion: ''
       })
-      setIsProveedorModalOpen(false)
-      showToast('Proveedor agregado exitosamente', 'success')
-    } catch (error) {
-      console.error('Error adding proveedor:', error)
-      showToast('Error al agregar proveedor', 'error')
+      setShowProveedorModal(false)
+      showToast('Proveedor guardado exitosamente.', 'success')
     }
+  } else {
+    showToast('El nombre del proveedor es obligatorio.', 'error')
   }
+}
 
   const handleRetencionesChange = (data) => {
     setFormData(prev => ({ ...prev, ...data }))

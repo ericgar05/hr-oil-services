@@ -226,6 +226,48 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
     }
   }
 
+  const agregarProveedor = async () => {
+  if (nuevoProveedor.nombre) {
+    const { data, error } = await supabase
+      .from('proveedores')
+      .insert({
+        projectid: projectId,
+        nombre: nuevoProveedor.nombre,
+        tiporif: nuevoProveedor.tipoRif,
+        rif: nuevoProveedor.rif,
+        direccion: nuevoProveedor.direccion,
+        total_facturas: 0,
+        total_gastado_dolares: 0
+      })
+      .select()
+
+    if (error) {
+      showToast('Error al guardar el nuevo proveedor: ' + error.message, 'error')
+    } else {
+      const newProv = data[0]
+      setProveedores(prev => [...prev, newProv])
+      setFormData(prev => ({
+        ...prev,
+        proveedor: newProv.nombre,
+        tipoRif: newProv.tiporif,
+        rif: newProv.rif,
+        direccion: newProv.direccion || ''
+      }))
+      setNuevoProveedor({
+        nombre: '',
+        tipoRif: 'J-',
+        rif: '',
+        direccion: ''
+      })
+      setShowProveedorModal(false)
+      showToast('Proveedor guardado exitosamente.', 'success')
+    }
+  } else {
+    showToast('El nombre del proveedor es obligatorio.', 'error')
+  }
+}
+
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
