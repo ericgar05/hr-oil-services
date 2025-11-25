@@ -1,8 +1,11 @@
+// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/components/FacturaForm.jsx
 import React, { useState, useEffect, useCallback } from 'react'
 import RetencionesCalculator from './RetencionesCalculator'
 import supabase from '../../../../../../../../../../api/supaBase.js'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
-import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'   
+import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
+import '../ComprasConFacturaMain.css'
+
 const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
   const [formData, setFormData] = useState({
@@ -37,6 +40,19 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
     obraContrato: '',
     observaciones: ''
   })
+
+  const [categorias, setCategorias] = useState([])
+  const [modosPago, setModosPago] = useState([])
+  const [proveedores, setProveedores] = useState([])
+  const [availableSubcategorias, setAvailableSubcategorias] = useState([])
+
+  const [nuevaCategoria, setNuevaCategoria] = useState('')
+  const [nuevoModoPago, setNuevoModoPago] = useState('')
+  
+  // Modales
+  const [isProveedorModalOpen, setIsProveedorModalOpen] = useState(false)
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
+  const [showModoPagoModal, setShowModoPagoModal] = useState(false)
 
   const [nuevoProveedor, setNuevoProveedor] = useState({
     nombre: '',
@@ -285,7 +301,7 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
         rif: '',
         direccion: ''
       })
-      setShowProveedorModal(false)
+      setIsProveedorModalOpen(false)
       showToast('Proveedor agregado exitosamente', 'success')
     } catch (error) {
       console.error('Error adding proveedor:', error)
@@ -500,6 +516,8 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
                     value={sub}
                     onChange={(e) => handleSubcategoriaChange(index, e.target.value)}
                     placeholder={`Subcategoría ${index + 1}`}
+                    list="subcategorias-list"
+                    style={{ flex: 1 }}
                   />
                   {formData.subcategorias.length > 1 && (
                     <button
@@ -523,7 +541,11 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
                   )}
                 </div>
               ))}
-              <button type="button" onClick={addSubcategoria} className="btn-add-subcategory">+ Añadir Subcategoría</button>
+              <datalist id="subcategorias-list">
+                {availableSubcategorias.map((sub, index) => (
+                  <option key={index} value={sub} />
+                ))}
+              </datalist>
             </div>
 
             <div className="form-group">
@@ -546,7 +568,7 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
                 </datalist>
                 <button 
                   type="button" 
-                  onClick={() => setShowProveedorModal(true)}
+                  onClick={() => setIsProveedorModalOpen(true)}
                   className="btn-add-inline"
                   title="Agregar nuevo proveedor"
                 >
@@ -781,15 +803,15 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
       </form>
 
       {/* Modal Agregar Proveedor */}
-      {showProveedorModal && (
-        <div className="modal-overlay" onClick={() => setShowProveedorModal(false)}>
+      {isProveedorModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsProveedorModalOpen(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Agregar Nuevo Proveedor</h3>
               <button 
                 type="button" 
                 className="btn-close" 
-                onClick={() => setShowProveedorModal(false)}
+                onClick={() => setIsProveedorModalOpen(false)}
               >
                 ×
               </button>
@@ -844,7 +866,7 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
               <button 
                 type="button" 
                 className="btn-secondary" 
-                onClick={() => setShowProveedorModal(false)}
+                onClick={() => setIsProveedorModalOpen(false)}
               >
                 Cancelar
               </button>

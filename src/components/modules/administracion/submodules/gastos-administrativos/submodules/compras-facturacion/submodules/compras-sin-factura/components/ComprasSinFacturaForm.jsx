@@ -32,6 +32,16 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   const [availableSubcategorias, setAvailableSubcategorias] = useState([])
   const [nuevaCategoria, setNuevaCategoria] = useState('')
   const [nuevoModoPago, setNuevoModoPago] = useState('')
+  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
+  const [showModoPagoModal, setShowModoPagoModal] = useState(false)
+  const [showProveedorModal, setShowProveedorModal] = useState(false)
+  
+  const [nuevoProveedor, setNuevoProveedor] = useState({
+    nombre: '',
+    tipoRif: 'J-',
+    rif: '',
+    direccion: ''
+  })
   const tiposRif = ['J-', 'V-', 'E-', 'P-', 'G-']
 
   const [feedback, setFeedback] = useState({
