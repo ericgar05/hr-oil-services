@@ -1,5 +1,5 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/ProveedoresSinFacturaList.jsx
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 
 const ProveedoresSinFacturaList = ({ projectId, refreshTrigger }) => {

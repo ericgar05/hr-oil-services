@@ -24,8 +24,12 @@ export const UserRegister = () => {
   const [userData, setUserData] = useState({
     username: "",
     password: "",
+    confirmPassword: "",
     role: "viewer", // Rol por defecto
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const panelRef = useRef(null);
 
@@ -46,7 +50,9 @@ export const UserRegister = () => {
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    setUserData({ username: "", password: "", role: "viewer" });
+    setUserData({ username: "", password: "", confirmPassword: "", role: "viewer" });
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleCloseFeedback = () => {
@@ -60,16 +66,28 @@ export const UserRegister = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const passwordHashed = await bcrypt.hash(userData.password, 12);
-    if (!userData.username || !userData.password) {
+    
+    if (!userData.username || !userData.password || !userData.confirmPassword) {
       setFeedback({
         isOpen: true,
         type: 'warning',
         title: 'Campos Incompletos',
-        message: 'Por favor, completa el nombre de usuario y la contraseña.'
+        message: 'Por favor, completa todos los campos requeridos.'
       });
       return;
     }
+
+    if (userData.password !== userData.confirmPassword) {
+      setFeedback({
+        isOpen: true,
+        type: 'error',
+        title: 'Contraseñas No Coinciden',
+        message: 'La contraseña y la confirmación deben ser iguales.'
+      });
+      return;
+    }
+
+    const passwordHashed = await bcrypt.hash(userData.password, 12);
     const { error } = await supabase.from("users").insert({
       username: userData.username,
       password: passwordHashed,
@@ -132,14 +150,43 @@ export const UserRegister = () => {
           </div>
           <div className="form-group">
             <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={userData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="password"
+                value={userData.password}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="password-toggle-btn"
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+            <div className="password-input-container">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={userData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="password-toggle-btn"
+              >
+                {showConfirmPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
           <div className="form-group">
             <label htmlFor="role">Rol</label>

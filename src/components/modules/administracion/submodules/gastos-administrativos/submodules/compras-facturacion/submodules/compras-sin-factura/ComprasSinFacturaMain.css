@@ -564,3 +564,31 @@
 .observaciones-icon:hover .observaciones-content {
   display: block;
 }
+
+/* Fix para overflow de botones y elementos de formulario */
+.input-with-button {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-with-button input,
+.input-with-button select {
+  flex: 1;
+  width: 100%; /* Fallback */
+  min-width: 0; /* Permite que flexbox encoja el elemento si es necesario */
+  box-sizing: border-box;
+}
+
+.btn-add-inline {
+  flex-shrink: 0; /* Evita que el botón se aplaste */
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+}

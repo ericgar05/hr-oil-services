@@ -90,7 +90,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
     }
   }, [compraEdit])
 
-  // Cargar categorías, modos de pago y proveedores desde la BD
+  // Cargar categorías, modos de pago, proveedores y subcategorías desde la BD
   useEffect(() => {
     const fetchData = async () => {
       // Cargar Categorías
@@ -114,17 +114,16 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
         else setProveedores(provData)
       }
 
-      // Cargar Subcategorías existentes
+      // Cargar Subcategorías desde la tabla subcategorias_compras
       const { data: subData, error: subError } = await supabase
-        .from('compras_sin_factura')
-        .select('subcategorias')
+        .from('subcategorias_compras')
+        .select('nombre')
+        .order('nombre', { ascending: true })
 
       if (subError) {
         console.error('Error cargando subcategorías:', subError)
       } else if (subData) {
-        const allSubs = subData.flatMap(f => f.subcategorias || [])
-        const uniqueSubs = [...new Set(allSubs)].filter(Boolean).sort()
-        setAvailableSubcategorias(uniqueSubs)
+        setAvailableSubcategorias(subData.map(s => s.nombre))
       }
     }
     fetchData()
@@ -143,12 +142,6 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
 
   const handleCloseFeedback = () => {
     setFeedback(prev => ({ ...prev, isOpen: false }));
-    if (feedback.type === 'success') {
-        // If success, we might want to trigger the parent callback after closing modal
-        // But onCompraSaved is called immediately in handleSubmit, which might refresh the list.
-        // If we want to wait for the modal to close before refreshing/closing form, we'd need to change logic.
-        // For now, let's keep it simple.
-    }
   };
 
   const handleInputChange = (e) => {
@@ -227,65 +220,89 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   }
 
   const agregarProveedor = async () => {
-  if (nuevoProveedor.nombre) {
-    const { data, error } = await supabase
-      .from('proveedores')
-      .insert({
-        projectid: projectId,
-        nombre: nuevoProveedor.nombre,
-        tiporif: nuevoProveedor.tipoRif,
-        rif: nuevoProveedor.rif,
-        direccion: nuevoProveedor.direccion,
-        total_facturas: 0,
-        total_gastado_dolares: 0
-      })
-      .select()
+    if (nuevoProveedor.nombre) {
+      const { data, error } = await supabase
+        .from('proveedores')
+        .insert({
+          projectid: projectId,
+          nombre: nuevoProveedor.nombre,
+          tiporif: nuevoProveedor.tipoRif,
+          rif: nuevoProveedor.rif,
+          direccion: nuevoProveedor.direccion,
+          total_facturas: 0,
+          total_gastado_dolares: 0
+        })
+        .select()
 
-    if (error) {
-      showToast('Error al guardar el nuevo proveedor: ' + error.message, 'error')
+      if (error) {
+        showToast('Error al guardar el nuevo proveedor: ' + error.message, 'error')
+      } else {
+        const newProv = data[0]
+        setProveedores(prev => [...prev, newProv])
+        setFormData(prev => ({
+          ...prev,
+          proveedor: newProv.nombre,
+          tipoRif: newProv.tiporif,
+          rif: newProv.rif,
+          direccion: newProv.direccion || ''
+        }))
+        setNuevoProveedor({
+          nombre: '',
+          tipoRif: 'J-',
+          rif: '',
+          direccion: ''
+        })
+        setShowProveedorModal(false)
+        showToast('Proveedor guardado exitosamente.', 'success')
+      }
     } else {
-      const newProv = data[0]
-      setProveedores(prev => [...prev, newProv])
-      setFormData(prev => ({
-        ...prev,
-        proveedor: newProv.nombre,
-        tipoRif: newProv.tiporif,
-        rif: newProv.rif,
-        direccion: newProv.direccion || ''
-      }))
-      setNuevoProveedor({
-        nombre: '',
-        tipoRif: 'J-',
-        rif: '',
-        direccion: ''
-      })
-      setShowProveedorModal(false)
-      showToast('Proveedor guardado exitosamente.', 'success')
+      showToast('El nombre del proveedor es obligatorio.', 'error')
     }
-  } else {
-    showToast('El nombre del proveedor es obligatorio.', 'error')
   }
-}
-
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
+      // 1. Guardar nuevas subcategorías si existen
+      const nuevasSubcategorias = formData.subcategorias.filter(sub => sub && sub.trim() !== '' && !availableSubcategorias.includes(sub));
+      
+      if (nuevasSubcategorias.length > 0) {
+        // Eliminar duplicados en las nuevas subcategorías
+        const uniqueNuevas = [...new Set(nuevasSubcategorias)];
+        
+        const subcategoriasInsert = uniqueNuevas.map(nombre => ({
+          nombre: nombre,
+        }));
+
+        const { error: subInsertError } = await supabase
+          .from('subcategorias_compras')
+          .insert(subcategoriasInsert);
+
+        if (subInsertError) {
+          console.error('Error al guardar nuevas subcategorías:', subInsertError);
+          showToast(`Error al guardar subcategorías: ${subInsertError.message}`, 'error');
+        } else {
+          setAvailableSubcategorias(prev => [...prev, ...uniqueNuevas].sort());
+        }
+      }
+
       // Calcular nuevos totales para el proveedor
       let newTotalFacturas = 0
       let newTotalGastado = 0
+      let existingProvId = null;
 
       // Obtener datos actuales del proveedor si existe
       const { data: existingProv } = await supabase
         .from('proveedores')
-        .select('total_facturas, total_gastado_dolares')
+        .select('id, total_facturas, total_gastado_dolares')
         .eq('projectid', projectId)
         .eq('tiporif', formData.tipoRif)
         .eq('rif', formData.rif)
-        .single()
+        .maybeSingle()
 
       if (existingProv) {
+        existingProvId = existingProv.id;
         newTotalFacturas = existingProv.total_facturas || 0
         newTotalGastado = existingProv.total_gastado_dolares || 0
       }
@@ -296,7 +313,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
         newTotalGastado += (formData.totalDolares || 0)
       }
 
-      // Guardar o actualizar proveedor
+      // Datos del proveedor
       const proveedorData = {
         projectid: projectId,
         nombre: formData.proveedor,
@@ -308,10 +325,20 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
         updatedat: new Date().toISOString()
       }
 
-      // Upsert proveedor (inserta si no existe conflicto con projectid, tiporif, rif)
-      const { error: provError } = await supabase
-        .from('proveedores')
-        .upsert(proveedorData, { onConflict: 'projectid, tiporif, rif' })
+      let provError;
+      
+      if (existingProvId) {
+        // Actualizar existente
+        ({ error: provError } = await supabase
+          .from('proveedores')
+          .update(proveedorData)
+          .eq('id', existingProvId));
+      } else {
+        // Insertar nuevo
+        ({ error: provError } = await supabase
+          .from('proveedores')
+          .insert(proveedorData));
+      }
 
       if (provError) {
         console.error('Error al guardar proveedor:', provError)
@@ -334,7 +361,6 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
       let data, error
 
       if (compraEdit) {
-
         ({ data, error } = await supabase
           .from('compras_sin_factura')
           .update({ ...cleanedFormData, updatedAt: new Date().toISOString() })
@@ -342,7 +368,6 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
       } else {
         // Modo creación
         ({ data, error } = await supabase
-          //Aqui se insertan los datos de la compra-sin-factura
           .from('compras_sin_factura')
           .insert({
             ...cleanedFormData,
@@ -444,6 +469,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                     value={sub}
                     onChange={(e) => handleSubcategoriaChange(index, e.target.value)}
                     placeholder={`Subcategoría ${index + 1}`}
+                    list="subcategorias-list"
                   />
                   {formData.subcategorias.length > 1 && (
                     <button
@@ -467,13 +493,11 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   )}
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={addSubcategoria}
-                className="btn-add-subcategory"
-              >
-                + Añadir Subcategoría
-              </button>
+              <datalist id="subcategorias-list">
+                {availableSubcategorias.map((sub, index) => (
+                  <option key={index} value={sub} />
+                ))}
+              </datalist>
             </div>
 
             <div className="form-group">
@@ -608,7 +632,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 type="number"
                 step="0.01"
                 name="tasaPago"
-                value={formData.tasaPago}
+                // value={formData.tasaPago}
                 onChange={handleInputChange}
                 placeholder="0.00"
               />
@@ -620,7 +644,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 type="number"
                 step="0.01"
                 name="pagoBolivares"
-                value={formData.pagoBolivares}
+                // value={formData.pagoBolivares}
                 onChange={handleInputChange}
                 placeholder="0.00"
                 required
@@ -823,7 +847,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   type="text"
                   value={nuevoModoPago}
                   onChange={(e) => setNuevoModoPago(e.target.value)}
-                  placeholder="Ej: Zelle, Efectivo, Transferencia..."
+                  placeholder="Nombre del modo de pago"
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), agregarModoPago())}
                 />
               </div>
