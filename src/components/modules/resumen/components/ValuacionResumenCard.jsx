@@ -16,6 +16,7 @@ const ValuacionResumenCard = ({
 
   const [pagos, setPagos] = useState([]);
   const [loadingPagos, setLoadingPagos] = useState(true);
+  const [showCategories, setShowCategories] = useState(false);
 
   useEffect(() => {
     const fetchPagos = async () => {
@@ -207,35 +208,47 @@ const ValuacionResumenCard = ({
 
         {/* Gastos por Categoría */}
         <div className="financial-section-full">
-          <h5>Gastos por Categoría</h5>
-          {categoriasOrdenadas.length > 0 ? (
-            <div className="categorias-grid">
-              {categoriasOrdenadas.map(([categoria, montos]) => {
-                const porcentaje = subtotalValuacionUSD > 0
-                  ? (montos.total / subtotalValuacionUSD) * 100
-                  : 0;
+          <h5
+            onClick={() => setShowCategories(!showCategories)}
+            style={{ cursor: 'pointer', userSelect: 'none' }}
+          >
+            <span style={{ marginRight: '0.5rem' }}>
+              {showCategories ? '▼' : '▶'}
+            </span>
+            Gastos por Categoría
+          </h5>
+          {showCategories && (
+            <>
+              {categoriasOrdenadas.length > 0 ? (
+                <div className="categorias-grid">
+                  {categoriasOrdenadas.map(([categoria, montos]) => {
+                    const porcentaje = subtotalValuacionUSD > 0
+                      ? (montos.total / subtotalValuacionUSD) * 100
+                      : 0;
 
-                return (
-                  <div key={categoria} className="categoria-item">
-                    <div className="categoria-header-simple">
-                      <span className="categoria-nombre">{categoria}</span>
-                      <div className="categoria-stats">
-                        <span className="categoria-total">
-                          {formatCurrency(montos.total, "USD")}
-                        </span>
-                        <span className="categoria-porcentaje">
-                          {porcentaje.toFixed(2)}%
-                        </span>
+                    return (
+                      <div key={categoria} className="categoria-item">
+                        <div className="categoria-header-simple">
+                          <span className="categoria-nombre">{categoria}</span>
+                          <div className="categoria-stats">
+                            <span className="categoria-total">
+                              {formatCurrency(montos.total, "USD")}
+                            </span>
+                            <span className="categoria-porcentaje">
+                              {porcentaje.toFixed(2)}%
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="empty-message">
-              <span>Sin gastos por categoría registrados</span>
-            </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="empty-message">
+                  <span>Sin gastos por categoría registrados</span>
+                </div>
+              )}
+            </>
           )}
         </div>
 
