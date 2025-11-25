@@ -129,23 +129,23 @@ const FacturasList = ({ projectId, onEditFactura }) => {
           </div>
           {(retenciones.retencionIvaCobrada > 0 ||
             retenciones.retencionIslrCobrada > 0) && (
-            <>
-              {retenciones.retencionIvaCobrada > 0 && (
-                <div className="retencion-item">
-                  <small className="estado-bueno">
-                    IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
-                  </small>
-                </div>
-              )}
-              {retenciones.retencionIslrCobrada > 0 && (
-                <div className="retencion-item">
-                  <small className="estado-bueno">
-                    ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
-                  </small>
-                </div>
-              )}
-            </>
-          )}
+              <>
+                {retenciones.retencionIvaCobrada > 0 && (
+                  <div className="retencion-item">
+                    <small className="estado-bueno">
+                      IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
+                    </small>
+                  </div>
+                )}
+                {retenciones.retencionIslrCobrada > 0 && (
+                  <div className="retencion-item">
+                    <small className="estado-bueno">
+                      ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
+                    </small>
+                  </div>
+                )}
+              </>
+            )}
         </div>
       );
     } else {
@@ -174,26 +174,26 @@ const FacturasList = ({ projectId, onEditFactura }) => {
           {/* Mostrar retenciones ya cobradas (si las hay) */}
           {(retenciones.retencionIvaCobrada > 0 ||
             retenciones.retencionIslrCobrada > 0) && (
-            <>
-              <div className="retencion-item separador">
-                <small className="estado-bueno">Pagado:</small>
-              </div>
-              {retenciones.retencionIvaCobrada > 0 && (
-                <div className="retencion-item">
-                  <small className="estado-bueno">
-                    IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
-                  </small>
+              <>
+                <div className="retencion-item separador">
+                  <small className="estado-bueno">Pagado:</small>
                 </div>
-              )}
-              {retenciones.retencionIslrCobrada > 0 && (
-                <div className="retencion-item">
-                  <small className="estado-bueno">
-                    ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
-                  </small>
-                </div>
-              )}
-            </>
-          )}
+                {retenciones.retencionIvaCobrada > 0 && (
+                  <div className="retencion-item">
+                    <small className="estado-bueno">
+                      IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
+                    </small>
+                  </div>
+                )}
+                {retenciones.retencionIslrCobrada > 0 && (
+                  <div className="retencion-item">
+                    <small className="estado-bueno">
+                      ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
+                    </small>
+                  </div>
+                )}
+              </>
+            )}
         </div>
       );
     }
@@ -225,7 +225,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
             onChange={(e) => setFiltroProveedor(e.target.value)}
             className="search-input"
           />
-
+          <label htmlFor="fechaInicio" style={{ color: 'red' }}>Desde</label>
           <input
             type="date"
             placeholder="Fecha inicio"
@@ -233,7 +233,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
             onChange={(e) => setFechaInicio(e.target.value)}
             className="date-input"
           />
-
+          <label htmlFor="fechaFin" style={{ color: 'red' }}>Hasta</label>
           <input
             type="date"
             placeholder="Fecha fin"
@@ -254,6 +254,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
               <th>RIF</th>
               <th>N° Factura</th>
               <th>N° Control</th>
+              <th>Descripción</th>
               <th>Categoría</th>
               <th>Tasa de Pago (Bs/$)</th>
               <th>Subcategorías</th>
@@ -279,6 +280,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
                 </td>
                 <td>{factura.numeroFactura}</td>
                 <td>{factura.numeroControl || "-"}</td>
+                <td>{factura.descripcion || "-"}</td>
                 <td>{factura.categoria}</td>
                 <td>{factura.tasaPago?.toFixed(2) || "0.00"}</td>
                 <td>{formatSubcategorias(factura)}</td>

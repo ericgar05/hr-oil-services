@@ -1,4 +1,3 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/CompraSinFacturaForm.jsx
 import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
@@ -7,6 +6,7 @@ import '../ComprasSinFacturaMain.css'
 
 const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
+
   const [formData, setFormData] = useState({
     categoria: '',
     subcategorias: [''],
@@ -29,20 +29,9 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   const [categorias, setCategorias] = useState([])
   const [modosPago, setModosPago] = useState([])
   const [proveedores, setProveedores] = useState([])
+  const [availableSubcategorias, setAvailableSubcategorias] = useState([])
   const [nuevaCategoria, setNuevaCategoria] = useState('')
   const [nuevoModoPago, setNuevoModoPago] = useState('')
-  
-  // Modales
-  const [showProveedorModal, setShowProveedorModal] = useState(false)
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
-  const [showModoPagoModal, setShowModoPagoModal] = useState(false)
-
-  const [nuevoProveedor, setNuevoProveedor] = useState({
-    nombre: '',
-    tipoRif: 'J-',
-    rif: '',
-    direccion: ''
-  })
   const tiposRif = ['J-', 'V-', 'E-', 'P-', 'G-']
 
   const [feedback, setFeedback] = useState({
@@ -54,15 +43,22 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
 
   useEffect(() => {
     if (compraEdit) {
-      console.log('Cargando datos de edición:', compraEdit)
       setFormData({
+        categoria: '',
+        subcategorias: [''],
+        proveedor: '',
+        tipoRif: 'J-',
+        rif: '',
+        direccion: '',
+        fechaCompra: '',
+        fechaRecibida: '',
+        numeroNotaEntrega: '',
         ...compraEdit,
         subcategorias: Array.isArray(compraEdit.subcategorias)
           ? compraEdit.subcategorias
           : (compraEdit.subcategoria ? [compraEdit.subcategoria] : [''])
       })
     } else {
-
       setFormData({
         categoria: '',
         subcategorias: [''],
@@ -107,6 +103,19 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
         if (provError) console.error('Error cargando proveedores:', provError)
         else setProveedores(provData)
       }
+
+      // Cargar Subcategorías existentes
+      const { data: subData, error: subError } = await supabase
+        .from('compras_sin_factura')
+        .select('subcategorias')
+
+      if (subError) {
+        console.error('Error cargando subcategorías:', subError)
+      } else if (subData) {
+        const allSubs = subData.flatMap(f => f.subcategorias || [])
+        const uniqueSubs = [...new Set(allSubs)].filter(Boolean).sort()
+        setAvailableSubcategorias(uniqueSubs)
+      }
     }
     fetchData()
   }, [projectId])
@@ -126,6 +135,9 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
     setFeedback(prev => ({ ...prev, isOpen: false }));
     if (feedback.type === 'success') {
         // If success, we might want to trigger the parent callback after closing modal
+        // But onCompraSaved is called immediately in handleSubmit, which might refresh the list.
+        // If we want to wait for the modal to close before refreshing/closing form, we'd need to change logic.
+        // For now, let's keep it simple.
     }
   };
 
@@ -204,69 +216,62 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
     }
   }
 
-  const agregarProveedor = async () => {
-    if (!nuevoProveedor.nombre.trim() || !nuevoProveedor.rif.trim()) {
-      showToast('Por favor complete nombre y RIF del proveedor', 'error')
-      return
-    }
-
-    try {
-      const proveedorData = {
-        projectid: projectId,
-        nombre: nuevoProveedor.nombre.trim(),
-        tiporif: nuevoProveedor.tipoRif,
-        rif: nuevoProveedor.rif.trim(),
-        direccion: nuevoProveedor.direccion.trim()
-      }
-
-      const { error } = await supabase
-        .from('proveedores')
-        .insert([proveedorData])
-
-      if (error) throw error
-
-      // Reload providers
-      console.log('Recargando proveedores para projectid:', projectId);
-      const { data: provData, error: reloadError } = await supabase
-        .from('proveedores')
-        .select('*')
-        .eq('projectid', projectId)
-      
-      if (reloadError) {
-        console.error('Error recargando proveedores:', reloadError);
-      } else {
-        console.log('Proveedores recargados:', provData);
-        if (provData) setProveedores(provData)
-      }
-
-      // Auto-fill form with new provider
-      setFormData(prev => ({
-        ...prev,
-        proveedor: nuevoProveedor.nombre.trim(),
-        tipoRif: nuevoProveedor.tipoRif,
-        rif: nuevoProveedor.rif.trim(),
-        direccion: nuevoProveedor.direccion.trim()
-      }))
-
-      // Reset and close modal
-      setNuevoProveedor({
-        nombre: '',
-        tipoRif: 'J-',
-        rif: '',
-        direccion: ''
-      })
-      setShowProveedorModal(false)
-      showToast('Proveedor agregado exitosamente', 'success')
-    } catch (error) {
-      console.error('Error adding proveedor:', error)
-      showToast('Error al agregar proveedor', 'error')
-    }
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
+      // Calcular nuevos totales para el proveedor
+      let newTotalFacturas = 0
+      let newTotalGastado = 0
+
+      // Obtener datos actuales del proveedor si existe
+      const { data: existingProv } = await supabase
+        .from('proveedores')
+        .select('total_facturas, total_gastado_dolares')
+        .eq('projectid', projectId)
+        .eq('tiporif', formData.tipoRif)
+        .eq('rif', formData.rif)
+        .single()
+
+      if (existingProv) {
+        newTotalFacturas = existingProv.total_facturas || 0
+        newTotalGastado = existingProv.total_gastado_dolares || 0
+      }
+
+      // Si es una nueva compra (no edición), incrementar contadores
+      if (!compraEdit) {
+        newTotalFacturas += 1
+        newTotalGastado += (formData.totalDolares || 0)
+      }
+
+      // Guardar o actualizar proveedor
+      const proveedorData = {
+        projectid: projectId,
+        nombre: formData.proveedor,
+        tiporif: formData.tipoRif,
+        rif: formData.rif,
+        direccion: formData.direccion,
+        total_facturas: newTotalFacturas,
+        total_gastado_dolares: newTotalGastado,
+        updatedat: new Date().toISOString()
+      }
+
+      // Upsert proveedor (inserta si no existe conflicto con projectid, tiporif, rif)
+      const { error: provError } = await supabase
+        .from('proveedores')
+        .upsert(proveedorData, { onConflict: 'projectid, tiporif, rif' })
+
+      if (provError) {
+        console.error('Error al guardar proveedor:', provError)
+      } else {
+        // Recargar proveedores
+        const { data: newProvs } = await supabase
+          .from('proveedores')
+          .select('*')
+          .eq('projectid', projectId)
+        if (newProvs) setProveedores(newProvs)
+      }
+
       const cleanedFormData = { ...formData }
 
       delete cleanedFormData.id
@@ -387,7 +392,6 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                     value={sub}
                     onChange={(e) => handleSubcategoriaChange(index, e.target.value)}
                     placeholder={`Subcategoría ${index + 1}`}
-                    style={{ flex: 1 }}
                   />
                   {formData.subcategorias.length > 1 && (
                     <button
@@ -411,6 +415,13 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   )}
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={addSubcategoria}
+                className="btn-add-subcategory"
+              >
+                + Añadir Subcategoría
+              </button>
             </div>
 
             <div className="form-group">

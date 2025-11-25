@@ -19,6 +19,7 @@ const PagosNominaMain = () => {
     getAsistenciasByProject,
     savePagos,
     getPagosByProject,
+    deletePago,
   } = usePersonal();
   const { showToast } = useNotification();
 
@@ -54,7 +55,7 @@ const PagosNominaMain = () => {
     const year = proximoViernes.getFullYear();
     const month = String(proximoViernes.getMonth() + 1).padStart(2, "0");
     const day = String(proximoViernes.getDate()).padStart(2, "0");
-    
+
     setFechaPago(`${year}-${month}-${day}`);
   }, []);
 
@@ -120,6 +121,26 @@ const PagosNominaMain = () => {
     }
   };
 
+  const handleDeletePago = async (id) => {
+    try {
+      await deletePago(id);
+      await loadData(); // Recargar datos
+      setFeedback({
+        isOpen: true,
+        type: 'success',
+        title: 'Pago Eliminado',
+        message: 'El registro de pago ha sido eliminado exitosamente.'
+      });
+    } catch (error) {
+      setFeedback({
+        isOpen: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Error al eliminar pago: ' + error.message
+      });
+    }
+  };
+
   return (
     <div className="pagos-nomina-main">
       <button className="back-button" onClick={handleBack}>
@@ -128,9 +149,8 @@ const PagosNominaMain = () => {
 
       <ModuleDescription
         title="Pagos Nómina"
-        description={`Gestión de pagos, cálculos y liquidaciones de nómina - ${
-          selectedProject?.name || ""
-        }`}
+        description={`Gestión de pagos, cálculos y liquidaciones de nómina - ${selectedProject?.name || ""
+          }`}
       />
 
       <div className="pagos-controls">
@@ -221,6 +241,8 @@ const PagosNominaMain = () => {
                 setTasaCambio(pago.tasaCambio.toString());
                 setCurrentView("resumen");
               }}
+              onDeletePago={handleDeletePago}
+              selectedProject={selectedProject}
             />
           )}
         </div>

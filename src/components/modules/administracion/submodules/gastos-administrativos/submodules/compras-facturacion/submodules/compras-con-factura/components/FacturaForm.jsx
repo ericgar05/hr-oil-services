@@ -1,11 +1,8 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/components/FacturaForm.jsx
 import React, { useState, useEffect, useCallback } from 'react'
 import RetencionesCalculator from './RetencionesCalculator'
 import supabase from '../../../../../../../../../../api/supaBase.js'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
-import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
-import '../ComprasConFacturaMain.css'
-
+import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'   
 const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
   const [formData, setFormData] = useState({
@@ -44,6 +41,7 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
   const [categorias, setCategorias] = useState([])
   const [modosPago, setModosPago] = useState([])
   const [proveedores, setProveedores] = useState([])
+  const [availableSubcategorias, setAvailableSubcategorias] = useState([])
 
   const [nuevaCategoria, setNuevaCategoria] = useState('')
   const [nuevoModoPago, setNuevoModoPago] = useState('')
@@ -152,6 +150,19 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
 
         if (provError) console.error('Error cargando proveedores:', provError)
         else setProveedores(provData)
+      }
+
+      // Cargar Subcategorías existentes
+      const { data: subData, error: subError } = await supabase
+        .from('facturas')
+        .select('subcategorias')
+
+      if (subError) {
+        console.error('Error cargando subcategorías:', subError)
+      } else if (subData) {
+        const allSubs = subData.flatMap(f => f.subcategorias || [])
+        const uniqueSubs = [...new Set(allSubs)].filter(Boolean).sort()
+        setAvailableSubcategorias(uniqueSubs)
       }
     }
     fetchData()
@@ -295,13 +306,9 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
     }
   }
 
-  const handleRetencionesChange = useCallback((nuevasRetenciones) => {
-    console.log('Nuevas retenciones:', nuevasRetenciones)
-    setFormData(prev => ({
-      ...prev,
-      ...nuevasRetenciones
-    }))
-  }, [])
+  const handleRetencionesChange = (data) => {
+    setFormData(prev => ({ ...prev, ...data }))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -315,6 +322,58 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
       return
     }
     try {
+      // Calcular nuevos totales para el proveedor
+      let newTotalFacturas = 0
+      let newTotalGastado = 0
+
+      // Obtener datos actuales del proveedor si existe
+      const { data: existingProv } = await supabase
+        .from('proveedores')
+        .select('total_facturas, total_gastado_dolares')
+        .eq('projectid', projectId)
+        .eq('tiporif', formData.tipoRif)
+        .eq('rif', formData.rif)
+        .single()
+
+      if (existingProv) {
+        newTotalFacturas = existingProv.total_facturas || 0
+        newTotalGastado = existingProv.total_gastado_dolares || 0
+      }
+
+      // Si es una nueva factura (no edición), incrementar contadores
+      if (!facturaEdit) {
+        newTotalFacturas += 1
+        newTotalGastado += (formData.subTotalDolares || 0)
+      }
+
+      // Guardar o actualizar proveedor
+      const proveedorData = {
+        projectid: projectId,
+        nombre: formData.proveedor,
+        tiporif: formData.tipoRif,
+        rif: formData.rif,
+        direccion: formData.direccion,
+        total_facturas: newTotalFacturas,
+        total_gastado_dolares: newTotalGastado,
+        updatedat: new Date().toISOString()
+      }
+
+      // Upsert proveedor (inserta si no existe conflicto con projectid, tiporif, rif)
+      const { error: provError } = await supabase
+        .from('proveedores')
+        .upsert(proveedorData, { onConflict: 'projectid, tiporif, rif' })
+
+      if (provError) {
+        console.error('Error al guardar proveedor:', provError)
+      } else {
+        // Recargar proveedores
+        const { data: newProvs } = await supabase
+          .from('proveedores')
+          .select('*')
+          .eq('projectid', projectId)
+        if (newProvs) setProveedores(newProvs)
+      }
+
       const cleanedFormData = { ...formData }
       // Remove id, createdAt, updatedAt, status if they are not part of the insert/update payload
       delete cleanedFormData.id
@@ -343,6 +402,12 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
       }
 
       if (error) throw error
+
+      // Actualizar lista de subcategorías disponibles
+      const nuevasSubcategorias = formData.subcategorias.filter(s => s && !availableSubcategorias.includes(s))
+      if (nuevasSubcategorias.length > 0) {
+        setAvailableSubcategorias(prev => [...prev, ...nuevasSubcategorias].sort())
+      }
 
       onFacturaSaved()
 
@@ -448,7 +513,6 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
                     value={sub}
                     onChange={(e) => handleSubcategoriaChange(index, e.target.value)}
                     placeholder={`Subcategoría ${index + 1}`}
-                    style={{ flex: 1 }}
                   />
                   {formData.subcategorias.length > 1 && (
                     <button
@@ -472,6 +536,7 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
                   )}
                 </div>
               ))}
+              <button type="button" onClick={addSubcategoria} className="btn-add-subcategory">+ Añadir Subcategoría</button>
             </div>
 
             <div className="form-group">

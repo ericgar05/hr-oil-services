@@ -385,25 +385,6 @@
 //                     </span>
 //                   )}
 //                   <small>
-//                     Porcentaje de ISLR que se aplicará a este empleado
-//                   </small>
-//                 </div>
-//               </div>
-
-//               <div className="calculation-info total">
-//                 <small>
-//                   <strong>Nota:</strong> La nómina {formData.tipoNomina} incluye
-//                   deducciones de ley (IVSS, Paro Forzoso, FAOV, ISLR)
-//                   <br />
-//                   <strong>Montos base por defecto:</strong> IVSS: 150 Bs, Paro
-//                   Forzoso: 150 Bs, FAOV: 1300 Bs, ISLR: 120 USD$
-//                 </small>
-//               </div>
-//             </>
-//           )}
-
-//           {showMontoLeyBonificacion &&
-//             formData.montoLey &&
 //             formData.bonificacionEmpresa && (
 //               <div className="calculation-info total">
 //                 <strong>
@@ -450,10 +431,13 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
     bonificacionEmpresa: "",
     fechaIngreso: "",
     porcentajeIslr: "",
-    montoBaseIvss: "150",
-    montoBaseParoForzoso: "150",
-    montoBaseFaov: "1300",
-    montoBaseIslr: "120",
+    montoBaseIvss: "",
+    montoBaseParoForzoso: "",
+    montoBaseFaov: "",
+    montoBaseIslr: "",
+    montoBaseFaov: "",
+    montoBaseIslr: "",
+    estado: "Activo",
   });
 
   const [errors, setErrors] = useState({});
@@ -474,11 +458,13 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
         bonificacionEmpresa: employee.bonificacionEmpresa?.toString() || "",
         fechaIngreso: employee.fechaIngreso || "",
         porcentajeIslr: employee.porcentajeIslr?.toString() || "",
-        montoBaseIvss: employee.montoBaseIvss?.toString() || "150",
-        montoBaseParoForzoso:
-          employee.montoBaseParoForzoso?.toString() || "150",
-        montoBaseFaov: employee.montoBaseFaov?.toString() || "1300",
-        montoBaseIslr: employee.montoBaseIslr?.toString() || "120",
+        montoBaseIvss: employee.montoBaseIvss?.toString() || "",
+        montoBaseParoForzoso: employee.montoBaseParoForzoso?.toString() || "",
+        montoBaseFaov: employee.montoBaseFaov?.toString() || "",
+        montoBaseIslr: employee.montoBaseIslr?.toString() || "",
+        montoBaseFaov: employee.montoBaseFaov?.toString() || "",
+        montoBaseIslr: employee.montoBaseIslr?.toString() || "",
+        estado: employee.estado || "Activo",
       });
     }
   }, [employee]);
@@ -574,7 +560,7 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
       case "Diario":
         return monto;
       case "Semanal":
-        return (monto / 6).toFixed(2); // 6 días laborales
+        return (monto / 5).toFixed(2); // 5 días laborales
       case "Mensual":
         return (monto / 30).toFixed(2); // 30 días promedio
       default:
@@ -741,6 +727,21 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
               )}
             </div>
           </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Estado *</label>
+              <select
+                name="estado"
+                value={formData.estado}
+                onChange={handleChange}
+                className={errors.estado ? "error" : ""}
+                disabled={submitting}
+              >
+                <option value="Activo">Activo</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
         </div>
 
         <div className="form-section">
@@ -841,73 +842,65 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
                 </div>
               </div>
 
-              {showMontosBase && (
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Monto Base IVSS (Bs)</label>
-                    <input
-                      type="number"
-                      name="montoBaseIvss"
-                      value={formData.montoBaseIvss}
-                      onChange={handleChange}
-                      placeholder="150.00"
-                      step="0.01"
-                      min="0"
-                      disabled={submitting}
-                    />
-                    <small>Monto base para cálculo de IVSS</small>
-                  </div>
+              <div className="form-section-divider">
+                <h5>Deducciones de Ley (Configuración Individual)</h5>
+              </div>
 
-                  <div className="form-group">
-                    <label>Monto Base Paro Forzoso (Bs)</label>
-                    <input
-                      type="number"
-                      name="montoBaseParoForzoso"
-                      value={formData.montoBaseParoForzoso}
-                      onChange={handleChange}
-                      placeholder="150.00"
-                      step="0.01"
-                      min="0"
-                      disabled={submitting}
-                    />
-                    <small>Monto base para cálculo de Paro Forzoso</small>
-                  </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Monto Base IVSS (Bs)</label>
+                  <input
+                    type="number"
+                    name="montoBaseIvss"
+                    value={formData.montoBaseIvss}
+                    onChange={handleChange}
+                    placeholder="150.00"
+                    step="0.01"
+                    disabled={submitting}
+                  />
                 </div>
-              )}
-
-              {showMontosBase && (
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Monto Base FAOV (Bs)</label>
-                    <input
-                      type="number"
-                      name="montoBaseFaov"
-                      value={formData.montoBaseFaov}
-                      onChange={handleChange}
-                      placeholder="1300.00"
-                      step="0.01"
-                      min="0"
-                      disabled={submitting}
-                    />
-                    <small>Monto base para cálculo de FAOV</small>
-                  </div>
-
-                  <div className="form-group">
-                    <label>Monto Base ISLR (USD$)</label>
-                    <input
-                      type="number"
-                      name="montoBaseIslr"
-                      value={formData.montoBaseIslr}
-                      onChange={handleChange}
-                      placeholder="120.00"
-                      step="0.01"
-                      min="0"
-                      disabled={submitting}
-                    />
-                    <small>Monto base para cálculo de ISLR</small>
-                  </div>
+                <div className="form-group">
+                  <label>Monto Base Paro Forzoso (Bs)</label>
+                  <input
+                    type="number"
+                    name="montoBaseParoForzoso"
+                    value={formData.montoBaseParoForzoso}
+                    onChange={handleChange}
+                    placeholder="150.00"
+                    step="0.01"
+                    disabled={submitting}
+                  />
                 </div>
-              )}
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Monto Base FAOV (Bs)</label>
+                  <input
+                    type="number"
+                    name="montoBaseFaov"
+                    value={formData.montoBaseFaov}
+                    onChange={handleChange}
+                    placeholder="1300.00"
+                    step="0.01"
+                    disabled={submitting}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Monto Base ISLR (USD)</label>
+                  <input
+                    type="number"
+                    name="montoBaseIslr"
+                    value={formData.montoBaseIslr}
+                    onChange={handleChange}
+                    placeholder="120.00"
+                    step="0.01"
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+
+
 
               <div className="calculation-info total">
                 <small>
@@ -946,8 +939,8 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
             {submitting
               ? "Guardando..."
               : employee
-              ? "Actualizar Empleado"
-              : "Registrar Empleado"}
+                ? "Actualizar Empleado"
+                : "Registrar Empleado"}
           </button>
         </div>
       </form>

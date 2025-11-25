@@ -5,9 +5,10 @@ import ModuleDescription from '../../../../../_core/ModuleDescription/ModuleDesc
 import { useProjects } from '../../../../../../../contexts/ProjectContext'
 import ComprasConFacturaMain from './submodules/compras-con-factura/ComprasConFacturaMain'
 import ComprasSinFacturaMain from './submodules/compras-sin-factura/ComprasSinFacturaMain'
+import Configuraciones from './components/Configuraciones'
 import supabase from '../../../../../../../api/supaBase'
 import './ComprasFacturacionMain.css'
-import { ClipBoardIcon, CartShoppingIcon, InfoIcon } from '../../../../../../../assets/icons/Icons'
+import { ClipBoardIcon, CartShoppingIcon, InfoIcon, ConfigIcon } from '../../../../../../../assets/icons/Icons'
 import Modal from '../../../../../../common/Modal/Modal'
 
 const ComprasFacturacionMain = ({ projectId }) => {
@@ -25,7 +26,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
   useEffect(() => {
     const fetchSummaryData = async () => {
       if (!projectId) return
-      
+
       setLoading(true)
       try {
         console.log('Fetching summary data for project:', projectId)
@@ -36,7 +37,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
           .select('*', { count: 'exact' })
           .eq('projectId', projectId) // Cambiado a projectId (snake_case)
           .neq('status', 'deleted')
-        
+
         if (errorFacturas) {
           console.error('Error fetching facturas:', errorFacturas)
           // Intentar con projectId (camelCase) si projectId falla
@@ -45,7 +46,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
             .select('*', { count: 'exact' })
             .eq('projectId', projectId)
             .neq('status', 'deleted')
-          
+
           if (errorFacturasAlt) {
             throw errorFacturasAlt
           }
@@ -58,7 +59,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
           .select('*', { count: 'exact' })
           .eq('projectId', projectId)
           .neq('status', 'deleted')
-        
+
         if (errorSinFactura) {
           console.error('Error fetching compras sin factura:', errorSinFactura)
           // Intentar con projectId (camelCase)
@@ -67,7 +68,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
             .select('*', { count: 'exact' })
             .eq('projectId', projectId)
             .neq('status', 'deleted')
-          
+
           if (errorSinFacturaAlt) {
             throw errorSinFacturaAlt
           }
@@ -80,7 +81,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
           .select('tipoRif, rif') // Cambiado a snake_case
           .eq('projectId', projectId)
           .neq('status', 'deleted')
-        
+
         if (errorFacturasProv) {
           console.error('Error fetching proveedores facturas:', errorFacturasProv)
           // Intentar con camelCase
@@ -89,7 +90,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
             .select('tipoRif, rif')
             .eq('projectId', projectId)
             .neq('status', 'deleted')
-          
+
           if (errorFacturasProvAlt) {
             throw errorFacturasProvAlt
           }
@@ -100,7 +101,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
           .select('tipoRif, rif') // Cambiado a snake_case
           .eq('projectId', projectId)
           .neq('status', 'deleted')
-        
+
         if (errorSinFacturaProv) {
           console.error('Error fetching proveedores sin factura:', errorSinFacturaProv)
           // Intentar con camelCase
@@ -109,7 +110,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
             .select('tipoRif, rif')
             .eq('projectId', projectId)
             .neq('status', 'deleted')
-          
+
           if (errorSinFacturaProvAlt) {
             throw errorSinFacturaProvAlt
           }
@@ -149,19 +150,26 @@ const ComprasFacturacionMain = ({ projectId }) => {
   }, [projectId])
 
   const submodules = [
-    { 
-      id: 'compras-con-factura', 
-      title: 'Compras con Factura', 
+    {
+      id: 'compras-con-factura',
+      title: 'Compras con Factura',
       description: 'Registro y control de compras con factura formal, cálculo de retenciones',
-      icon: <ClipBoardIcon/>,
+      icon: <ClipBoardIcon />,
       path: 'compras-con-factura'
     },
-    { 
-      id: 'compras-sin-factura', 
-      title: 'Compras sin Factura', 
+    {
+      id: 'compras-sin-factura',
+      title: 'Compras sin Factura',
       description: 'Registro de compras informales y gastos menores',
-      icon: <CartShoppingIcon/>,
+      icon: <CartShoppingIcon />,
       path: 'compras-sin-factura'
+    },
+    {
+      id: 'configuraciones',
+      title: 'Configuraciones',
+      description: 'Gestión de categorías, subcategorías y proveedores',
+      icon: <ConfigIcon />,
+      path: 'configuraciones'
     }
   ]
 
@@ -191,40 +199,51 @@ const ComprasFacturacionMain = ({ projectId }) => {
   }
 
   // Si hay una ruta específica activa, mostrar el submodule correspondiente
-  if (window.location.pathname.includes('compras-con-factura') || 
-      window.location.pathname.includes('compras-sin-factura')) {
+  if (window.location.pathname.includes('compras-con-factura') ||
+    window.location.pathname.includes('compras-sin-factura') ||
+    window.location.pathname.includes('configuraciones')) {
     return (
       <div className="compras-facturacion-main">
         <div className="submodule-navigation">
-          <button 
+          <button
             className={`submodule-nav-btn ${activeSubmodule === 'compras-con-factura' ? 'active' : ''}`}
             onClick={() => handleSubmoduleChange('compras-con-factura')}
           >
             📋 Compras con Factura
           </button>
-          <button 
+          <button
             className={`submodule-nav-btn ${activeSubmodule === 'compras-sin-factura' ? 'active' : ''}`}
             onClick={() => handleSubmoduleChange('compras-sin-factura')}
           >
             🛒 Compras sin Factura
           </button>
+          <button
+            className={`submodule-nav-btn ${activeSubmodule === 'configuraciones' ? 'active' : ''}`}
+            onClick={() => handleSubmoduleChange('configuraciones')}
+          >
+            ⚙️ Configuraciones
+          </button>
           <button className="back-button" onClick={handleBack}>
             ← Volver
           </button>
         </div>
-        
+
         <Routes>
-          <Route 
-            path="compras-con-factura" 
-            element={<ComprasConFacturaMain projectId={projectId} />} 
+          <Route
+            path="compras-con-factura"
+            element={<ComprasConFacturaMain projectId={projectId} />}
           />
-          <Route 
-            path="compras-sin-factura" 
-            element={<ComprasSinFacturaMain projectId={projectId} />} 
+          <Route
+            path="compras-sin-factura"
+            element={<ComprasSinFacturaMain projectId={projectId} />}
           />
-          <Route 
-            path="/" 
-            element={<ComprasConFacturaMain projectId={projectId} />} 
+          <Route
+            path="configuraciones"
+            element={<Configuraciones projectId={projectId} />}
+          />
+          <Route
+            path="/"
+            element={<ComprasConFacturaMain projectId={projectId} />}
           />
         </Routes>
       </div>
@@ -238,23 +257,23 @@ const ComprasFacturacionMain = ({ projectId }) => {
         ← Volver a Gastos Administrativos
       </button>
 
-      <ModuleDescription 
+      <ModuleDescription
         title="COMPRA & FACTURACIÓN"
         description={`Gestión integral de compras y facturación del proyecto ${selectedProject?.name || ''}`}
         action={
-          <button 
+          <button
             className="btn-info-circle"
             onClick={() => setShowInfoModal(true)}
             title="Ver información del módulo"
           >
-            <InfoIcon/>
+            <InfoIcon />
           </button>
         }
       />
 
       <div className="compras-facturacion-grid">
         {submodules.map(submodule => (
-          <div 
+          <div
             key={submodule.id}
             className="compras-facturacion-card"
             onClick={() => handleCardClick(submodule.path)}
@@ -292,7 +311,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
           </div>
         </div>
 
-  
+
       </div>
 
       <Modal
@@ -302,7 +321,7 @@ const ComprasFacturacionMain = ({ projectId }) => {
       >
         <div className="modal-info-content">
           <p>Este módulo permite la gestión integral de todas las compras y gastos del proyecto.</p>
-          
+
           <h3>Funcionalidades Principales:</h3>
           <ul className="info-list">
             <li><strong>Compras con Factura:</strong> Registro de compras formales, cálculo automático de retenciones (IVA, ISLR) y gestión de proveedores.</li>

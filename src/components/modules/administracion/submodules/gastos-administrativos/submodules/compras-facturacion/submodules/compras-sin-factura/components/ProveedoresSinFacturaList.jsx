@@ -34,7 +34,7 @@ const ProveedoresSinFacturaList = ({ projectId, refreshTrigger }) => {
     const proveedoresMap = {}
 
     compras.forEach(compra => {
-      const key = `${compra.tipoRif}${compra.rif}`
+      const key = `${compra.proveedor}_${compra.tipoRif}_${compra.rif || 'NA'}`
       if (!proveedoresMap[key]) {
         proveedoresMap[key] = {
           proveedor: compra.proveedor,
@@ -54,7 +54,7 @@ const ProveedoresSinFacturaList = ({ projectId, refreshTrigger }) => {
       proveedoresMap[key].totalCompras += 1
       proveedoresMap[key].totalDolares += compra.totalDolares || 0
       proveedoresMap[key].totalBolivares += compra.pagoBolivares || 0
-      
+
       // Actualizar fechas
       if (compra.fechaCompra < proveedoresMap[key].primeraCompra) {
         proveedoresMap[key].primeraCompra = compra.fechaCompra
@@ -123,7 +123,7 @@ const ProveedoresSinFacturaList = ({ projectId, refreshTrigger }) => {
                 <span className="compras-count">{proveedor.totalCompras} compras</span>
               </div>
             </div>
-            
+
             <div className="proveedor-info">
               <p><strong>Dirección:</strong> {proveedor.direccion || 'No especificada'}</p>
               <p><strong>Primera Compra:</strong> {proveedor.primeraCompra}</p>
@@ -133,22 +133,22 @@ const ProveedoresSinFacturaList = ({ projectId, refreshTrigger }) => {
 
             <div className="proveedor-totales">
               <h5>Totales del Proveedor</h5>
-              
+
               <div className="total-item">
                 <span>Total Compras:</span>
                 <span>{proveedor.totalCompras}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Total en Dólares:</span>
                 <span>$ {proveedor.totalDolares.toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Total en Bolívares:</span>
                 <span>Bs {proveedor.totalBolivares.toFixed(2)}</span>
               </div>
-              
+
               <div className="total-item">
                 <span>Promedio por Compra ($):</span>
                 <span>$ {(proveedor.totalDolares / proveedor.totalCompras).toFixed(2)}</span>

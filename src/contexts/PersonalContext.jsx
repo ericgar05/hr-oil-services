@@ -55,6 +55,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(emp.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(emp.monto_base_faov),
         montoBaseIslr: parseFloat(emp.monto_base_islr),
+        montoBaseIslr: parseFloat(emp.monto_base_islr),
+        estado: emp.estado || "Activo",
+        fechaInactivo: emp.fecha_inactivo,
+        fechaReactivacion: emp.fecha_reactivacion,
         createdAt: emp.created_at,
         updatedAt: emp.updated_at,
       }));
@@ -97,12 +101,17 @@ export const PersonalProvider = ({ children }) => {
             ),
             porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
             fecha_ingreso: employeeData.fechaIngreso,
-            monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 150),
+            monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
             monto_base_paro_forzoso: parseFloat(
-              employeeData.montoBaseParoForzoso || 150
+              employeeData.montoBaseParoForzoso || 0
             ),
-            monto_base_faov: parseFloat(employeeData.montoBaseFaov || 1300),
-            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 120),
+            monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+            monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+            estado: employeeData.estado || "Activo",
+            fecha_inactivo: employeeData.fechaInactivo,
+            fecha_reactivacion: employeeData.fechaReactivacion,
           },
         ])
         .select()
@@ -130,6 +139,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(data.monto_base_faov),
         montoBaseIslr: parseFloat(data.monto_base_islr),
+        montoBaseIslr: parseFloat(data.monto_base_islr),
+        estado: data.estado || "Activo",
+        fechaInactivo: data.fecha_inactivo,
+        fechaReactivacion: data.fecha_reactivacion,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -165,6 +178,16 @@ export const PersonalProvider = ({ children }) => {
           ),
           porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
           fecha_ingreso: employeeData.fechaIngreso,
+          monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
+          monto_base_paro_forzoso: parseFloat(
+            employeeData.montoBaseParoForzoso || 0
+          ),
+          monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+          monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+          monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+          estado: employeeData.estado,
+          fecha_inactivo: employeeData.fechaInactivo,
+          fecha_reactivacion: employeeData.fechaReactivacion,
           updated_at: new Date().toISOString(),
         })
         .eq("id", id)
@@ -193,6 +216,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(data.monto_base_faov),
         montoBaseIslr: parseFloat(data.monto_base_islr),
+        montoBaseIslr: parseFloat(data.monto_base_islr),
+        estado: data.estado || "Activo",
+        fechaInactivo: data.fecha_inactivo,
+        fechaReactivacion: data.fecha_reactivacion,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -255,6 +282,10 @@ export const PersonalProvider = ({ children }) => {
         montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
         montoBaseFaov: parseFloat(data.monto_base_faov),
         montoBaseIslr: parseFloat(data.monto_base_islr),
+        montoBaseIslr: parseFloat(data.monto_base_islr),
+        estado: data.estado || "Activo",
+        fechaInactivo: data.fecha_inactivo,
+        fechaReactivacion: data.fecha_reactivacion,
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       };
@@ -620,6 +651,71 @@ export const PersonalProvider = ({ children }) => {
     }
   }, []);
 
+  const deletePago = useCallback(async (id) => {
+    console.log("🗑️ PersonalContext: Eliminando pago:", id);
+
+    try {
+      // Eliminar detalles de pago primero (aunque cascade delete debería encargarse)
+      const { error: detailsError } = await supabase
+        .from("payment_details")
+        .delete()
+        .eq("payroll_payment_id", id);
+
+      if (detailsError) throw detailsError;
+
+      // Eliminar el registro principal
+      const { error } = await supabase
+        .from("payroll_payments")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      console.log("✅ PersonalContext: Pago eliminado exitosamente");
+      addNotification("Pago eliminado exitosamente", "delete");
+      return true;
+    } catch (error) {
+      console.error("Error eliminando pago:", error);
+      addNotification("Error al eliminar pago", "error");
+      throw error;
+    }
+  }, [addNotification]);
+
+  // ========== BANCOS ==========
+  const getBancos = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("bancos_empresa")
+        .select("*")
+        .order("nombre", { ascending: true });
+
+      if (error) throw error;
+
+      return data.map((b) => b.nombre);
+    } catch (error) {
+      console.error("Error cargando bancos:", error);
+      return [];
+    }
+  }, []);
+
+  const addBanco = useCallback(async (nombre) => {
+    try {
+      const { data, error } = await supabase
+        .from("bancos_empresa")
+        .insert([{ nombre }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      console.log("✅ PersonalContext: Banco agregado exitosamente");
+      return data.nombre;
+    } catch (error) {
+      console.error("Error agregando banco:", error);
+      throw error;
+    }
+  }, []);
+
   const value = useMemo(() => ({
     // Empleados
     getEmployeesByProject,
@@ -638,6 +734,12 @@ export const PersonalProvider = ({ children }) => {
     savePagos,
     getPagosByProject,
     getPagoById,
+    deletePago,
+
+    // Bancos
+    getBancos,
+    addBanco,
+
   }), [
     getEmployeesByProject,
     addEmployee,
@@ -650,7 +752,10 @@ export const PersonalProvider = ({ children }) => {
     deleteAsistencia,
     savePagos,
     getPagosByProject,
-    getPagoById
+    getPagoById,
+    deletePago,
+    getBancos,
+    addBanco,
   ]);
 
   return (

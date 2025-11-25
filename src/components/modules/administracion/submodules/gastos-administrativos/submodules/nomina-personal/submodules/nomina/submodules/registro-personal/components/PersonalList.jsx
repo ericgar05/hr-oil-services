@@ -1,10 +1,11 @@
 
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/nomina-personal/submodules/nomina/submodules/registro-personal/components/PersonalList.jsx
-import  { useState } from "react";
+import { useState } from "react";
 import "./PersonalList.css";
 
-const PersonalList = ({ employees, onEdit, onDelete }) => {
+const PersonalList = ({ employees, onEdit, onDelete, onStatusChange }) => {
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [statusConfirm, setStatusConfirm] = useState(null);
 
   const handleDeleteClick = (employee) => {
     setDeleteConfirm(employee);
@@ -17,6 +18,24 @@ const PersonalList = ({ employees, onEdit, onDelete }) => {
 
   const cancelDelete = () => {
     setDeleteConfirm(null);
+  };
+
+  const handleStatusClick = (employee) => {
+    setStatusConfirm({
+      employee,
+      newStatus: employee.estado === "Inactivo" ? "Activo" : "Inactivo",
+    });
+  };
+
+  const confirmStatusChange = () => {
+    if (statusConfirm) {
+      onStatusChange(statusConfirm.employee, statusConfirm.newStatus);
+      setStatusConfirm(null);
+    }
+  };
+
+  const cancelStatusChange = () => {
+    setStatusConfirm(null);
   };
 
   const formatCurrency = (amount) => {
@@ -78,11 +97,20 @@ const PersonalList = ({ employees, onEdit, onDelete }) => {
 
       <div className="employees-grid">
         {employees.map((employee) => (
-          <div key={employee.id} className="employee-card">
+          <div key={employee.id} className={`employee-card ${employee.estado === "Inactivo" ? "inactive-card" : ""}`}>
             <div className="employee-header">
-              <h4>
-                {employee.nombre} {employee.apellido}
-              </h4>
+              <div className="header-top">
+                <h4>
+                  {employee.nombre} {employee.apellido}
+                </h4>
+                <button
+                  className={`status-badge ${employee.estado === "Inactivo" ? "status-inactive" : "status-active"}`}
+                  onClick={() => handleStatusClick(employee)}
+                  title="Cambiar estado"
+                >
+                  {employee.estado || "Activo"}
+                </button>
+              </div>
               <span className="employee-id">C.I. {employee.cedula}</span>
             </div>
 
@@ -95,23 +123,30 @@ const PersonalList = ({ employees, onEdit, onDelete }) => {
                 <span className="label">Tipo Nómina:</span>
                 <span className="value">{employee.tipoNomina}</span>
               </div>
-              <div className="detail-item">
-                <span className="label">Salario:</span>
-                <span className="value">
-                  {getSalarioDisplay(employee)}
-                  <br />
-                  <small
-                    style={{
-                      color: "var(--text-secondary)",
-                      fontSize: "0.7rem",
-                    }}
-                  >
+
+              <div className="detail-row-split">
+                <div className="detail-item">
+                  <span className="label">Tipo Salario:</span>
+                  <span className="value">{employee.tipoSalario}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="label">Monto:</span>
+                  <span className="value">
+                    {getSalarioDisplay(employee)}
+                  </span>
+                </div>
+              </div>
+
+              {getDetallesSalario(employee) && (
+                <div className="detail-item full-width">
+                  <small style={{ color: "var(--text-secondary)", fontSize: "0.7rem" }}>
                     {getDetallesSalario(employee)}
                   </small>
-                </span>
-              </div>
+                </div>
+              )}
+
               <div className="detail-item">
-                <span className="label">Frecuencia:</span>
+                <span className="label">Frecuencia de Pago:</span>
                 <span className="value">{employee.frecuenciaPago}</span>
               </div>
               <div className="detail-item">
@@ -120,6 +155,15 @@ const PersonalList = ({ employees, onEdit, onDelete }) => {
                   {new Date(employee.fechaIngreso + 'T00:00:00').toLocaleDateString()}
                 </span>
               </div>
+
+              {employee.estado === "Inactivo" && employee.fechaInactivo && (
+                <div className="detail-item full-width inactive-date">
+                  <span className="label">Inactivo desde:</span>
+                  <span className="value">
+                    {new Date(employee.fechaInactivo + 'T00:00:00').toLocaleDateString()}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="employee-actions">
@@ -151,6 +195,33 @@ const PersonalList = ({ employees, onEdit, onDelete }) => {
               </button>
               <button className="btn-confirm-delete" onClick={confirmDelete}>
                 Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {statusConfirm && (
+        <div className="delete-modal-overlay">
+          <div className="delete-modal status-modal">
+            <h4>Confirmar Cambio de Estado</h4>
+            <p>
+              ¿Estás seguro de que deseas cambiar el estado de <strong>{statusConfirm.employee.nombre} {statusConfirm.employee.apellido}</strong> a <strong>{statusConfirm.newStatus}</strong>?
+            </p>
+            {statusConfirm.newStatus === "Inactivo" && (
+              <p className="warning-text">
+                ⚠️ El empleado no aparecerá en los reportes de asistencia ni en los cálculos de nómina mientras esté inactivo.
+              </p>
+            )}
+            <div className="modal-actions">
+              <button className="btn-cancel" onClick={cancelStatusChange}>
+                Cancelar
+              </button>
+              <button
+                className={`btn-confirm-status ${statusConfirm.newStatus === "Activo" ? "btn-activate" : "btn-deactivate"}`}
+                onClick={confirmStatusChange}
+              >
+                Confirmar {statusConfirm.newStatus}
               </button>
             </div>
           </div>

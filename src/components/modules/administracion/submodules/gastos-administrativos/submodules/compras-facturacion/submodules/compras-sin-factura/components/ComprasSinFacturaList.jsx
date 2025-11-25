@@ -1,8 +1,9 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-sin-factura/components/ComprasSinFacturaList.jsx
-import  { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
-import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'   
+import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
+
 const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
   const { showToast } = useNotification();
   const [compras, setCompras] = useState([])
@@ -30,7 +31,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
         .select('*')
         .eq('projectId', projectId)
         .neq('status', 'deleted')
-      
+
       if (error) throw error
       setCompras(data || [])
     } catch (error) {
@@ -39,7 +40,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
   }
 
   const comprasFiltradas = compras.filter(compra => {
-    const cumpleProveedor = !filtroProveedor || 
+    const cumpleProveedor = !filtroProveedor ||
       compra.proveedor.toLowerCase().includes(filtroProveedor.toLowerCase()) ||
       compra.rif.includes(filtroProveedor)
     const cumpleCategoria = !filtroCategoria || compra.categoria === filtroCategoria
@@ -96,9 +97,9 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
     <div className="compras-sin-factura-list">
       <div className="section-header">
         <h3>Lista de Compras Sin Factura</h3>
-        
+
         <div className="filtros">
-          <select 
+          <select
             value={filtroCategoria}
             onChange={(e) => setFiltroCategoria(e.target.value)}
             className="filter-select"
@@ -116,7 +117,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
             onChange={(e) => setFiltroProveedor(e.target.value)}
             className="search-input"
           />
-
+          <label htmlFor="fechaInicio" style={{ color: 'red' }}>Desde</label>
           <input
             type="date"
             placeholder="Fecha inicio"
@@ -124,7 +125,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
             onChange={(e) => setFechaInicio(e.target.value)}
             className="date-input"
           />
-
+          <label htmlFor="fechaFin" style={{ color: 'red' }}>Hasta</label>
           <input
             type="date"
             placeholder="Fecha fin"
@@ -144,6 +145,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
               <th>Proveedor</th>
               <th>RIF</th>
               <th>N° Nota Entrega</th>
+              <th>Descripción</th>
               <th>Categoría</th>
               <th>Subcategorías</th>
               <th>Total ($)</th>
@@ -163,6 +165,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
                 <td>{compra.proveedor}</td>
                 <td>{compra.tipoRif}{compra.rif}</td>
                 <td>{compra.numeroNotaEntrega || '-'}</td>
+                <td>{compra.descripcion || '-'}</td>
                 <td>{compra.categoria}</td>
                 <td>{formatSubcategorias(compra)}</td>
                 <td>$ {compra.totalDolares?.toFixed(2) || '0.00'}</td>
@@ -181,13 +184,13 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
                   ) : '-'}
                 </td>
                 <td>
-                  <button 
+                  <button
                     className="btn-edit"
                     onClick={() => onEditCompra(compra)}
                   >
                     Editar
                   </button>
-                  <button 
+                  <button
                     className="btn-delete"
                     onClick={() => handleDelete(compra.id)}
                   >
@@ -199,12 +202,6 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
           </tbody>
         </table>
       </div>
-
-      {comprasFiltradas.length === 0 && (
-        <div className="no-data">
-          <p>No se encontraron compras registradas</p>
-        </div>
-      )}
 
       <FeedbackModal
         isOpen={feedback.isOpen}
