@@ -38,19 +38,6 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
     observaciones: ''
   })
 
-  const [categorias, setCategorias] = useState([])
-  const [modosPago, setModosPago] = useState([])
-  const [proveedores, setProveedores] = useState([])
-  const [availableSubcategorias, setAvailableSubcategorias] = useState([])
-
-  const [nuevaCategoria, setNuevaCategoria] = useState('')
-  const [nuevoModoPago, setNuevoModoPago] = useState('')
-  
-  // Modales
-  const [showProveedorModal, setShowProveedorModal] = useState(false)
-  const [showCategoriaModal, setShowCategoriaModal] = useState(false)
-  const [showModoPagoModal, setShowModoPagoModal] = useState(false)
-
   const [nuevoProveedor, setNuevoProveedor] = useState({
     nombre: '',
     tipoRif: 'J-',
