@@ -1,6 +1,7 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/components/FacturaForm.jsx
 import React, { useState, useEffect, useCallback } from 'react'
 import RetencionesCalculator from './RetencionesCalculator'
+import MultiBancoModal from '../../../components/MultiBancoModal'
 import supabase from '../../../../../../../../../../api/supaBase.js'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
 import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
@@ -38,7 +39,8 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
     retencionCobrada: 0,
     modoPago: '',
     obraContrato: '',
-    observaciones: ''
+    observaciones: '',
+    valuacion: ''
   })
 
   const [categorias, setCategorias] = useState([])
@@ -48,12 +50,12 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
 
   const [nuevaCategoria, setNuevaCategoria] = useState('')
   const [nuevoModoPago, setNuevoModoPago] = useState('')
-  
+
   // Modales
   const [isProveedorModalOpen, setIsProveedorModalOpen] = useState(false)
   const [showCategoriaModal, setShowCategoriaModal] = useState(false)
   const [showModoPagoModal, setShowModoPagoModal] = useState(false)
-
+  const [showMultiBancoModal, setShowMultiBancoModal] = useState(false)
   const [nuevoProveedor, setNuevoProveedor] = useState({
     nombre: '',
     tipoRif: 'J-',
@@ -111,7 +113,8 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
         retencionCobrada: 0,
         modoPago: '',
         obraContrato: '',
-        observaciones: ''
+        observaciones: '',
+        valuacion: ''
       })
     }
   }, [facturaEdit])
@@ -182,7 +185,18 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
       [name]: type === 'number' ? parseFloat(value) || 0 : value
     }))
   }
-
+  const handleModoPagoChange = (e) => {
+    const value = e.target.value
+    if (value === 'Multi-Banco') {
+      setShowMultiBancoModal(true)
+    } else {
+      setFormData(prev => ({ ...prev, modoPago: value }))
+    }
+  }
+  const handleMultiBancoConfirm = (multiBancoText) => {
+    setFormData(prev => ({ ...prev, modoPago: multiBancoText }))
+    setShowMultiBancoModal(false)
+  }
   const handleProveedorChange = (e) => {
     const nombre = e.target.value
     const proveedorExistente = proveedores.find(p => p.nombre.toLowerCase() === nombre.toLowerCase())
@@ -249,46 +263,46 @@ const FacturaForm = ({ projectId, onFacturaSaved, facturaEdit, onCancelEdit }) =
       }
     }
   }
-const agregarProveedor = async () => {
-  if (nuevoProveedor.nombre) {
-    const { data, error } = await supabase
-      .from('proveedores')
-      .insert({
-        projectid: projectId,
-        nombre: nuevoProveedor.nombre,
-        tiporif: nuevoProveedor.tipoRif,
-        rif: nuevoProveedor.rif,
-        direccion: nuevoProveedor.direccion,
-        total_facturas: 0,
-        total_gastado_dolares: 0
-      })
-      .select()
+  const agregarProveedor = async () => {
+    if (nuevoProveedor.nombre) {
+      const { data, error } = await supabase
+        .from('proveedores')
+        .insert({
+          projectid: projectId,
+          nombre: nuevoProveedor.nombre,
+          tiporif: nuevoProveedor.tipoRif,
+          rif: nuevoProveedor.rif,
+          direccion: nuevoProveedor.direccion,
+          total_facturas: 0,
+          total_gastado_dolares: 0
+        })
+        .select()
 
-    if (error) {
-      showToast('Error al guardar el nuevo proveedor: ' + error.message, 'error')
+      if (error) {
+        showToast('Error al guardar el nuevo proveedor: ' + error.message, 'error')
+      } else {
+        const newProv = data[0]
+        setProveedores(prev => [...prev, newProv])
+        setFormData(prev => ({
+          ...prev,
+          proveedor: newProv.nombre,
+          tipoRif: newProv.tiporif,
+          rif: newProv.rif,
+          direccion: newProv.direccion || ''
+        }))
+        setNuevoProveedor({
+          nombre: '',
+          tipoRif: 'J-',
+          rif: '',
+          direccion: ''
+        })
+        setShowProveedorModal(false)
+        showToast('Proveedor guardado exitosamente.', 'success')
+      }
     } else {
-      const newProv = data[0]
-      setProveedores(prev => [...prev, newProv])
-      setFormData(prev => ({
-        ...prev,
-        proveedor: newProv.nombre,
-        tipoRif: newProv.tiporif,
-        rif: newProv.rif,
-        direccion: newProv.direccion || ''
-      }))
-      setNuevoProveedor({
-        nombre: '',
-        tipoRif: 'J-',
-        rif: '',
-        direccion: ''
-      })
-      setShowProveedorModal(false)
-      showToast('Proveedor guardado exitosamente.', 'success')
+      showToast('El nombre del proveedor es obligatorio.', 'error')
     }
-  } else {
-    showToast('El nombre del proveedor es obligatorio.', 'error')
   }
-}
 
   const handleRetencionesChange = (data) => {
     setFormData(prev => ({ ...prev, ...data }))
@@ -427,7 +441,8 @@ const agregarProveedor = async () => {
           retencionCobrada: 0,
           modoPago: '',
           obraContrato: '',
-          observaciones: ''
+          observaciones: '',
+          valuacion: ''
         })
       }
 
@@ -477,8 +492,8 @@ const agregarProveedor = async () => {
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowCategoriaModal(true)}
                   className="btn-add-inline"
                   title="Agregar nueva categoría"
@@ -547,8 +562,8 @@ const agregarProveedor = async () => {
                     <option key={index} value={prov.nombre} />
                   ))}
                 </datalist>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsProveedorModalOpen(true)}
                   className="btn-add-inline"
                   title="Agregar nuevo proveedor"
@@ -731,16 +746,20 @@ const agregarProveedor = async () => {
               <div className="input-with-button">
                 <select
                   name="modoPago"
-                  value={formData.modoPago}
-                  onChange={handleInputChange}
+                  value={formData.modoPago.startsWith('Multi-Banco') ? 'Multi-Banco' : formData.modoPago}
+                  onChange={handleModoPagoChange}
+                  className="modo-pago-select"
                 >
                   <option value="">Seleccionar modo de pago</option>
+                  <option value="Multi-Banco" style={{ backgroundColor: '#d4edda', color: '#155724', fontWeight: '600' }}>
+                    Multi-Banco
+                  </option>
                   {modosPago.map(modo => (
                     <option key={modo} value={modo}>{modo}</option>
                   ))}
                 </select>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowModoPagoModal(true)}
                   className="btn-add-inline"
                   title="Agregar nuevo modo de pago"
@@ -748,6 +767,20 @@ const agregarProveedor = async () => {
                   +
                 </button>
               </div>
+              {/* Vista previa de Multi-Banco */}
+              {formData.modoPago && formData.modoPago.startsWith('Multi-Banco') && (
+                <div className="multi-banco-preview" style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #e9ecef', fontSize: '0.9em' }}>
+                  <strong style={{ display: 'block', marginBottom: '5px', color: '#495057' }}>Detalle de Pago:</strong>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                    {formData.modoPago.replace('Multi-Banco: ', '').split(', ').map((item, index) => (
+                      <li key={index} style={{ marginBottom: '3px', display: 'flex', justifyContent: 'space-between' }}>
+                        <span>{item.split(': ')[0]}</span>
+                        <span style={{ fontWeight: '600' }}>{item.split(': ')[1]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -770,6 +803,17 @@ const agregarProveedor = async () => {
               <label>PAGADO EN DÓLARES ($)</label>
               <div className="readonly-value">{formData.pagadoDolares.toFixed(2)}</div>
             </div>
+
+            <div className="form-group">
+              <label>VALUACIÓN</label>
+              <input
+                type="text"
+                name="valuacion"
+                value={formData.valuacion || ''}
+                onChange={handleInputChange}
+                placeholder="N° de Valuación"
+              />
+            </div>
           </div>
         </div>
 
@@ -789,9 +833,9 @@ const agregarProveedor = async () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Agregar Nuevo Proveedor</h3>
-              <button 
-                type="button" 
-                className="btn-close" 
+              <button
+                type="button"
+                className="btn-close"
                 onClick={() => setIsProveedorModalOpen(false)}
               >
                 ×
@@ -837,16 +881,16 @@ const agregarProveedor = async () => {
               </div>
             </div>
             <div className="modal-footer">
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={agregarProveedor}
               >
                 Guardar Proveedor
               </button>
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setIsProveedorModalOpen(false)}
               >
                 Cancelar
@@ -862,9 +906,9 @@ const agregarProveedor = async () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <div className="modal-header">
               <h3>Agregar Nueva Categoría</h3>
-              <button 
-                type="button" 
-                className="btn-close" 
+              <button
+                type="button"
+                className="btn-close"
                 onClick={() => setShowCategoriaModal(false)}
               >
                 ×
@@ -883,16 +927,16 @@ const agregarProveedor = async () => {
               </div>
             </div>
             <div className="modal-footer">
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={agregarCategoria}
               >
                 Guardar Categoría
               </button>
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setShowCategoriaModal(false)}
               >
                 Cancelar
@@ -908,9 +952,9 @@ const agregarProveedor = async () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <div className="modal-header">
               <h3>Agregar Nuevo Modo de Pago</h3>
-              <button 
-                type="button" 
-                className="btn-close" 
+              <button
+                type="button"
+                className="btn-close"
                 onClick={() => setShowModoPagoModal(false)}
               >
                 ×
@@ -929,16 +973,16 @@ const agregarProveedor = async () => {
               </div>
             </div>
             <div className="modal-footer">
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={agregarModoPago}
               >
                 Guardar Modo de Pago
               </button>
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setShowModoPagoModal(false)}
               >
                 Cancelar
@@ -954,6 +998,14 @@ const agregarProveedor = async () => {
         type={feedback.type}
         title={feedback.title}
         message={feedback.message}
+      />
+      {/* Modal Multi-Banco */}
+      <MultiBancoModal
+        isOpen={showMultiBancoModal}
+        onClose={() => setShowMultiBancoModal(false)}
+        onConfirm={handleMultiBancoConfirm}
+        montoTotal={formData.montoPagado}
+        montoLabel="Monto Pagado"
       />
     </div>
   )

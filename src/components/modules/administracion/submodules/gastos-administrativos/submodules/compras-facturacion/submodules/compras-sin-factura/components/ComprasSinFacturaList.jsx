@@ -153,6 +153,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
               <th>Pago (Bs)</th>
               <th>Método Pago</th>
               <th>Contrato</th>
+              <th>Valuación</th>
               <th>Observaciones</th>
               <th>Acciones</th>
             </tr>
@@ -173,6 +174,7 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
                 <td>Bs {compra.pagoBolivares?.toFixed(2) || '0.00'}</td>
                 <td>{compra.modoPago || '-'}</td>
                 <td>{compra.contrato || '-'}</td>
+                <td>{compra.valuacion || '-'}</td>
                 <td className="observaciones-cell">
                   {compra.observaciones ? (
                     <div className="observaciones-tooltip">

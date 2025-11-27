@@ -80,17 +80,17 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
     // Calcular retención ISLR según tabla correspondiente
     const esPersonaNatural = tipoRif === 'V-' || tipoRif === 'E-'
     const conceptos = esPersonaNatural ? conceptosNaturales : conceptosJuridicos
-    
+
     const conceptoSeleccionado = conceptos
       .find(concepto => concepto.concepto === currentRetenciones.conceptoIslr)
 
     if (conceptoSeleccionado && conceptoSeleccionado.porcentaje > 0) {
       if (esPersonaNatural) {
         // Para personas naturales - fórmula específica
-        const pagosMayoresA =  83.3333 * unidadTributaria 
+        const pagosMayoresA = 83.3333 * unidadTributaria
         const baseSustraendo = (conceptoSeleccionado.porcentaje / 100) * pagosMayoresA
         retencionIslrMonto = ((conceptoSeleccionado.porcentaje / 100) * baseImponible) - baseSustraendo
-        
+
         // Asegurar que no sea negativo
         retencionIslrMonto = Math.max(0, retencionIslrMonto)
       } else {
@@ -98,7 +98,7 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
         retencionIslrMonto = (conceptoSeleccionado.porcentaje / 100) * baseImponible
       }
     }
-    
+
     const totalPagar = subTotalPagar - retencionIvaMonto - retencionIslrMonto
     const totalPagarDolares = tasaPago > 0 ? totalPagar / tasaPago : 0
 
@@ -166,19 +166,44 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
     }
   }, [formData?.iva, formData?.tipoRif, formData?.baseImponible, formData?.subTotalPagar, formData?.tasaPago, unidadTributaria])
 
-  // Efecto para calcular retenciones cuando cambien los datos del formulario
+  // Efecto para sincronizar el estado interno con formData cuando se carga una factura para editar
   useEffect(() => {
-    // Solo calcular si tenemos datos válidos
-    if (formData?.subTotalPagar > 0 || formData?.iva > 0) {
+    if (formData?.id) {
+      // Cargar TODOS los valores de retenciones desde formData para modo edición
+      setRetenciones({
+        retencionIva: formData.retencionIva || '',
+        conceptoIslr: formData.conceptoIslr || '',
+        retencionIslr: formData.retencionIslr || 0,
+        totalPagar: formData.totalPagar || 0,
+        totalPagarDolares: formData.totalPagarDolares || 0,
+        pagado: formData.pagado || '',
+        montoPagado: formData.montoPagado || 0,
+        pagadoDolares: formData.pagadoDolares || 0,
+        retencionPorCobrar: formData.retencionPorCobrar || 0,
+        retencionCobrada: formData.retencionCobrada || 0,
+        retencionIvaPendiente: formData.retencionIvaPendiente || 0,
+        retencionIslrPendiente: formData.retencionIslrPendiente || 0,
+        retencionIvaCobrada: formData.retencionIvaCobrada || 0,
+        retencionIslrCobrada: formData.retencionIslrCobrada || 0
+      })
+    }
+  }, [formData?.id])
+
+  // Efecto para calcular retenciones cuando cambien los datos del formulario
+  // SOLO si NO estamos en modo edición (no hay ID)
+  useEffect(() => {
+    // Solo calcular si tenemos datos válidos Y no estamos cargando datos de edición
+    if (!formData?.id && (formData?.subTotalPagar > 0 || formData?.iva > 0)) {
       const nuevasRetenciones = calcularRetenciones(retenciones)
       setRetenciones(nuevasRetenciones)
-      
+
       // Verificar que onRetencionesChange sea una función antes de llamarla
       if (typeof onRetencionesChange === 'function') {
         onRetencionesChange(nuevasRetenciones)
       }
     }
   }, [
+    formData?.id,
     formData?.iva,
     formData?.subTotalPagar,
     formData?.tasaPago,
@@ -191,10 +216,10 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
       ...retenciones,
       [name]: value
     }
-    
+
     const retencionesCalculadas = calcularRetenciones(nuevasRetenciones)
     setRetenciones(retencionesCalculadas)
-    
+
     // Verificar que onRetencionesChange sea una función antes de llamarla
     if (typeof onRetencionesChange === 'function') {
       onRetencionesChange(retencionesCalculadas)
@@ -210,18 +235,18 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
   const conceptosDisponibles = esPersonaNatural ? conceptosNaturales : conceptosJuridicos
 
   // Calcular retención IVA actual para mostrar en el campo
-  const retencionIvaActual = retenciones.retencionIva === 'IVA 75%' ? (formData?.iva || 0) * 0.75 : 
-                            retenciones.retencionIva === 'IVA 100%' ? (formData?.iva || 0) : 0
+  const retencionIvaActual = retenciones.retencionIva === 'IVA 75%' ? (formData?.iva || 0) * 0.75 :
+    retenciones.retencionIva === 'IVA 100%' ? (formData?.iva || 0) : 0
 
   return (
     <div className="retenciones-calculator">
       <div className="form-section">
         <h3>Cálculo de Retenciones (Montos en Bolívares)</h3>
-        
+
         <div className="form-grid">
           <div className="form-group">
             <label>RETENCIÓN DEL IVA</label>
-            <select 
+            <select
               value={retenciones.retencionIva}
               onChange={(e) => handleRetencionChange('retencionIva', e.target.value)}
             >
@@ -233,7 +258,7 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
 
           <div className="form-group">
             <label>CONCEPTO ISLR ({esPersonaNatural ? 'NATURAL' : 'JURÍDICA'})</label>
-            <select 
+            <select
               value={retenciones.conceptoIslr}
               onChange={(e) => handleRetencionChange('conceptoIslr', e.target.value)}
             >
@@ -269,7 +294,7 @@ const RetencionesCalculator = ({ formData, onRetencionesChange }) => {
 
           <div className="form-group">
             <label>PAGADO</label>
-            <select 
+            <select
               value={retenciones.pagado}
               onChange={(e) => handleRetencionChange('pagado', e.target.value)}
             >

@@ -265,6 +265,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
               <th>Método Pago</th>
               <th>Retenciones</th>
               <th>Observaciones</th>
+              <th>Valuación</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -304,6 +305,7 @@ const FacturasList = ({ projectId, onEditFactura }) => {
                     "-"
                   )}
                 </td>
+                <td>{factura.valuacion || '-'}</td>
                 <td>
                   <button
                     className="btn-edit"

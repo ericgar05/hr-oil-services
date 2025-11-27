@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
 import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
+import MultiBancoModal from '../../../components/MultiBancoModal'
 import '../ComprasSinFacturaMain.css'
 
 const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
@@ -34,8 +35,9 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   const [nuevoModoPago, setNuevoModoPago] = useState('')
   const [showCategoriaModal, setShowCategoriaModal] = useState(false)
   const [showModoPagoModal, setShowModoPagoModal] = useState(false)
+  const [showMultiBancoModal, setShowMultiBancoModal] = useState(false)
   const [showProveedorModal, setShowProveedorModal] = useState(false)
-  
+
   const [nuevoProveedor, setNuevoProveedor] = useState({
     nombre: '',
     tipoRif: 'J-',
@@ -152,6 +154,20 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
     }))
   }
 
+  const handleModoPagoChange = (e) => {
+    const value = e.target.value
+    if (value === 'Multi-Banco') {
+      setShowMultiBancoModal(true)
+    } else {
+      setFormData(prev => ({ ...prev, modoPago: value }))
+    }
+  }
+
+  const handleMultiBancoConfirm = (multiBancoText) => {
+    setFormData(prev => ({ ...prev, modoPago: multiBancoText }))
+    setShowMultiBancoModal(false)
+  }
+
   const handleProveedorChange = (e) => {
     const nombre = e.target.value
     const proveedorExistente = proveedores.find(p => p.nombre.toLowerCase() === nombre.toLowerCase())
@@ -266,11 +282,11 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
     try {
       // 1. Guardar nuevas subcategorías si existen
       const nuevasSubcategorias = formData.subcategorias.filter(sub => sub && sub.trim() !== '' && !availableSubcategorias.includes(sub));
-      
+
       if (nuevasSubcategorias.length > 0) {
         // Eliminar duplicados en las nuevas subcategorías
         const uniqueNuevas = [...new Set(nuevasSubcategorias)];
-        
+
         const subcategoriasInsert = uniqueNuevas.map(nombre => ({
           nombre: nombre,
         }));
@@ -326,7 +342,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
       }
 
       let provError;
-      
+
       if (existingProvId) {
         // Actualizar existente
         ({ error: provError } = await supabase
@@ -449,8 +465,8 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                     <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowCategoriaModal(true)}
                   className="btn-add-inline"
                   title="Agregar nueva categoría"
@@ -518,8 +534,8 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                     <option key={index} value={prov.nombre} />
                   ))}
                 </datalist>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowProveedorModal(true)}
                   className="btn-add-inline"
                   title="Agregar nuevo proveedor"
@@ -632,7 +648,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 type="number"
                 step="0.01"
                 name="tasaPago"
-                // value={formData.tasaPago}
+                value={formData.tasaPago}
                 onChange={handleInputChange}
                 placeholder="0.00"
               />
@@ -644,7 +660,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 type="number"
                 step="0.01"
                 name="pagoBolivares"
-                // value={formData.pagoBolivares}
+                value={formData.pagoBolivares}
                 onChange={handleInputChange}
                 placeholder="0.00"
                 required
@@ -665,16 +681,19 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
               <div className="input-with-button">
                 <select
                   name="modoPago"
-                  value={formData.modoPago}
-                  onChange={handleInputChange}
+                  value={formData.modoPago.startsWith('Multi-Banco') ? 'Multi-Banco' : formData.modoPago}
+                  onChange={handleModoPagoChange}
                 >
                   <option value="">Seleccionar modo de pago</option>
+                  <option value="Multi-Banco" style={{ backgroundColor: '#d4edda', color: '#155724', fontWeight: '600' }}>
+                    Multi-Banco
+                  </option>
                   {modosPago.map(modo => (
                     <option key={modo} value={modo}>{modo}</option>
                   ))}
                 </select>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowModoPagoModal(true)}
                   className="btn-add-inline"
                   title="Agregar nuevo modo de pago"
@@ -682,6 +701,20 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   +
                 </button>
               </div>
+              {/* Vista previa de Multi-Banco */}
+              {formData.modoPago && formData.modoPago.startsWith('Multi-Banco') && (
+                <div className="multi-banco-preview" style={{ marginTop: '10px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px', border: '1px solid #e9ecef', fontSize: '0.9em' }}>
+                  <strong style={{ display: 'block', marginBottom: '5px', color: '#495057' }}>Detalle de Pago:</strong>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                    {formData.modoPago.replace('Multi-Banco: ', '').split(', ').map((item, index) => (
+                      <li key={index} style={{ marginBottom: '3px', display: 'flex', justifyContent: 'space-between' }}>
+                        <span>{item.split(': ')[0]}</span>
+                        <span style={{ fontWeight: '600' }}>{item.split(': ')[1]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -713,9 +746,9 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Agregar Nuevo Proveedor</h3>
-              <button 
-                type="button" 
-                className="btn-close" 
+              <button
+                type="button"
+                className="btn-close"
                 onClick={() => setShowProveedorModal(false)}
               >
                 ×
@@ -761,16 +794,16 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
               </div>
             </div>
             <div className="modal-footer">
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={agregarProveedor}
               >
                 Guardar Proveedor
               </button>
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setShowProveedorModal(false)}
               >
                 Cancelar
@@ -786,9 +819,9 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <div className="modal-header">
               <h3>Agregar Nueva Categoría</h3>
-              <button 
-                type="button" 
-                className="btn-close" 
+              <button
+                type="button"
+                className="btn-close"
                 onClick={() => setShowCategoriaModal(false)}
               >
                 ×
@@ -807,16 +840,16 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
               </div>
             </div>
             <div className="modal-footer">
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={agregarCategoria}
               >
                 Guardar Categoría
               </button>
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setShowCategoriaModal(false)}
               >
                 Cancelar
@@ -832,9 +865,9 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
             <div className="modal-header">
               <h3>Agregar Nuevo Modo de Pago</h3>
-              <button 
-                type="button" 
-                className="btn-close" 
+              <button
+                type="button"
+                className="btn-close"
                 onClick={() => setShowModoPagoModal(false)}
               >
                 ×
@@ -853,16 +886,16 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
               </div>
             </div>
             <div className="modal-footer">
-              <button 
-                type="button" 
-                className="btn-primary" 
+              <button
+                type="button"
+                className="btn-primary"
                 onClick={agregarModoPago}
               >
                 Guardar Modo de Pago
               </button>
-              <button 
-                type="button" 
-                className="btn-secondary" 
+              <button
+                type="button"
+                className="btn-secondary"
                 onClick={() => setShowModoPagoModal(false)}
               >
                 Cancelar
@@ -878,6 +911,14 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
         type={feedback.type}
         title={feedback.title}
         message={feedback.message}
+      />
+      {/* Modal Multi-Banco */}
+      <MultiBancoModal
+        isOpen={showMultiBancoModal}
+        onClose={() => setShowMultiBancoModal(false)}
+        onConfirm={handleMultiBancoConfirm}
+        montoTotal={formData.pagoBolivares}
+        montoLabel="Pago en Bolívares"
       />
     </div>
   )
