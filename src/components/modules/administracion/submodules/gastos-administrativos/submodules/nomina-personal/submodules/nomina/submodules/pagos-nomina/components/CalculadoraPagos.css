@@ -90,7 +90,6 @@
   gap: 1rem;
   padding: 1rem 1.5rem;
   min-width: 1200px;
-  /* Ensure content doesn't squash on small screens */
 }
 
 .list-header-pagos-nomina {
@@ -116,18 +115,18 @@
   background-color: rgba(255, 255, 255, 0.02);
 }
 
-/* Semanal Grid Template (7 Columns) */
-/* Empleado | Días | HE D | HE N | Ded | Banco | Obs */
+/* Semanal Grid Template (8 Columns) */
+/* Empleado | Días | HE D | HE N | Ded | Monto Extra | Banco | Obs */
 .employees-pagos-list.semanal .list-header-pagos-nomina,
 .employees-pagos-list.semanal .pago-row {
-  grid-template-columns: minmax(250px, 2.5fr) minmax(80px, 0.8fr) minmax(80px, 0.8fr) minmax(80px, 0.8fr) minmax(100px, 1fr) minmax(120px, 1.2fr) minmax(150px, 2fr);
+  grid-template-columns: minmax(250px, 2.5fr) minmax(80px, 0.8fr) minmax(80px, 0.8fr) minmax(80px, 0.8fr) minmax(100px, 1fr) minmax(110px, 1.1fr) minmax(120px, 1.2fr) minmax(150px, 2fr);
 }
 
-/* Quincenal Grid Template (9 Columns) */
-/* Empleado | Tipo | Mitad | Días | HE D | HE N | Ded | Banco | Obs */
+/* Quincenal Grid Template (10 Columns) */
+/* Empleado | Tipo | Mitad | Días | HE D | HE N | Ded | Monto Extra | Banco | Obs */
 .employees-pagos-list.quincenal .list-header-pagos-nomina,
 .employees-pagos-list.quincenal .pago-row {
-  grid-template-columns: minmax(250px, 2.2fr) minmax(180px, 1.8fr) minmax(110px, 1fr) minmax(70px, 0.7fr) minmax(70px, 0.7fr) minmax(70px, 0.7fr) minmax(90px, 0.9fr) minmax(110px, 1.1fr) minmax(150px, 1.5fr);
+  grid-template-columns: minmax(250px, 2.2fr) minmax(180px, 1.8fr) minmax(110px, 1fr) minmax(70px, 0.7fr) minmax(70px, 0.7fr) minmax(70px, 0.7fr) minmax(90px, 0.9fr) minmax(110px, 1.1fr) minmax(110px, 1.1fr) minmax(150px, 1.5fr);
 }
 
 .employee-info {
@@ -135,7 +134,6 @@
   flex-direction: column;
   gap: 0.25rem;
   overflow: hidden;
-  /* Prevent text overflow */
 }
 
 .employee-name {
@@ -165,7 +163,6 @@
   font-weight: 600;
   text-align: center;
   white-space: normal;
-  /* Permitir que el texto baje si es largo */
   line-height: 1.2;
   display: inline-block;
   width: 100%;
@@ -208,6 +205,7 @@
 .dias-pago-input input,
 .horas-extra-input input,
 .deduccion-manual-input input,
+.monto-extra-input input,
 .banco-input select,
 .observaciones-input input {
   width: 100%;
@@ -218,12 +216,12 @@
   color: #fef3c7;
   font-size: 0.9rem;
   height: 38px;
-  /* Altura fija para consistencia */
 }
 
 .dias-pago-input input,
 .horas-extra-input input,
-.deduccion-manual-input input {
+.deduccion-manual-input input,
+.monto-extra-input input {
   text-align: center;
 }
 

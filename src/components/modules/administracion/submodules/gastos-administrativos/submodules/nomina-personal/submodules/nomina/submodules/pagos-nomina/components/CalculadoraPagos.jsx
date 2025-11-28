@@ -19,6 +19,7 @@ const CalculadoraPagos = ({
 
   const [horasExtras, setHorasExtras] = useState({});
   const [deduccionesManuales, setDeduccionesManuales] = useState({});
+  const [montoExtraBs, setMontoExtraBs] = useState({});
   const [diasPagoQuincenal, setDiasPagoQuincenal] = useState({});
   const [mitadPagoQuincenal, setMitadPagoQuincenal] = useState({});
   const [bancosPago, setBancosPago] = useState({});
@@ -141,6 +142,7 @@ const CalculadoraPagos = ({
     const initialObservaciones = {};
     const initialHorasExtras = {};
     const initialDeducciones = {};
+    const initialMontoExtra = {};
 
     employees.forEach((emp) => {
       if (emp.frecuenciaPago === "Quincenal") {
@@ -154,6 +156,7 @@ const CalculadoraPagos = ({
         nocturna: 0,
       };
       initialDeducciones[emp.id] = deduccionesManuales[emp.id] || 0;
+      initialMontoExtra[emp.id] = montoExtraBs[emp.id] || 0;
     });
     setDiasPagoQuincenal((prev) => ({ ...prev, ...initialDias }));
     setMitadPagoQuincenal((prev) => ({ ...prev, ...initialMitad }));
@@ -172,6 +175,7 @@ const CalculadoraPagos = ({
     setObservaciones((prev) => ({ ...prev, ...newObservaciones }));
     setHorasExtras((prev) => ({ ...prev, ...initialHorasExtras }));
     setDeduccionesManuales((prev) => ({ ...prev, ...initialDeducciones }));
+    setMontoExtraBs((prev) => ({ ...prev, ...initialMontoExtra }));
   }, [employees, fechaPago]);
 
   // CORRECCIÓN: Función auxiliar para formatear fecha de forma segura
@@ -598,8 +602,15 @@ const CalculadoraPagos = ({
       desgloseDeduccionesLey = deducciones.desglose;
     }
 
-    // Total a pagar en Bs
+    // Monto extra en Bs y su conversión a USD
+    const montoExtraEnBs = parseFloat(montoExtraBs[empleado.id] || 0);
+    const montoExtraUSD = montoExtraEnBs / parseFloat(tasaCambio || 1);
+
+    // Total a pagar en Bs (SIN incluir monto extra)
     const totalPagarBs = subtotalBs - deduccionesLeyBs;
+
+    // Monto Total en USD (Total a Pagar USD + Monto Extra USD)
+    const montoTotalUSD = subtotalUSD + montoExtraUSD;
 
     return {
       empleado: {
@@ -615,6 +626,9 @@ const CalculadoraPagos = ({
       subtotalBs,
       deduccionesLeyBs,
       desgloseDeduccionesLey,
+      montoExtraBs: montoExtraEnBs,
+      montoExtraUSD: montoExtraUSD,
+      montoTotalUSD: montoTotalUSD,
       totalPagarBs,
       montoLeyBs,
       valorHora,
@@ -638,6 +652,15 @@ const CalculadoraPagos = ({
 
     if (!fechaPago) {
       showToast("Por favor seleccione una fecha de pago", "warning");
+      return;
+    }
+
+    // Confirmación antes de proceder
+    const confirmar = window.confirm(
+      "¿Está seguro de que desea calcular y proceder a guardar los pagos?"
+    );
+
+    if (!confirmar) {
       return;
     }
 
@@ -677,6 +700,13 @@ const CalculadoraPagos = ({
 
   const handleDeduccionManualChange = (empleadoId, valor) => {
     setDeduccionesManuales((prev) => ({
+      ...prev,
+      [empleadoId]: parseFloat(valor) || 0,
+    }));
+  };
+
+  const handleMontoExtraChange = (empleadoId, valor) => {
+    setMontoExtraBs((prev) => ({
       ...prev,
       [empleadoId]: parseFloat(valor) || 0,
     }));
@@ -856,6 +886,7 @@ const CalculadoraPagos = ({
               <span>H. Extra D.</span>
               <span>H. Extra N.</span>
               <span>Deduc./Adel.($)</span>
+              <span>Monto Extra (Bs)</span>
               <span>Banco</span>
               <span>Observaciones</span>
             </div>
@@ -866,6 +897,7 @@ const CalculadoraPagos = ({
                 nocturna: 0,
               };
               const deduccionManual = deduccionesManuales[empleado.id] || 0;
+              const montoExtra = montoExtraBs[empleado.id] || 0;
               const bancoPago = bancosPago[empleado.id] || "";
               const observacion = observaciones[empleado.id] || "";
               const diasTrabajados = calcularDiasTrabajados(
@@ -947,6 +979,19 @@ const CalculadoraPagos = ({
                     />
                   </div>
 
+                  <div className="monto-extra-input">
+                    <input
+                      type="number"
+                      value={montoExtra}
+                      onChange={(e) =>
+                        handleMontoExtraChange(empleado.id, e.target.value)
+                      }
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+
                   <div className="banco-input">
                     <select
                       value={bancoPago}
@@ -1010,6 +1055,7 @@ const CalculadoraPagos = ({
                 <span>H. Extra D.</span>
                 <span>H. Extra N.</span>
                 <span>Deduc./Adel. ($)</span>
+                <span>Monto Extra (Bs)</span>
                 <span>Banco</span>
                 <span>Observaciones</span>
               </div>
@@ -1023,6 +1069,7 @@ const CalculadoraPagos = ({
                   nocturna: 0,
                 };
                 const deduccionManual = deduccionesManuales[empleado.id] || 0;
+                const montoExtra = montoExtraBs[empleado.id] || 0;
                 const bancoPago = bancosPago[empleado.id] || "";
                 const observacion = observaciones[empleado.id] || "";
                 const diasPago = diasPagoQuincenal[empleado.id] || 15;
@@ -1165,6 +1212,19 @@ const CalculadoraPagos = ({
                         value={deduccionManual}
                         onChange={(e) =>
                           handleDeduccionManualChange(empleado.id, e.target.value)
+                        }
+                        placeholder="0.00"
+                        step="0.01"
+                        min="0"
+                      />
+                    </div>
+
+                    <div className="monto-extra-input">
+                      <input
+                        type="number"
+                        value={montoExtra}
+                        onChange={(e) =>
+                          handleMontoExtraChange(empleado.id, e.target.value)
                         }
                         placeholder="0.00"
                         step="0.01"

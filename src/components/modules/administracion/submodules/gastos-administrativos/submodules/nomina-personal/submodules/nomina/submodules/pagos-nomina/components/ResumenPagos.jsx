@@ -75,6 +75,9 @@ const ResumenPagos = ({
         "Monto H. Extra Total ($)": pago.totalHorasExtrasUSD.toFixed(2),
         "Deducciones ($)": pago.deduccionesManualesUSD.toFixed(2),
         "Total a Pagar ($)": pago.subtotalUSD.toFixed(2),
+        "Monto Extra (Bs)": pago.montoExtraBs?.toFixed(2) || "0.00",
+        "Monto Extra ($)": pago.montoExtraUSD?.toFixed(2) || "0.00",
+        "Monto Total ($)": pago.montoTotalUSD?.toFixed(2) || "0.00",
         "Tasa del Día": parseFloat(tasaCambio).toFixed(4),
         "Total Pagar (Bs)": pago.totalPagarBs.toFixed(2),
         "Pagado por": pago.bancoPago || "No especificado",
@@ -136,6 +139,9 @@ const ResumenPagos = ({
         totalDeduccionesManuales:
           totales.totalDeduccionesManuales + pago.deduccionesManualesUSD,
         totalUSD: totales.totalUSD + pago.subtotalUSD,
+        totalMontoExtraBs: totales.totalMontoExtraBs + (pago.montoExtraBs || 0),
+        totalMontoExtraUSD: totales.totalMontoExtraUSD + (pago.montoExtraUSD || 0),
+        totalMontoTotalUSD: totales.totalMontoTotalUSD + (pago.montoTotalUSD || 0),
         totalPagar: totales.totalPagar + pago.totalPagarBs,
         // Totales de deducciones de ley
         totalIvss: totales.totalIvss + (pago.desgloseDeduccionesLey?.ivss || 0),
@@ -151,6 +157,9 @@ const ResumenPagos = ({
         totalHorasExtras: 0,
         totalDeduccionesManuales: 0,
         totalUSD: 0,
+        totalMontoExtraBs: 0,
+        totalMontoExtraUSD: 0,
+        totalMontoTotalUSD: 0,
         totalPagar: 0,
         totalIvss: 0,
         totalParoForzoso: 0,
@@ -196,6 +205,9 @@ const ResumenPagos = ({
               <th>Monto H. Extra Total ($)</th>
               <th>Deducciones ($)</th>
               <th>Total a Pagar ($)</th>
+              <th>Monto Extra (Bs)</th>
+              <th>Monto Extra ($)</th>
+              <th>Monto Total ($)</th>
               <th>Tasa del Día</th>
               <th>Total Pagar (Bs)</th>
               <th>Pagado por</th>
@@ -237,6 +249,9 @@ const ResumenPagos = ({
                   <td className="text-right">${pago.totalHorasExtrasUSD.toFixed(2)}</td>
                   <td className="text-right">${pago.deduccionesManualesUSD.toFixed(2)}</td>
                   <td className="text-right">${pago.subtotalUSD.toFixed(2)}</td>
+                  <td className="text-right">Bs {(pago.montoExtraBs || 0).toFixed(2)}</td>
+                  <td className="text-right">${(pago.montoExtraUSD || 0).toFixed(2)}</td>
+                  <td className="text-right"><strong>${(pago.montoTotalUSD || 0).toFixed(2)}</strong></td>
                   <td className="text-right">Bs {parseFloat(tasaCambio).toFixed(4)}</td>
                   <td className="text-right total-pagar"><strong>Bs {pago.totalPagarBs.toFixed(2)}</strong></td>
                   <td>{pago.bancoPago || "No especificado"}</td>
@@ -279,6 +294,9 @@ const ResumenPagos = ({
               <td className="text-right"><strong>${totales.totalHorasExtras.toFixed(2)}</strong></td>
               <td className="text-right"><strong>${totales.totalDeduccionesManuales.toFixed(2)}</strong></td>
               <td className="text-right"><strong>${totales.totalUSD.toFixed(2)}</strong></td>
+              <td className="text-right"><strong>Bs {totales.totalMontoExtraBs.toFixed(2)}</strong></td>
+              <td className="text-right"><strong>${totales.totalMontoExtraUSD.toFixed(2)}</strong></td>
+              <td className="text-right"><strong>${totales.totalMontoTotalUSD.toFixed(2)}</strong></td>
               <td></td>
               <td className="text-right total-pagar"><strong>Bs {totales.totalPagar.toFixed(2)}</strong></td>
               <td colSpan="4"></td>
