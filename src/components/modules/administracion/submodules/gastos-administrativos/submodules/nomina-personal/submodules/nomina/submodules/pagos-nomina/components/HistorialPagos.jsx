@@ -60,9 +60,9 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
   const calcularTotalesPago = (pago) => {
     return pago.pagos.reduce(
       (totales, pagoEmp) => ({
-        totalUSD: totales.totalUSD + pagoEmp.subtotalUSD,
+        totalUSD: totales.totalUSD + pagoEmp.subtotalUSD + (pagoEmp.montoExtraUSD || 0),
         totalBs: totales.totalBs + pagoEmp.subtotalBs,
-        totalPagar: totales.totalPagar + pagoEmp.totalPagarBs,
+        totalPagar: totales.totalPagar + pagoEmp.totalPagarBs + (pagoEmp.montoExtraBs || 0),
       }),
       { totalUSD: 0, totalBs: 0, totalPagar: 0 }
     );
@@ -223,12 +223,7 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
                       $ {totales.totalUSD.toFixed(2)}
                     </span>
                   </div>
-                  <div className="pago-total">
-                    <span className="label">Total Bs</span>
-                    <span className="value">
-                      Bs {totales.totalBs.toFixed(2)}
-                    </span>
-                  </div>
+
                   <div className="pago-total highlight">
                     <span className="label">A Pagar</span>
                     <span className="value">
@@ -277,10 +272,10 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
                         </span>
                         <div className="amounts">
                           <span className="amount-bs">
-                            Bs {pagoEmp.totalPagarBs.toFixed(2)}
+                            Bs {(pagoEmp.totalPagarBs + (pagoEmp.montoExtraBs || 0)).toFixed(2)}
                           </span>
                           <span className="amount-usd">
-                            $ {(pagoEmp.subtotalUSD).toFixed(2)}
+                            $ {(pagoEmp.subtotalUSD + (pagoEmp.montoExtraUSD || 0)).toFixed(2)}
                           </span>
                         </div>
                       </div>
