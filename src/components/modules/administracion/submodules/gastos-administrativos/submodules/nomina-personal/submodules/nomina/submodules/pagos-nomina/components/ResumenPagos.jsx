@@ -298,7 +298,7 @@ const ResumenPagos = ({
               <td className="text-right"><strong>${totales.totalMontoExtraUSD.toFixed(2)}</strong></td>
               <td className="text-right"><strong>${totales.totalMontoTotalUSD.toFixed(2)}</strong></td>
               <td></td>
-              <td className="text-right total-pagar"><strong>Bs {totales.totalPagar.toFixed(2)}</strong></td>
+              <td className="text-right total-pagar"><strong>Bs {(totales.totalPagar + totales.totalMontoExtraBs).toFixed(2)}</strong></td>
               <td colSpan="4"></td>
 
               {/* Totales de deducciones de ley */}
