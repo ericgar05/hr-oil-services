@@ -1,4 +1,3 @@
-import React from 'react'
 import { useProjects } from '../../../contexts/ProjectContext'
 import './ProjectDashboard.css'
 
@@ -20,7 +19,7 @@ const ProjectDashboard = () => {
   };
 
   const projectStatusDisplay = statusMap[selectedProject.status] || 'Desconocido';
-  const projectStatusClass = `stat-value ${selectedProject.status}`;
+  // const projectStatusClass = `stat-value ${selectedProject.status}`; // Unused
 
   // Cálculo de días restantes
   const daysRemaining = Math.ceil((new Date(selectedProject.endDate) - new Date()) / (1000 * 60 * 60 * 24));
@@ -34,7 +33,7 @@ const ProjectDashboard = () => {
     <section className="project-dashboard">
       <header className="project-header">
         <h1>{selectedProject.name}</h1>
-        <section className="project-info">
+        <section className="project-dashboard-info">
           <span className="client">Cliente: <strong>{selectedProject.client}</strong></span>
           <span className="budget">Presupuesto: <strong>{formattedBudget}</strong></span>
           <span className="dates">Fechas: <strong>{formattedStartDate} - {formattedEndDate}</strong></span>
@@ -46,17 +45,17 @@ const ProjectDashboard = () => {
         <p>Selecciona un módulo del menú lateral para comenzar</p>
         
         <div className="quick-stats">
-          <div className="stat-card">
+          <div className="project-dashboard-stat-card">
             <h3>Estado del Proyecto</h3>
-            <div className={projectStatusClass}>{projectStatusDisplay}</div>
+            <div className={`project-dashboard-stat-value ${selectedProject.status}`}>{projectStatusDisplay}</div>
           </div>
-          <div className="stat-card">
+          <div className="project-dashboard-stat-card">
             <h3>Días Restantes</h3>
-            <div className="stat-value">{daysRemaining >= 0 ? `${daysRemaining} días` : 'Finalizado'}</div>
+            <div className="project-dashboard-stat-value">{daysRemaining >= 0 ? `${daysRemaining} días` : 'Finalizado'}</div>
           </div>
-          <div className="stat-card">
+          <div className="project-dashboard-stat-card">
             <h3>Progreso General</h3>
-            <div className="stat-value">{selectedProject.progress || 0}%</div>
+            <div className="project-dashboard-stat-value">{selectedProject.progress || 0}%</div>
           </div>
         </div>
       </div>

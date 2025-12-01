@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../../../../../../../../../contexts/ProjectContext'
@@ -7,6 +6,7 @@ import FacturaForm from './components/FacturaForm'
 import FacturasList from './components/FacturasList'
 import ProveedoresList from './components/ProveedoresList'
 import './ComprasConFacturaMain.css'
+import { BackIcon, ClipBoardIcon, AddIcon, MultiUsersIcon, ConfigIcon, SearchIcons } from '../../../../../../../../../assets/icons/Icons'
 
 import Configuraciones from '../../components/Configuraciones'
 
@@ -16,6 +16,13 @@ const ComprasConFacturaMain = ({ projectId }) => {
   const [activeTab, setActiveTab] = useState('lista-facturas')
   const [facturaEdit, setFacturaEdit] = useState(null)
   const [refreshData, setRefreshData] = useState(0)
+  
+  // Estados para filtros (Lifted State)
+  const [filtroCategoria, setFiltroCategoria] = useState('');
+  const [filtroProveedor, setFiltroProveedor] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFin, setFechaFin] = useState('');
+  const [availableCategories, setAvailableCategories] = useState([]);
 
   const handleFacturaSaved = () => {
     setFacturaEdit(null)
@@ -38,48 +45,102 @@ const ComprasConFacturaMain = ({ projectId }) => {
 
   console.log('🔄 ProjectId en ComprasFacturaMain:', projectId)
   return (
-    <div className="compras-con-factura-main">
-      <button className="back-button" onClick={handleBack}>
-        ← Volver a Compra & Facturación
+    <div className="ccf-main-container">
+      <button className="ccf-back-button" onClick={handleBack}>
+        <BackIcon fill="white" style={{ width: '20px', height: '20px', marginRight: '5px' }} /> Volver a Compra & Facturación
       </button>
       <ModuleDescription
         title="COMPRAS CON FACTURA"
         description={`Gestión de compras formales con factura para el proyecto ${selectedProject?.name || ''}`}
       />
 
-      <div className="factura-tabs">
+      <div className="ccf-tabs-container">
         <button
-          className={`tab-button ${activeTab === 'lista-facturas' ? 'active' : ''}`}
+          className={`ccf-tab-btn ${activeTab === 'lista-facturas' ? 'active' : ''}`}
           onClick={() => setActiveTab('lista-facturas')}
         >
-          Lista de Facturas
+          <span className="tab-icon"><ClipBoardIcon fill="white" style={{ width: '20px', height: '20px' }} /></span> Lista de Facturas
         </button>
         <button
-          className={`tab-button ${activeTab === 'nueva-factura' ? 'active' : ''}`}
+          className={`ccf-tab-btn ${activeTab === 'nueva-factura' ? 'active' : ''}`}
           onClick={() => setActiveTab('nueva-factura')}
         >
-          {facturaEdit ? 'Editar Factura' : 'Nueva Factura'}
+          <span className="tab-icon"><AddIcon fill="white" style={{ width: '20px', height: '20px' }} /></span> {facturaEdit ? 'Editar Factura' : 'Nueva Factura'}
         </button>
         <button
-          className={`tab-button ${activeTab === 'proveedores' ? 'active' : ''}`}
+          className={`ccf-tab-btn ${activeTab === 'proveedores' ? 'active' : ''}`}
           onClick={() => setActiveTab('proveedores')}
         >
-          Proveedores y Retenciones
+          <span className="tab-icon"><MultiUsersIcon fill="white" style={{ width: '20px', height: '20px' }} /></span> Proveedores y Retenciones
         </button>
         <button
-          className={`tab-button ${activeTab === 'configuraciones' ? 'active' : ''}`}
+          className={`ccf-tab-btn ${activeTab === 'configuraciones' ? 'active' : ''}`}
           onClick={() => setActiveTab('configuraciones')}
         >
-          Configuraciones
+          <span className="tab-icon"><ConfigIcon fill="white" style={{ width: '20px', height: '20px' }} /></span> Configuraciones
         </button>
       </div>
 
-      <div className="tab-content">
+      {(activeTab === 'lista-facturas' || activeTab === 'proveedores') && (
+        <div className="ccf-filters-row">
+          <div className="ccf-search-wrapper">
+            <span className="search-icon"><SearchIcons fill="white" style={{ width: '16px', height: '16px' }} /></span>
+            <input
+              type="text"
+              placeholder="Buscar proveedor, RIF..."
+              className="ccf-search-input"
+              value={filtroProveedor}
+              onChange={(e) => setFiltroProveedor(e.target.value)}
+            />
+          </div>
+
+          <select 
+            className="ccf-filter-select"
+            value={filtroCategoria}
+            onChange={(e) => setFiltroCategoria(e.target.value)}
+          >
+            <option value="">Todas las categorías</option>
+            {availableCategories.map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+
+          <div className="ccf-date-wrapper">
+            <div className="ccf-date-field">
+              <label>Desde</label>
+              <input 
+                type="date" 
+                className="ccf-date-input" 
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+              />
+            </div>
+            <div className="ccf-date-field">
+              <label>Hasta</label>
+              <input 
+                type="date" 
+                className="ccf-date-input" 
+                value={fechaFin}
+                onChange={(e) => setFechaFin(e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="ccf-content-area">
         {activeTab === 'lista-facturas' && (
           <FacturasList
             projectId={projectId}
             onEditFactura={handleEditFactura}
             refreshTrigger={refreshData}
+            parentFilters={{
+              filtroCategoria,
+              filtroProveedor,
+              fechaInicio,
+              fechaFin
+            }}
+            onCategoriesLoaded={setAvailableCategories}
           />
         )}
         {activeTab === 'nueva-factura' && (

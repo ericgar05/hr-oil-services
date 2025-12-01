@@ -5,6 +5,7 @@ import ModuleDescription from '../../../../../../../_core/ModuleDescription/Modu
 import CompraSinFacturaForm from './components/ComprasSinFacturaForm'
 import ComprasSinFacturaList from './components/ComprasSinFacturaList'
 import ProveedoresSinFacturaList from './components/ProveedoresSinFacturaList'
+import { BackIcon } from '../../../../../../../../../assets/icons/Icons'
 
 import './ComprasSinFacturaMain.css'
 import Configuraciones from '../../components/Configuraciones'
@@ -39,7 +40,7 @@ const ComprasSinFacturaMain = ({ projectId }) => {
   return (
     <div className="compras-sin-factura-main">
       <button className="back-button" onClick={handleBack}>
-        ← Volver a Compra & Facturación
+        <BackIcon style={{ width: '20px', height: '20px', marginRight: '5px' }} /> Volver a Compra & Facturación
       </button>
       <ModuleDescription
         title="COMPRAS SIN FACTURA"

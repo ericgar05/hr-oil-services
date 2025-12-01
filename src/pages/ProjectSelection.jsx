@@ -7,8 +7,7 @@ import ProjectForm from "../components/projects/ProjectForm/ProjectForm";
 import Button from "../components/common/Button/Button";
 import Modal from "../components/common/Modal/Modal";
 import SearchFilter from "../components/common/SearchFilter/SearchFilter";
-import { AddIcon } from "../assets/icons/Icons";
-import { OutIcon } from "../assets/icons/Icons";
+import { AddIcon, OutIcon, ConstructionIcon } from "../assets/icons/Icons";
 import "./ProjectSelection.css";
 
 const ProjectSelection = () => {
@@ -73,13 +72,7 @@ const ProjectSelection = () => {
   };
 
   const handleDeleteProject = async (projectId) => {
-    if (
-      !window.confirm(
-        "¿Estás seguro de que deseas eliminar este proyecto? Esta acción no se puede deshacer."
-      )
-    ) {
-      return;
-    }
+
 
     try {
       await deleteProject(projectId);
@@ -98,29 +91,50 @@ const ProjectSelection = () => {
   return (
     <section className="project-selection">
       <header className="project-selection-header">
-        <h1>PROYECTOS</h1>
-        <Button onClick={logout} className="btn-outline">
-          <OutIcon className="icon-logout" />
-        </Button>
+        <div className="header-left">
+            <div className="header-icon-box">
+                <ConstructionIcon />
+            </div>
+            <div className="header-breadcrumbs">
+                <span className="breadcrumb-item">Inicio</span>
+                <span className="breadcrumb-separator">{'>'}</span>
+                <span className="breadcrumb-current">Proyectos</span>
+            </div>
+        </div>
+        
+        <div className="header-right">
+            <div className="user-profile">
+                <div className="user-info">
+                    <span className="user-name">Admin</span>
+                    <span className="user-role">ADMINISTRADOR</span>
+                </div>
+                <div className="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin" />
+                    <span className="user-status-dot"></span>
+                </div>
+            </div>
+            <div className="header-divider"></div>
+            <button onClick={logout} className="btn-logout-icon" title="Cerrar Sesión">
+                <OutIcon />
+            </button>
+        </div>
       </header>
 
       <main className="project-selection-main">
-        <p>¿En qué proyecto trabajaremos hoy?</p>
+        <p>¿En qué proyecto <span className="highlight">trabajaremos hoy?</span></p>
 
-        <div className="project-selection-controls">
+        <section className="project-selection-controls" aria-label="Controles de búsqueda y creación">
           <SearchFilter
             value={searchTerm}
             onChange={setSearchTerm}
-            placeholder="Buscar proyectos por nombre o cliente..."
+            placeholder="Buscar proyectos..."
           />
 
-          <Button onClick={handleAddProject} className="new" disabled={loading}>
-            <AddIcon className="icon-add" />
-          </Button>
-        </div>
+
+        </section>
 
         {error && (
-          <div className="error-banner">
+          <div className="error-banner" role="alert">
             {error}
             <button onClick={() => setError("")} className="error-close">
               ×
@@ -129,7 +143,7 @@ const ProjectSelection = () => {
         )}
 
         {loading ? (
-          <div className="loading-state">
+          <div className="loading-state" role="status">
             <p>Cargando proyectos...</p>
           </div>
         ) : (
@@ -138,6 +152,7 @@ const ProjectSelection = () => {
             onEdit={handleEditProject}
             onDelete={handleDeleteProject}
             onSelect={handleSelectProject}
+            onAdd={handleAddProject}
           />
         )}
       </main>

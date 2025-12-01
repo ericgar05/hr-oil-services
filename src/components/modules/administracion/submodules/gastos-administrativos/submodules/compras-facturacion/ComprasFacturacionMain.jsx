@@ -1,6 +1,6 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/ComprasFacturacionMain.jsx
 import React, { useState, useEffect } from 'react'
-import { useNavigate, Routes, Route } from 'react-router-dom'
+import { useNavigate, Routes, Route, useLocation } from 'react-router-dom'
 import ModuleDescription from '../../../../../_core/ModuleDescription/ModuleDescription'
 import { useProjects } from '../../../../../../../contexts/ProjectContext'
 import ComprasConFacturaMain from './submodules/compras-con-factura/ComprasConFacturaMain'
@@ -13,6 +13,7 @@ import Modal from '../../../../../../common/Modal/Modal'
 
 const ComprasFacturacionMain = ({ projectId }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { selectedProject } = useProjects()
   const [activeSubmodule, setActiveSubmodule] = useState('compras-con-factura')
   const [showInfoModal, setShowInfoModal] = useState(false)
@@ -22,6 +23,18 @@ const ComprasFacturacionMain = ({ projectId }) => {
     countProveedores: 0
   })
   const [loading, setLoading] = useState(false)
+
+  // Sincronizar activeSubmodule con la URL
+  useEffect(() => {
+    const path = location.pathname
+    if (path.includes('compras-con-factura')) {
+      setActiveSubmodule('compras-con-factura')
+    } else if (path.includes('compras-sin-factura')) {
+      setActiveSubmodule('compras-sin-factura')
+    } else if (path.includes('configuraciones')) {
+      setActiveSubmodule('configuraciones')
+    }
+  }, [location.pathname])
 
   useEffect(() => {
     const fetchSummaryData = async () => {
@@ -199,58 +212,6 @@ const ComprasFacturacionMain = ({ projectId }) => {
   }
 
   // Si hay una ruta específica activa, mostrar el submodule correspondiente
-  if (window.location.pathname.includes('compras-con-factura') ||
-    window.location.pathname.includes('compras-sin-factura') ||
-    window.location.pathname.includes('configuraciones')) {
-    return (
-      <div className="compras-facturacion-main">
-        <div className="submodule-navigation">
-          <button
-            className={`submodule-nav-btn ${activeSubmodule === 'compras-con-factura' ? 'active' : ''}`}
-            onClick={() => handleSubmoduleChange('compras-con-factura')}
-          >
-            📋 Compras con Factura
-          </button>
-          <button
-            className={`submodule-nav-btn ${activeSubmodule === 'compras-sin-factura' ? 'active' : ''}`}
-            onClick={() => handleSubmoduleChange('compras-sin-factura')}
-          >
-            🛒 Compras sin Factura
-          </button>
-          <button
-            className={`submodule-nav-btn ${activeSubmodule === 'configuraciones' ? 'active' : ''}`}
-            onClick={() => handleSubmoduleChange('configuraciones')}
-          >
-            ⚙️ Configuraciones
-          </button>
-          <button className="back-button" onClick={handleBack}>
-            ← Volver
-          </button>
-        </div>
-
-        <Routes>
-          <Route
-            path="compras-con-factura"
-            element={<ComprasConFacturaMain projectId={projectId} />}
-          />
-          <Route
-            path="compras-sin-factura"
-            element={<ComprasSinFacturaMain projectId={projectId} />}
-          />
-          <Route
-            path="configuraciones"
-            element={<Configuraciones projectId={projectId} />}
-          />
-          <Route
-            path="/"
-            element={<ComprasConFacturaMain projectId={projectId} />}
-          />
-        </Routes>
-      </div>
-    )
-  }
-
-  // Vista principal con cards de selección
   return (
     <div className="compras-facturacion-main">
       <button className="back-button" onClick={handleBack}>
@@ -310,8 +271,6 @@ const ComprasFacturacionMain = ({ projectId }) => {
             </div>
           </div>
         </div>
-
-
       </div>
 
       <Modal

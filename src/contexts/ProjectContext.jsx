@@ -16,7 +16,7 @@ export const ProjectProvider = ({ children }) => {
   const { userData } = useAuth();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadProjects();
@@ -50,6 +50,16 @@ export const ProjectProvider = ({ children }) => {
       }));
 
       setProjects(formattedProjects);
+
+      // Restaurar proyecto seleccionado
+      const savedProjectId = localStorage.getItem("hr_oil_selected_project_id");
+      if (savedProjectId && formattedProjects.length > 0) {
+        const project = formattedProjects.find((p) => p.id === savedProjectId);
+        if (project) {
+          setSelectedProject(project);
+        }
+      }
+
     } catch (error) {
       console.error("Error loading projects:", error);
     } finally {
@@ -197,16 +207,7 @@ export const ProjectProvider = ({ children }) => {
     localStorage.removeItem("hr_oil_selected_project_id");
   };
 
-  // Cargar proyecto seleccionado al iniciar
-  useEffect(() => {
-    const savedProjectId = localStorage.getItem("hr_oil_selected_project_id");
-    if (savedProjectId && projects.length > 0) {
-      const project = projects.find((p) => p.id === savedProjectId);
-      if (project) {
-        setSelectedProject(project);
-      }
-    }
-  }, [projects]);
+
 
   const value = {
     projects,

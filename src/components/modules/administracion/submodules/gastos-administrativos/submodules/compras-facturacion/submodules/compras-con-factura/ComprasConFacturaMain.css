@@ -33,71 +33,205 @@
   --transition: all 0.2s ease-in-out;
 }
 
-.compras-con-factura-main {
+.ccf-main-container {
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background-color: var(--gray-50);
+  background-color: transparent; /* Transparent to blend with app background */
   min-height: 100vh;
 }
 
-/* ===== COMPONENTE DE PESTAÑAS ===== */
-.factura-tabs {
-  display: flex;
-  border-bottom: 1px solid var(--gray-200);
-  margin-bottom: 32px;
-  background: white;
-  border-radius: var(--border-radius) var(--border-radius) 0 0;
-  padding: 0 16px;
-  box-shadow: var(--shadow-sm);
-}
-
-.tab-button {
+.ccf-back-button {
   background: none;
-  border: none;
-  padding: 16px 24px;
+  border: 1px solid var(--gray-700);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--gray-600);
-  border-bottom: 3px solid transparent;
+  color: var(--gray-400);
+  font-size: 0.9rem;
+  margin-bottom: 24px;
   transition: var(--transition);
-  position: relative;
-  margin-bottom: -1px;
 }
 
-.tab-button:hover {
-  color: var(--primary-color);
-  background-color: var(--primary-light);
+.ccf-back-button:hover {
+  background-color: var(--gray-800);
+  color: var(--gray-200);
 }
 
-.tab-button.active {
-  color: var(--primary-color);
-  border-bottom-color: var(--primary-color);
+/* ===== TABS (Segmented Control Style) ===== */
+.ccf-tabs-container {
+  display: inline-flex;
+  background: var(--gray-800);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--gray-700);
+  gap: 4px;
+  margin-bottom: 24px;
+}
+
+.ccf-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--gray-400);
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.ccf-tab-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--gray-200);
+}
+
+.ccf-tab-btn.active {
+  background-color: var(--primary-color);
+  color: white;
   font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.tab-content {
+.tab-icon {
+  font-size: 1.1em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.ccf-content-area {
   min-height: 600px;
-  background: white;
-  border-radius: 0 0 var(--border-radius) var(--border-radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  /* No background here to let cards/tables handle their own backgrounds */
 }
 
-/* ===== ENCABEZADOS Y SECCIONES ===== */
+/* ===== FILTERS ROW ===== */
+.ccf-filters-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  justify-content: flex-start; /* Align to left as per image */
+}
+
+.ccf-search-wrapper {
+  position: relative;
+  flex: 0 1 300px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-500);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.ccf-search-input {
+  width: 100%;
+  padding: 10px 12px 10px 40px; /* Space for icon */
+  border: 1px solid var(--gray-700);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: var(--gray-900); /* Dark background */
+  color: var(--gray-200);
+  height: 42px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.ccf-filter-select {
+  padding: 10px 16px;
+  border: 1px solid var(--gray-700);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background-color: var(--gray-900);
+  min-width: 200px;
+  color: var(--gray-200);
+  height: 42px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ccf-search-input:focus,
+.ccf-filter-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  background-color: var(--gray-800);
+}
+
+.ccf-search-input::placeholder {
+  color: var(--gray-500);
+}
+
+.ccf-date-wrapper {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-left: auto; /* Push dates to the right */
+}
+
+.ccf-date-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ccf-date-field label {
+  color: var(--danger-color); /* Red color for "Desde"/"Hasta" */
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.ccf-date-input {
+  padding: 8px 12px;
+  border: 1px solid var(--gray-700);
+  border-radius: var(--border-radius-sm);
+  font-size: 0.9rem;
+  background-color: var(--gray-900);
+  color: var(--gray-200);
+  font-family: inherit;
+  cursor: pointer;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+/* Make calendar icon white in dark mode */
+.ccf-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.ccf-date-input:focus,
+.ccf-search-input:focus,
+.ccf-filter-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+/* ===== INTERNAL COMPONENTS (Dark Theme Adaptation) ===== */
+
 .form-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-700);
 }
 
 .form-header h3 {
   margin: 0;
-  color: #fff;
+  color: var(--gray-100);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -113,14 +247,14 @@
 
 .section-header h3 {
   margin: 0;
-  color: var(--gray-800);
+  color: var(--gray-200);
   font-size: 1.25rem;
   font-weight: 600;
 }
 
 .form-section {
   padding: 24px;
-  border-bottom: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--gray-700);
 }
 
 .form-section:last-of-type {
@@ -129,14 +263,13 @@
 
 .form-section h3 {
   margin: 0 0 20px 0;
-  color: var(--gray-700);
+  color: var(--gray-300);
   font-size: 1.125rem;
   font-weight: 600;
   padding-bottom: 8px;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-700);
 }
 
-/* ===== FORMULARIOS Y CONTROLES ===== */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -155,7 +288,7 @@
 .form-group label {
   margin-bottom: 8px;
   font-weight: 500;
-  color: var(--gray-700);
+  color: var(--gray-400);
   font-size: 0.875rem;
 }
 
@@ -163,11 +296,12 @@
 .form-group select,
 .form-group textarea {
   padding: 10px 12px;
-  border: 1px solid var(--gray-300);
+  border: 1px solid var(--gray-700);
   border-radius: var(--border-radius-sm);
   font-size: 0.875rem;
   transition: var(--transition);
-  background-color: white;
+  background-color: var(--gray-900);
+  color: var(--gray-200);
 }
 
 .form-group input:focus,
@@ -175,7 +309,7 @@
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
 .form-group textarea {
@@ -196,28 +330,26 @@
   flex: 1;
 }
 
-/* ===== COMPONENTES DE SOLO LECTURA ===== */
 .readonly-value {
   padding: 10px 12px;
-  background-color: var(--gray-50);
-  border: 1px solid var(--gray-200);
+  background-color: var(--gray-800);
+  border: 1px solid var(--gray-700);
   border-radius: var(--border-radius-sm);
   min-height: 42px;
   display: flex;
   align-items: center;
-  color: var(--gray-700);
+  color: var(--gray-300);
   font-size: 0.875rem;
 }
 
 .total-importante {
-  background-color: var(--primary-light);
+  background-color: rgba(37, 99, 235, 0.2);
   border-color: var(--primary-color);
   font-weight: 600;
-  color: var(--primary-dark);
+  color: var(--primary-light);
   font-size: 1rem;
 }
 
-/* ===== SELECT CON OPCIÓN DE AGREGAR ===== */
 .select-with-add {
   display: flex;
   flex-direction: column;
@@ -248,7 +380,6 @@
   background: var(--primary-dark);
 }
 
-/* ===== BOTONES ===== */
 .btn-primary {
   background: var(--primary-color);
   color: white;
@@ -266,9 +397,9 @@
 }
 
 .btn-secondary {
-  background: white;
-  color: var(--gray-700);
-  border: 1px solid var(--gray-300);
+  background: var(--gray-800);
+  color: var(--gray-300);
+  border: 1px solid var(--gray-600);
   border-radius: var(--border-radius-sm);
   padding: 10px 20px;
   cursor: pointer;
@@ -277,8 +408,8 @@
 }
 
 .btn-secondary:hover {
-  background: var(--gray-50);
-  border-color: var(--gray-400);
+  background: var(--gray-700);
+  border-color: var(--gray-500);
 }
 
 .btn-edit {
@@ -336,15 +467,15 @@
   justify-content: flex-end;
   margin-top: 24px;
   padding-top: 20px;
-  border-top: 1px solid var(--gray-200);
+  border-top: 1px solid var(--gray-700);
 }
 
-/* ===== TABLA DE FACTURAS ===== */
 .facturas-table {
   overflow-x: auto;
   border-radius: var(--border-radius);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--gray-700);
   box-shadow: var(--shadow-sm);
+  background: var(--gray-800);
 }
 
 .facturas-table table {
@@ -357,53 +488,27 @@
 .facturas-table td {
   padding: 12px 16px;
   text-align: left;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-700);
   font-size: 0.875rem;
+  color: var(--gray-300);
 }
 
 .facturas-table th {
-  background: var(--gray-50);
+  background: var(--gray-900);
   font-weight: 600;
-  color: var(--gray-700);
+  color: var(--gray-200);
   position: sticky;
   top: 0;
 }
 
 .facturas-table tr:hover {
-  background: var(--gray-50);
+  background: var(--gray-700);
 }
 
 .facturas-table tr:last-child td {
   border-bottom: none;
 }
 
-/* ===== FILTROS ===== */
-.filtros {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.filter-select,
-.search-input,
-.date-input {
-  padding: 8px 12px;
-  border: 1px solid var(--gray-300);
-  border-radius: var(--border-radius-sm);
-  font-size: 0.875rem;
-  background-color: white;
-}
-
-.filter-select:focus,
-.search-input:focus,
-.date-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-/* ===== ESTADOS Y BADGES ===== */
 .estado-badge {
   padding: 6px 12px;
   border-radius: 20px;
@@ -414,13 +519,13 @@
 }
 
 .estado-bueno {
-  background: var(--success-light);
-  color: #065f46;
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
 }
 
 .estado-pendiente {
-  background: var(--danger-light);
-  color: #991b1b;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
 }
 
 .estado-bueno-text {
@@ -433,14 +538,13 @@
   font-weight: 600;
 }
 
-/* ===== RESUMEN DE TOTALES ===== */
 .resumen-totales {
   margin-bottom: 32px;
 }
 
 .resumen-card {
-  background: white;
-  border: 1px solid var(--gray-200);
+  background: var(--gray-800);
+  border: 1px solid var(--gray-700);
   border-radius: var(--border-radius);
   padding: 24px;
   box-shadow: var(--shadow);
@@ -448,7 +552,7 @@
 
 .resumen-card h4 {
   margin: 0 0 20px 0;
-  color: var(--gray-800);
+  color: var(--gray-200);
   border-bottom: 2px solid var(--primary-color);
   padding-bottom: 12px;
   font-size: 1.125rem;
@@ -465,22 +569,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: var(--gray-50);
+  background: var(--gray-900);
   border-radius: var(--border-radius-sm);
   border-left: 4px solid var(--primary-color);
 }
 
 .resumen-item span {
   font-weight: 500;
-  color: var(--gray-600);
+  color: var(--gray-400);
 }
 
 .resumen-item strong {
   font-size: 1.1em;
-  color: var(--gray-800);
+  color: var(--gray-200);
 }
 
-/* ===== TARJETAS DE PROVEEDORES ===== */
 .proveedores-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -488,8 +591,8 @@
 }
 
 .proveedor-card {
-  background: white;
-  border: 1px solid var(--gray-200);
+  background: var(--gray-800);
+  border: 1px solid var(--gray-700);
   border-radius: var(--border-radius);
   padding: 24px;
   box-shadow: var(--shadow);
@@ -502,6 +605,7 @@
 .proveedor-card:hover {
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: var(--primary-color);
 }
 
 .proveedor-header {
@@ -509,12 +613,12 @@
   justify-content: space-between;
   align-items: flex-start;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-700);
 }
 
 .proveedor-info-main h4 {
   margin: 0 0 6px 0;
-  color: var(--gray-800);
+  color: var(--gray-200);
   font-size: 1.25rem;
   font-weight: 600;
 }
@@ -539,28 +643,28 @@
 .proveedor-info p {
   margin: 0;
   font-size: 0.875rem;
-  color: var(--gray-600);
+  color: var(--gray-400);
   display: flex;
   gap: 8px;
 }
 
 .proveedor-info p strong {
-  color: var(--gray-700);
+  color: var(--gray-300);
   min-width: 100px;
 }
 
 .proveedor-totales {
   padding: 16px;
-  background: var(--gray-50);
+  background: var(--gray-900);
   border-radius: var(--border-radius);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--gray-700);
 }
 
 .proveedor-totales h5 {
   margin: 0 0 12px 0;
-  color: var(--gray-700);
+  color: var(--gray-300);
   font-size: 1rem;
-  border-bottom: 1px solid var(--gray-300);
+  border-bottom: 1px solid var(--gray-700);
   padding-bottom: 8px;
 }
 
@@ -573,16 +677,15 @@
 }
 
 .total-item span:first-child {
-  color: var(--gray-600);
+  color: var(--gray-400);
   font-weight: 500;
 }
 
 .total-item span:last-child {
   font-weight: 600;
-  color: var(--gray-800);
+  color: var(--gray-200);
 }
 
-/* ===== DETALLES DE RETENCIONES ===== */
 .retenciones-detalle-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -592,16 +695,16 @@
 
 .retencion-tipo {
   padding: 16px;
-  background: var(--gray-50);
+  background: var(--gray-900);
   border-radius: var(--border-radius);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--gray-700);
 }
 
 .retencion-tipo h4 {
   margin: 0 0 12px 0;
   font-size: 0.875rem;
-  color: var(--gray-700);
-  border-bottom: 1px solid var(--gray-300);
+  color: var(--gray-300);
+  border-bottom: 1px solid var(--gray-700);
   padding-bottom: 8px;
 }
 
@@ -611,18 +714,19 @@
   align-items: center;
   margin-bottom: 6px;
   font-size: 0.875rem;
+  color: var(--gray-300);
 }
 
 .retencion-total {
   grid-column: 1 / -1;
   padding: 16px;
-  background: var(--primary-light);
+  background: rgba(37, 99, 235, 0.1);
   border-radius: var(--border-radius);
   border: 1px solid var(--primary-color);
   margin-top: 12px;
+  color: var(--gray-200);
 }
 
-/* ===== OBSERVACIONES EN TABLA ===== */
 .observaciones-cell {
   max-width: 150px;
 }
@@ -646,8 +750,8 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: white;
-  border: 1px solid var(--gray-300);
+  background: var(--gray-800);
+  border: 1px solid var(--gray-700);
   padding: 12px;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-md);
@@ -655,17 +759,16 @@
   min-width: 250px;
   font-size: 0.875rem;
   line-height: 1.4;
-  color: var(--gray-700);
+  color: var(--gray-200);
 }
 
-/* ===== MODAL DE PAGO ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -674,23 +777,24 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--gray-800);
   padding: 32px;
   border-radius: var(--border-radius);
   max-width: 500px;
   width: 100%;
   box-shadow: var(--shadow-lg);
+  border: 1px solid var(--gray-700);
 }
 
 .modal-content h3 {
   margin: 0 0 12px 0;
-  color: var(--gray-800);
+  color: var(--gray-100);
   font-size: 1.25rem;
 }
 
 .modal-content p {
   margin: 0 0 24px 0;
-  color: var(--gray-600);
+  color: var(--gray-400);
 }
 
 .opciones-pago {
@@ -722,14 +826,13 @@
   margin-top: 24px;
 }
 
-/* ===== ESTADO SIN DATOS ===== */
 .no-data {
   text-align: center;
   padding: 60px 40px;
   color: var(--gray-500);
-  background: white;
+  background: var(--gray-800);
   border-radius: var(--border-radius);
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--gray-700);
   box-shadow: var(--shadow-sm);
 }
 
@@ -738,7 +841,6 @@
   font-size: 1.125rem;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .proveedores-grid {
     grid-template-columns: 1fr;
@@ -750,25 +852,42 @@
 }
 
 @media (max-width: 768px) {
-  .compras-con-factura-main {
+  .ccf-main-container {
     padding: 16px;
   }
 
-  .factura-tabs {
+  .ccf-tabs-container {
     flex-direction: column;
-    padding: 0;
+    gap: 8px;
   }
 
-  .tab-button {
+  .ccf-tab-btn {
     width: 100%;
     text-align: left;
-    border-bottom: 1px solid var(--gray-200);
-    border-left: 3px solid transparent;
+    margin-bottom: 0;
   }
 
-  .tab-button.active {
-    border-bottom: 1px solid var(--gray-200);
-    border-left: 3px solid var(--primary-color);
+  .ccf-filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ccf-search-wrapper {
+    flex: 1;
+  }
+
+  .ccf-date-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ccf-date-field {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ccf-date-input {
+    width: 100%;
   }
 
   .form-grid {
@@ -778,10 +897,6 @@
   .section-header {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .filtros {
-    width: 100%;
   }
 
   .form-actions {
@@ -796,70 +911,4 @@
   .proveedor-actions {
     align-self: flex-start;
   }
-
-  .resumen-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 640px) {
-  .form-section {
-    padding: 16px;
-  }
-
-  .modal-content {
-    padding: 24px;
-  }
-
-  .rif-input {
-    flex-direction: column;
-  }
-
-  .rif-input select {
-    flex: 1;
-  }
-}
-/* En ComprasSinFacturaMain.css y ComprasConFacturaMain.css */
-.subcategoria-input-group {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-  align-items: center;
-}
-
-.subcategoria-input-group input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.btn-remove-subcategory {
-  padding: 8px 12px;
-  background: #ffebee;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #721c24;
-  font-weight: bold;
-  min-width: 40px;
-}
-
-.btn-remove-subcategory:hover {
-  background: #f8d7da;
-}
-
-.btn-add-subcategory {
-  padding: 8px 16px;
-  background: #e8f5e8;
-  border: 1px solid #c3e6cb;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #155724;
-  font-weight: 500;
-  margin-top: 8px;
-}
-
-.btn-add-subcategory:hover {
-  background: #d4edda;
 }

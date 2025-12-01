@@ -1,17 +1,16 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/compra-facturacion/submodules/compras-con-factura/components/FacturasList.jsx
-import { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import supabase from "../../../../../../../../../../api/supaBase";
 import { useNotification } from "../../../../../../../../../../contexts/NotificationContext";
 import FeedbackModal from "../../../../../../../../../common/FeedbackModal/FeedbackModal";
 
-const FacturasList = ({ projectId, onEditFactura }) => {
+const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoaded }) => {
   const { showToast } = useNotification();
   const [facturas, setFacturas] = useState([]);
   const [filtroProveedor, setFiltroProveedor] = useState("");
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-
   const [feedback, setFeedback] = useState({
     isOpen: false,
     type: 'success',
@@ -19,12 +18,21 @@ const FacturasList = ({ projectId, onEditFactura }) => {
     message: ''
   });
 
-  useEffect(() => {
-    cargarFacturas();
-  }, [projectId]);
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+
+  const formatCurrencyBs = (amount) => {
+    return new Intl.NumberFormat("es-VE", {
+      style: "currency",
+      currency: "VES",
+    }).format(amount);
+  };
 
   const cargarFacturas = async () => {
-    if (!projectId) return; // Prevent query if projectId is undefined
     try {
       const { data, error } = await supabase
         .from("facturas")
@@ -33,21 +41,44 @@ const FacturasList = ({ projectId, onEditFactura }) => {
         .neq("status", "deleted");
       if (error) throw error;
       setFacturas(data || []);
+      
+      // Populate parent categories if callback provided
+      if (data && onCategoriesLoaded) {
+        const uniqueCats = [...new Set(data.map((f) => f.categoria))];
+        onCategoriesLoaded(uniqueCats);
+      }
     } catch (error) {
       console.error("Error cargando facturas:", error);
     }
   };
 
+  useEffect(() => {
+    if (projectId) {
+      cargarFacturas();
+    }
+  }, [projectId]);
+
   const facturasFiltradas = facturas.filter((factura) => {
+    // Use parent filters if provided, otherwise use local state
+    const activeFilters = parentFilters || {
+      filtroCategoria,
+      filtroProveedor,
+      fechaInicio,
+      fechaFin
+    };
+
+    const { filtroCategoria: cat, filtroProveedor: prov, fechaInicio: start, fechaFin: end } = activeFilters;
+
     const cumpleProveedor =
-      !filtroProveedor ||
-      factura.proveedor.toLowerCase().includes(filtroProveedor.toLowerCase()) ||
-      factura.rif.includes(filtroProveedor);
+      !prov ||
+      factura.proveedor.toLowerCase().includes(prov.toLowerCase()) ||
+      factura.rif.includes(prov);
     const cumpleCategoria =
-      !filtroCategoria || factura.categoria === filtroCategoria;
+      !cat || factura.categoria === cat;
     const cumpleFechaInicio =
-      !fechaInicio || factura.fechaFactura >= fechaInicio;
-    const cumpleFechaFin = !fechaFin || factura.fechaFactura <= fechaFin;
+      !start || factura.fechaFactura >= start;
+    const cumpleFechaFin =
+      !end || factura.fechaFactura <= end;
 
     return (
       cumpleProveedor && cumpleCategoria && cumpleFechaInicio && cumpleFechaFin
@@ -204,131 +235,133 @@ const FacturasList = ({ projectId, onEditFactura }) => {
       <div className="section-header">
         <h3>Lista de Facturas</h3>
 
-        <div className="filtros">
-          <select
-            value={filtroCategoria}
-            onChange={(e) => setFiltroCategoria(e.target.value)}
-            className="filter-select"
-          >
-            <option value="">Todas las categorías</option>
-            {categoriasUnicas.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+        {!parentFilters && (
+          <div className="filtros">
+            <select
+              value={filtroCategoria}
+              onChange={(e) => setFiltroCategoria(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">Todas las categorías</option>
+              {categoriasUnicas.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
 
-          <input
-            type="text"
-            placeholder="Buscar por proveedor o RIF..."
-            value={filtroProveedor}
-            onChange={(e) => setFiltroProveedor(e.target.value)}
-            className="search-input"
-          />
-          <label htmlFor="fechaInicio" style={{ color: 'red' }}>Desde</label>
-          <input
-            type="date"
-            placeholder="Fecha inicio"
-            value={fechaInicio}
-            onChange={(e) => setFechaInicio(e.target.value)}
-            className="date-input"
-          />
-          <label htmlFor="fechaFin" style={{ color: 'red' }}>Hasta</label>
-          <input
-            type="date"
-            placeholder="Fecha fin"
-            value={fechaFin}
-            onChange={(e) => setFechaFin(e.target.value)}
-            className="date-input"
-          />
-        </div>
+            <input
+              type="text"
+              placeholder="Buscar por proveedor o RIF..."
+              value={filtroProveedor}
+              onChange={(e) => setFiltroProveedor(e.target.value)}
+              className="search-input"
+            />
+            <label htmlFor="fechaInicio" style={{ color: 'red' }}>Desde</label>
+            <input
+              type="date"
+              placeholder="Fecha inicio"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+              className="date-input"
+            />
+            <label htmlFor="fechaFin" style={{ color: 'red' }}>Hasta</label>
+            <input
+              type="date"
+              placeholder="Fecha fin"
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+              className="date-input"
+            />
+          </div>
+        )}
       </div>
 
-      <div className="facturas-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha Factura</th>
-              <th>Fecha Recibida</th>
-              <th>Proveedor</th>
-              <th>RIF</th>
-              <th>N° Factura</th>
-              <th>N° Control</th>
-              <th>Descripción</th>
-              <th>Categoría</th>
-              <th>Tasa de Pago (Bs/$)</th>
-              <th>Subcategorías</th>
-              <th>Total a Pagar (Bs)</th>
-              <th>Total a Pagar ($)</th>
-              <th>Pagado (Bs)</th>
-              <th>Pagado ($)</th>
-              <th>Método Pago</th>
-              <th>Retenciones</th>
-              <th>Observaciones</th>
-              <th>Valuación</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {facturasFiltradas.map((factura, index) => (
-              <tr key={factura.id}>
-                <td>{factura.fechaFactura}</td>
-                <td>{factura.fechaRecibida || "-"}</td>
-                <td>{factura.proveedor}</td>
-                <td>
-                  {factura.tipoRif}
-                  {factura.rif}
-                </td>
-                <td>{factura.numeroFactura}</td>
-                <td>{factura.numeroControl || "-"}</td>
-                <td>{factura.descripcion || "-"}</td>
-                <td>{factura.categoria}</td>
-                <td>{factura.tasaPago?.toFixed(2) || "0.00"}</td>
-                <td>{formatSubcategorias(factura)}</td>
-                <td>Bs {factura.totalPagar?.toFixed(2) || "0.00"}</td>
-                <td>$ {factura.totalPagarDolares?.toFixed(2) || "0.00"}</td>
-                <td>Bs {factura.montoPagado?.toFixed(2) || "0.00"}</td>
-                <td>$ {factura.pagadoDolares?.toFixed(2) || "0.00"}</td>
-                <td>{factura.modoPago || "-"}</td>
-                <td className="retenciones-cell">
-                  {getEstadoRetenciones(factura)}
-                </td>
-                <td className="observaciones-cell">
-                  {factura.observaciones ? (
-                    <div className="observaciones-tooltip">
-                      <span className="observaciones-icon">📝</span>
-                      <div className="observaciones-content">
-                        {factura.observaciones}
-                      </div>
-                    </div>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-                <td>{factura.valuacion || '-'}</td>
-                <td>
-                  <button
-                    className="btn-edit"
-                    onClick={() => onEditFactura(factura)}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="btn-delete"
-                    onClick={() => handleDelete(factura.id)}
-                  >
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {facturasFiltradas.length === 0 && (
+      {facturasFiltradas.length === 0 ? (
         <div className="no-data">
-          <p>No se encontraron facturas registradas</p>
+          <p>No hay facturas para mostrar</p>
+        </div>
+      ) : (
+        <div className="facturas-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha Factura</th>
+                <th>Fecha Recibida</th>
+                <th>Proveedor</th>
+                <th>RIF</th>
+                <th>N° Factura</th>
+                <th>N° Control</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Tasa de Pago (Bs/$)</th>
+                <th>Subcategorías</th>
+                <th>Total a Pagar (Bs)</th>
+                <th>Total a Pagar ($)</th>
+                <th>Pagado (Bs)</th>
+                <th>Pagado ($)</th>
+                <th>Método Pago</th>
+                <th>Retenciones</th>
+                <th>Observaciones</th>
+                <th>Valuación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {facturasFiltradas.map((factura, index) => (
+                <tr key={factura.id}>
+                  <td>{factura.fechaFactura}</td>
+                  <td>{factura.fechaRecibida || "-"}</td>
+                  <td>{factura.proveedor}</td>
+                  <td>
+                    {factura.tipoRif}
+                    {factura.rif}
+                  </td>
+                  <td>{factura.numeroFactura}</td>
+                  <td>{factura.numeroControl || "-"}</td>
+                  <td>{factura.descripcion || "-"}</td>
+                  <td>{factura.categoria}</td>
+                  <td>{factura.tasaPago?.toFixed(2) || "0.00"}</td>
+                  <td>{formatSubcategorias(factura)}</td>
+                  <td>Bs {factura.totalPagar?.toFixed(2) || "0.00"}</td>
+                  <td>$ {factura.totalPagarDolares?.toFixed(2) || "0.00"}</td>
+                  <td>Bs {factura.montoPagado?.toFixed(2) || "0.00"}</td>
+                  <td>$ {factura.pagadoDolares?.toFixed(2) || "0.00"}</td>
+                  <td>{factura.modoPago || "-"}</td>
+                  <td className="retenciones-cell">
+                    {getEstadoRetenciones(factura)}
+                  </td>
+                  <td className="observaciones-cell">
+                    {factura.observaciones ? (
+                      <div className="observaciones-tooltip">
+                        <span className="observaciones-icon">📝</span>
+                        <div className="observaciones-content">
+                          {factura.observaciones}
+                        </div>
+                      </div>
+                    ) : (
+                      "-"
+                    )}
+                  </td>
+                  <td>{factura.valuacion || '-'}</td>
+                  <td>
+                    <button
+                      className="btn-edit"
+                      onClick={() => onEditFactura(factura)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(factura.id)}
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

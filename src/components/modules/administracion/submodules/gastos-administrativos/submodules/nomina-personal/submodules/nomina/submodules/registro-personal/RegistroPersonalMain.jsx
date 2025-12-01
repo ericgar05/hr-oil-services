@@ -1,4 +1,3 @@
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/nomina-personal/submodules/nomina/submodules/registro-personal/RegistroPersonalMain.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProjects } from "../../../../../../../../../../../contexts/ProjectContext";
@@ -132,71 +131,86 @@ const RegistroPersonalMain = () => {
 
   return (
     <div className="registro-personal-main">
-      <button className="back-button" onClick={handleBack}>
-        ← Volver a Nómina
-      </button>
+      <div className="registro-header">
+        <div className="header-title-row">
+          <div>
+            <h1>Registro</h1>
+            <p className="subtitle">
+              Gestión de personal -{" "}
+              <span className="project-name">
+                {selectedProject?.name || "Proyecto"}
+              </span>
+            </p>
+          </div>
+          <button className="back-button-outline" onClick={handleBack}>
+            ← Volver a Nómina
+          </button>
+        </div>
 
-      <ModuleDescription
-        title="Registro de Personal"
-        description={`Gestión completa del registro y datos del personal - ${selectedProject?.name || ""
-          }`}
-      />
+        <div className="controls-row">
+          <div className="search-container-dark">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="search-icon"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input
+              type="text"
+              placeholder="Buscar empleado..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input-dark"
+              disabled={loading}
+            />
+          </div>
+          <button
+            className="btn-new-employee"
+            onClick={() => setShowForm(true)}
+          >
+            + Nuevo
+          </button>
+        </div>
+      </div>
 
       <div className="module-content">
-        {showForm ? (
-          <PersonalForm
-            employee={editingEmployee}
-            onSubmit={editingEmployee ? handleEditEmployee : handleAddEmployee}
-            onCancel={handleCancelForm}
-          />
+        {loading ? (
+          <div className="loading-state">
+            <p>Cargando empleados...</p>
+          </div>
         ) : (
-          <>
-            <div className="content-header">
-              <div className="header-actions">
-                <h3>Lista de Personal Registrado</h3>
-                <button
-                  className="btn-personal"
-                  onClick={() => setShowForm(true)}
-                  disabled={loading}
-                >
-                  {loading ? "Cargando..." : "+ Nuevo Empleado"}
-                </button>
-              </div>
-              <p>Gestión integral de la información del personal</p>
-
-              <div className="search-container" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <input
-                  type="text"
-                  placeholder="Buscar por nombre, apellido o cédula..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="search-input"
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ddd',
-                    fontSize: '1rem'
-                  }}
-                />
-              </div>
-            </div>
-
-            {loading ? (
-              <div className="loading-state">
-                <p>Cargando empleados...</p>
-              </div>
-            ) : (
-              <PersonalList
-                employees={filteredEmployees}
-                onEdit={handleEditClick}
-                onDelete={handleDeleteEmployee}
-                onStatusChange={handleStatusChange}
-              />
-            )}
-          </>
+          <PersonalList
+            employees={filteredEmployees}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteEmployee}
+            onStatusChange={handleStatusChange}
+          />
         )}
       </div>
+
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="modal-close-btn" onClick={handleCancelForm}>
+              ×
+            </button>
+            <PersonalForm
+              employee={editingEmployee}
+              onSubmit={editingEmployee ? handleEditEmployee : handleAddEmployee}
+              onCancel={handleCancelForm}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

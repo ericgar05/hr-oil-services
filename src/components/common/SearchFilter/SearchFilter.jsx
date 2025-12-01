@@ -1,24 +1,20 @@
-import React from 'react'
 import './SearchFilter.css'
 import { SearchIcons } from '../../../assets/icons/Icons'
 
 
 const SearchFilter = ({ value, onChange, placeholder = "Buscar..." }) => {
   return (
-    <div className="search-filter">
+    <div className="search-filter-project">
+      <SearchIcons className="search-icon-project"/>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="search-input"
+        className="search-input-project"
         />
-      <button className="search-button" type = "submit">
-        <SearchIcons className="search-icon"/>
-        
-      </button>
     </div>
   )
 }
 
-export default SearchFilter
+export default SearchFilter;

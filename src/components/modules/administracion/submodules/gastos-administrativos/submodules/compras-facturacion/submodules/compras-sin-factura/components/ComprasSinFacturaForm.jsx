@@ -4,6 +4,7 @@ import { useNotification } from '../../../../../../../../../../contexts/Notifica
 import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
 import MultiBancoModal from '../../../components/MultiBancoModal'
 import '../ComprasSinFacturaMain.css'
+import { AddIcon, DelateIcon, XIcon } from '../../../../../../../../../../assets/icons/Icons'
 
 const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelEdit }) => {
   const { showToast } = useNotification();
@@ -471,7 +472,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   className="btn-add-inline"
                   title="Agregar nueva categoría"
                 >
-                  +
+                  <AddIcon style={{ width: '20px', height: '20px' }} />
                 </button>
               </div>
             </div>
@@ -494,7 +495,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                       className="btn-remove-subcategory"
                       title="Eliminar subcategoría"
                     >
-                      -
+                      <DelateIcon style={{ width: '20px', height: '20px' }} />
                     </button>
                   )}
                   {index === formData.subcategorias.length - 1 && (
@@ -504,7 +505,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                       className="btn-add-inline"
                       title="Añadir Subcategoría"
                     >
-                      +
+                      <AddIcon style={{ width: '20px', height: '20px' }} />
                     </button>
                   )}
                 </div>
@@ -540,7 +541,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   className="btn-add-inline"
                   title="Agregar nuevo proveedor"
                 >
-                  +
+                  <AddIcon style={{ width: '20px', height: '20px' }} />
                 </button>
               </div>
             </div>
@@ -698,7 +699,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                   className="btn-add-inline"
                   title="Agregar nuevo modo de pago"
                 >
-                  +
+                  <AddIcon style={{ width: '20px', height: '20px' }} />
                 </button>
               </div>
               {/* Vista previa de Multi-Banco */}
@@ -751,7 +752,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 className="btn-close"
                 onClick={() => setShowProveedorModal(false)}
               >
-                ×
+                <XIcon style={{ width: '20px', height: '20px' }} />
               </button>
             </div>
             <div className="modal-body">
@@ -824,7 +825,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 className="btn-close"
                 onClick={() => setShowCategoriaModal(false)}
               >
-                ×
+                <XIcon style={{ width: '20px', height: '20px' }} />
               </button>
             </div>
             <div className="modal-body">
@@ -870,7 +871,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
                 className="btn-close"
                 onClick={() => setShowModoPagoModal(false)}
               >
-                ×
+                <XIcon style={{ width: '20px', height: '20px' }} />
               </button>
             </div>
             <div className="modal-body">

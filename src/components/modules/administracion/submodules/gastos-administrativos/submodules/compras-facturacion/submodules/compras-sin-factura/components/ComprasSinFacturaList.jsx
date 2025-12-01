@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import supabase from '../../../../../../../../../../api/supaBase'
 import { useNotification } from '../../../../../../../../../../contexts/NotificationContext'
 import FeedbackModal from '../../../../../../../../../common/FeedbackModal/FeedbackModal'
+import { ClipBoardIcon } from '../../../../../../../../../../assets/icons/Icons'
 
 const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
   const { showToast } = useNotification();
@@ -178,7 +179,9 @@ const ComprasSinFacturaList = ({ projectId, onEditCompra, refreshTrigger }) => {
                 <td className="observaciones-cell">
                   {compra.observaciones ? (
                     <div className="observaciones-tooltip">
-                      <span className="observaciones-icon">📝</span>
+                      <span className="observaciones-icon">
+                        <ClipBoardIcon style={{ width: '20px', height: '20px' }} />
+                      </span>
                       <div className="observaciones-content">
                         {compra.observaciones}
                       </div>

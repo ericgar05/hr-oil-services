@@ -1,7 +1,9 @@
 .project-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  width: 100%;
 }
 
 .project-list-empty {
@@ -21,8 +23,68 @@
   color: var(--text-secondary);
 }
 
+.project-card-add {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 2px dashed #9ca3af;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  background-color: transparent;
+  transition: all 0.2s ease;
+  min-height: 200px;
+  color: #6b7280;
+}
+
+.project-card-add:hover {
+  border-color: #3b82f6;
+  background-color: rgba(59, 130, 246, 0.05);
+  color: #3b82f6;
+}
+
+.add-card-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  fill: currentColor;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  color: inherit;
+}
+
+.project-card-add:hover .add-card-icon {
+    background-color: transparent;
+    color: inherit;
+    border-color: transparent;
+}
+
+.project-card-add h3 {
+    font-size: inherit;
+    font-weight: inherit;
+    margin: 0;
+    color: inherit;
+}
+
+.project-card-add p {
+    display: none;
+}
+
 @media (max-width: 768px) {
   .project-list {
-    grid-template-columns: 1fr;
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 20px; /* Space for scrollbar */
+    -webkit-overflow-scrolling: touch;
+    margin: 0; /* Reset margin for full width scroll */
+    padding: 20px;
+  }
+
+  .project-list > * {
+    flex: 0 0 85%; /* Show part of next card */
+    scroll-snap-align: center;
+    min-width: 280px;
   }
 }

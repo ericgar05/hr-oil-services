@@ -12,7 +12,16 @@ import "./ProjectLobby.css";
 
 const ProjectLobby = () => {
   const { projectId } = useParams();
-  const { selectedProject } = useProjects();
+  const { selectedProject, loading } = useProjects();
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Cargando proyecto...</p>
+      </div>
+    );
+  }
 
   // Si no hay proyecto seleccionado, redirigir a selección
   if (!selectedProject || selectedProject.id !== projectId) {
