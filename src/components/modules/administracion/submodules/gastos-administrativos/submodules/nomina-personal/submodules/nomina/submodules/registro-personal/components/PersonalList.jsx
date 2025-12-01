@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../../../../../../../../../../../contexts/AuthContext"; // Import useAuth
+import { useAuth } from "../../../../../../../../../../../../contexts/AuthContext"; // Import useAuth
 import "./PersonalList.css";
 
 const PersonalList = ({ employees, onEdit, onDelete, onStatusChange }) => {
