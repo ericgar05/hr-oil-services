@@ -120,8 +120,8 @@ export const AuthProvider = ({ children }) => {
     // Mapeo básico de roles a permisos (como fallback cuando no hay permisos en BD)
     const rolePermissions = {
       editor: {
-        resumen: ["read", "write"],
-        administracion: ["read", "write"],
+        resumen: ["read", "write", "delete"],
+        administracion: ["read", "write", "delete"],
       },
       viewer: {
         resumen: ["read"],

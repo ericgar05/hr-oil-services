@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useProjects } from "../../../../../../../../../../../contexts/ProjectContext";
 import { usePersonal } from "../../../../../../../../../../../contexts/PersonalContext";
 import { useNotification } from "../../../../../../../../../../../contexts/NotificationContext";
+import { useAuth } from "../../../../../../../../../../../contexts/AuthContext"; // Import useAuth
 import ModuleDescription from "../../../../../../../../../_core/ModuleDescription/ModuleDescription";
 import PersonalForm from "./components/PersonalForm";
 import PersonalList from "./components/PersonalList";
@@ -15,6 +16,7 @@ const RegistroPersonalMain = () => {
   const { getEmployeesByProject, addEmployee, updateEmployee, deleteEmployee } =
     usePersonal();
   const { showToast } = useNotification();
+  const { hasPermission } = useAuth(); // Destructure hasPermission
 
   const [employees, setEmployees] = useState([]);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
@@ -22,6 +24,8 @@ const RegistroPersonalMain = () => {
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // ... (rest of the component logic remains the same until the button)
 
   // Cargar empleados del proyecto actual
   useEffect(() => {
@@ -173,12 +177,14 @@ const RegistroPersonalMain = () => {
               disabled={loading}
             />
           </div>
-          <button
-            className="btn-new-employee"
-            onClick={() => setShowForm(true)}
-          >
-            + Nuevo
-          </button>
+          {hasPermission("administracion", "write") && (
+            <button
+              className="btn-new-employee"
+              onClick={() => setShowForm(true)}
+            >
+              + Nuevo
+            </button>
+          )}
         </div>
       </div>
 

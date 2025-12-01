@@ -6,3 +6,16 @@
   width: 100%;
   margin-top: 1rem;
 }
+
+/* Override global blue focus for login inputs */
+.login-form .form-input {
+  background-color: #f3f4f6; /* Gray-100 */
+  color: #1f2937; /* Gray-800 */
+  border-color: #d1d5db; /* Gray-300 */
+}
+
+.login-form .form-input:focus {
+  background-color: #ffffff;
+  border-color: #6b7280 !important; /* Gray-500 */
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1) !important;
+}

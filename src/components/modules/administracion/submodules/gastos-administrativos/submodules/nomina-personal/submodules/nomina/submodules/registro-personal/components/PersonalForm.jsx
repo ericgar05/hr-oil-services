@@ -141,8 +141,14 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
     return isValid;
   };
 
+  const [transitioning, setTransitioning] = useState(false);
+
   const nextStep = () => {
     if (validateStep(currentStep)) {
+      if (currentStep === 2) {
+        setTransitioning(true);
+        setTimeout(() => setTransitioning(false), 500);
+      }
       setCurrentStep((prev) => prev + 1);
     }
   };
@@ -154,6 +160,7 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (transitioning) return;
     if (!validateStep(3)) return;
 
     setSubmitting(true);
@@ -595,7 +602,12 @@ const PersonalForm = ({ employee, onSubmit, onCancel }) => {
               Continuar
             </button>
           ) : (
-            <button type="submit" className="btn-primary" disabled={submitting}>
+            <button 
+              type="submit" 
+              className="btn-primary" 
+              disabled={submitting || transitioning}
+              style={{ opacity: transitioning ? 0.7 : 1 }}
+            >
               {submitting
                 ? "Guardando..."
                 : employee

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
-import { ArrowIcon } from "../../../assets/icons/Icons.jsx";
+import { ArrowIcon, ConfigIcon } from "../../../assets/icons/Icons.jsx";
 import { OutIcon } from "../../../assets/icons/Icons.jsx";
 import SidebarItem from "./SidebarItem";
 import "./Sidebar.css";
@@ -98,6 +98,19 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
                   onItemClick={handleItemClick}
                 />
               ))}
+
+              {/* Admin Section */}
+              {currentUser?.role === "editor" && (
+                <SidebarItem
+                  item={{
+                    id: "permissions",
+                    label: "Gestionar Permisos",
+                    path: "/admin/permissions",
+                    icon: <ConfigIcon />,
+                  }}
+                  onItemClick={handleItemClick}
+                />
+              )}
             </ul>
           </nav>
 
