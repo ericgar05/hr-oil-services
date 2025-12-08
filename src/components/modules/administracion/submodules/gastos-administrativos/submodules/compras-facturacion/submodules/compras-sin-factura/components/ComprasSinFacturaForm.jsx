@@ -31,6 +31,7 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
   const [categorias, setCategorias] = useState([])
   const [modosPago, setModosPago] = useState([])
   const [proveedores, setProveedores] = useState([])
+  const [valuaciones, setValuaciones] = useState([])
   const [availableSubcategorias, setAvailableSubcategorias] = useState([])
   const [nuevaCategoria, setNuevaCategoria] = useState('')
   const [nuevoModoPago, setNuevoModoPago] = useState('')
@@ -115,6 +116,16 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
 
         if (provError) console.error('Error cargando proveedores:', provError)
         else setProveedores(provData)
+
+        // Cargar Valuaciones
+        const { data: valData, error: valError } = await supabase
+          .from('valuations')
+          .select('valuation_number')
+          .eq('project_id', projectId)
+          .order('created_at', { ascending: false })
+
+        if (valError) console.error('Error cargando valuaciones:', valError)
+        else setValuaciones(valData.map(v => v.valuation_number))
       }
 
       // Cargar Subcategorías desde la tabla subcategorias_compras
@@ -452,6 +463,23 @@ const ComprasSinFacturaForm = ({ projectId, onCompraSaved, compraEdit, onCancelE
         <div className="form-section">
           <h3>Información General</h3>
           <div className="form-grid">
+            <div className="form-group">
+              <label>VALUACIÓN ASOCIADA</label>
+              <input
+                type="text"
+                name="valuacion"
+                value={formData.valuacion || ''}
+                onChange={handleInputChange}
+                list="valuaciones-list"
+                placeholder="Seleccionar o escribir valuación"
+              />
+              <datalist id="valuaciones-list">
+                {valuaciones.map((val, index) => (
+                  <option key={index} value={val} />
+                ))}
+              </datalist>
+            </div>
+
             <div className="form-group">
               <label>CATEGORÍA *</label>
               <div className="input-with-button">

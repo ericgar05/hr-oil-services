@@ -66,7 +66,7 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
     }
 
     // Filtrar deducciones válidas
-    const validDeductions = deductions.filter(deduction => 
+    const validDeductions = deductions.filter(deduction =>
       deduction.description && deduction.percentage
     )
 
@@ -95,10 +95,10 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
       await addClientDeductions(selectedInvoice, deductionsData)
 
       showToast('✅ Deducciones guardadas exitosamente', 'success')
-      
+
       // Limpiar formulario después de guardar
       setDeductions([{ description: '', percentage: '' }])
-      
+
     } catch (error) {
       console.error('Error al guardar deducciones:', error)
       showToast('❌ Error al guardar las deducciones: ' + error.message, 'error')
@@ -108,11 +108,11 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
   }
 
   const isFormValid = () => {
-    const hasValidDeductions = deductions.some(deduction => 
+    const hasValidDeductions = deductions.some(deduction =>
       deduction.description && deduction.percentage
     )
     const totalDeductionsValid = calculateTotalDeductions() <= parseFloat(invoiceDetails?.taxable_base || 0)
-    
+
     return selectedInvoice && hasValidDeductions && totalDeductionsValid
   }
 
@@ -122,8 +122,8 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
 
       <div className="invoice-selection">
         <label>Seleccionar Factura:</label>
-        <select 
-          value={selectedInvoice} 
+        <select
+          value={selectedInvoice}
           onChange={(e) => setSelectedInvoice(e.target.value)}
         >
           <option value="">Seleccione una factura</option>
@@ -190,8 +190,8 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
                   </span>
                 </div>
                 {deductions.length > 1 && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => removeDeduction(index)}
                     className="remove-button"
                   >
@@ -230,7 +230,7 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
 
             {/* BOTÓN PARA GUARDAR */}
             <div className="save-section">
-              <button 
+              <button
                 onClick={handleSaveDeductions}
                 disabled={!isFormValid() || saving}
                 className="save-button"
@@ -239,8 +239,8 @@ const ClientDeductionsForm = ({ invoices, selectedDate }) => {
               </button>
               {!isFormValid() && selectedInvoice && (
                 <p className="validation-message">
-                  {!deductions.some(d => d.description && d.percentage) 
-                    ? 'Agrega al menos una deducción válida' 
+                  {!deductions.some(d => d.description && d.percentage)
+                    ? 'Agrega al menos una deducción válida'
                     : 'Las deducciones no pueden ser mayores a la base imponible'
                   }
                 </p>
