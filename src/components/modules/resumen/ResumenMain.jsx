@@ -83,7 +83,8 @@ const ResumenMain = () => {
     presupuestoItems,
     valuacionesItems,
     totalGastosTodasValuaciones_USD,
-    totalUtilidadNetaTodasValuaciones_USD,
+    totalUtilidadProyectadaGlobal_USD,
+    totalComisionesYDeduccionesGlobal_USD,
   } = useMemo(() => {
     const subtotales = {
       USD: { conIVA: 0, sinIVA: 0 },
@@ -141,7 +142,8 @@ const ResumenMain = () => {
     };
 
     let totalGastosTodasValuaciones_USD = 0;
-    let totalUtilidadNetaTodasValuaciones_USD = 0;
+    let totalUtilidadProyectadaGlobal_USD = 0; // Renamed from totalUtilidadNeta
+    let totalComisionesYDeduccionesGlobal_USD = 0; // New accumulator
 
     valuations?.forEach((valuacion) => {
       const {
@@ -161,7 +163,7 @@ const ResumenMain = () => {
         if (!data) return [];
         const startDate = new Date(periodo_inicio);
         startDate.setHours(0, 0, 0, 0);
-        
+
         const endDate = new Date(periodo_fin);
         endDate.setHours(23, 59, 59, 999);
 
@@ -171,7 +173,7 @@ const ResumenMain = () => {
         });
       };
 
-      // Usar facturas y comprasSinFactura en lugar de compras (inventario)
+      // Usar facturas y comprasSinFactura e inventario
       const facturasPeriodo = filterDataByPeriod(facturas, "fechaFactura");
       const comprasSinFacturaPeriodo = filterDataByPeriod(comprasSinFactura, "fechaCompra");
       const pagosPeriodo = filterDataByPeriod(allPagos, "fechaPago");
@@ -184,7 +186,7 @@ const ResumenMain = () => {
 
       const totalPagosNominaUSD = pagosPeriodo.reduce((acc, curr) => {
         const totalPagoUSD = curr.pagos.reduce(
-          (pagoAcc, pago) => pagoAcc + parseFloat(pago.subtotalUSD || 0),
+          (pagoAcc, pago) => pagoAcc + parseFloat(pago.montoTotalUSD || 0),
           0
         );
         return acc + totalPagoUSD;
@@ -196,34 +198,38 @@ const ResumenMain = () => {
         totalPagosNominaUSD;
       totalGastosTodasValuaciones_USD += totalGastosUSD;
 
-      const deducciones = {
-        arrendamiento: subtotalValuacionUSD * 0.05,
-        aporteEPS: subtotalValuacionUSD * 0.03,
-        timbreFiscal: subtotalValuacionUSD * 0.001,
-        ejecucionObras: subtotalValuacionUSD * 0.02,
-      };
+      // New Deduction Logic (Mirroring ValuacionResumenCard)
+      const montoBanco = subtotalValuacionUSD * (1 - 0.081); // Subtotal - 8.1%
+      const diffSubtotalBanco = subtotalValuacionUSD - montoBanco; // The 8.1% deducted initially
 
-      const totalDeducciones = Object.values(deducciones).reduce(
-        (acc, curr) => acc + curr,
-        0
-      );
+      // Gov Deductions
+      const dedAlcaldia = montoBanco * 0.03;
+      const dedISLR = montoBanco * 0.01;
+      const dedSENIAT = montoBanco * 0.10;
+      const totalDedGov = dedAlcaldia + dedISLR + dedSENIAT;
 
-      const montoARecibir =
-        subtotalValuacionUSD - totalGastosUSD - totalDeducciones;
+      // Commissions
+      const baseComisiones = montoBanco - totalDedGov;
 
-      const deduccionesEmpresa = {
-        alcaldia: montoARecibir * 0.03,
-        anticipoIslr: montoARecibir * 0.01,
-        seniat: montoARecibir * 0.1,
-      };
+      const comisionCobro = baseComisiones * 0.15;
+      const d25 = baseComisiones * 0.25;
 
-      const totalDeduccionesEmpresa = Object.values(deduccionesEmpresa).reduce(
-        (acc, curr) => acc + curr,
-        0
-      );
+      const baseOtras = baseComisiones - d25;
+      const comisionP = baseOtras * 0.08;
+      const comisionR = baseOtras * 0.02;
+      const comisionL = baseOtras * 0.02;
+      const totalOtras = comisionP + comisionR + comisionL;
 
-      const utilidadNeta = montoARecibir - totalDeduccionesEmpresa;
-      totalUtilidadNetaTodasValuaciones_USD += utilidadNeta;
+      const totalComisiones = comisionCobro + d25 + totalOtras;
+
+      // Aggregating global totals
+      // Total Deductions & Commissions = The 8.1% initial cut + Gov Deductions + All Commissions
+      totalComisionesYDeduccionesGlobal_USD += (diffSubtotalBanco + totalDedGov + totalComisiones);
+
+      // Utilidad Proyectada = MontoBanco - Gov - Comisiones - Gastos
+      const utilidadProyectada = montoBanco - totalDedGov - totalComisiones - totalGastosUSD;
+
+      totalUtilidadProyectadaGlobal_USD += utilidadProyectada;
     });
 
     const presupuestoItems = [
@@ -255,7 +261,7 @@ const ResumenMain = () => {
         equivalentValue: generarConversiones(totalEjecutado_USD),
       },
       {
-        label: "Total Gastos (Todas Valuaciones)",
+        label: "Total Gastos (incl. Nómina)",
         value: formatCurrency(
           convertFromUSD(totalGastosTodasValuaciones_USD),
           mainCurrency
@@ -263,14 +269,21 @@ const ResumenMain = () => {
         equivalentValue: generarConversiones(totalGastosTodasValuaciones_USD),
       },
       {
-        label: "Utilidad Neta (Todas Valuaciones)",
+        label: "Total Comisiones y Deducciones",
         value: formatCurrency(
-          convertFromUSD(totalUtilidadNetaTodasValuaciones_USD),
+          convertFromUSD(totalComisionesYDeduccionesGlobal_USD),
           mainCurrency
         ),
-        equivalentValue: generarConversiones(
-          totalUtilidadNetaTodasValuaciones_USD
+        equivalentValue: generarConversiones(totalComisionesYDeduccionesGlobal_USD),
+        isNegative: true, // Helper for styling if needed, implies red usually
+      },
+      {
+        label: "Utilidad Proyectada",
+        value: formatCurrency(
+          convertFromUSD(totalUtilidadProyectadaGlobal_USD),
+          mainCurrency
         ),
+        equivalentValue: generarConversiones(totalUtilidadProyectadaGlobal_USD),
         highlight: true,
       },
       {
@@ -288,7 +301,8 @@ const ResumenMain = () => {
       presupuestoItems,
       valuacionesItems,
       totalGastosTodasValuaciones_USD,
-      totalUtilidadNetaTodasValuaciones_USD,
+      totalUtilidadProyectadaGlobal_USD,
+      totalComisionesYDeduccionesGlobal_USD,
     };
   }, [
     budget,
@@ -402,9 +416,8 @@ const ResumenMain = () => {
                     {Array.from({ length: totalSlides }).map((_, index) => (
                       <button
                         key={index}
-                        className={`carousel-indicator ${
-                          index === currentSlide ? "active" : ""
-                        }`}
+                        className={`carousel-indicator ${index === currentSlide ? "active" : ""
+                          }`}
                         onClick={() => goToSlide(index)}
                         aria-label={`Ir a valuación ${index + 1}`}
                       />

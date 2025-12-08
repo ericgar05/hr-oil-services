@@ -542,3 +542,121 @@
 .valuacion-resumen-card {
   animation: slideIn 0.3s ease-out;
 }
+
+/* Nuevos Estilos para Deducciones Detalladas */
+.resultados-grid-detailed {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.resultado-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.resultado-row.main {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #3b82f6;
+  box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+}
+
+.resultado-row.main .label {
+  font-weight: 700;
+  color: #1e3a8a;
+  font-size: 1rem;
+}
+
+.resultado-row.main .value {
+  font-weight: 800;
+  color: #1e40af;
+  font-size: 1.25rem;
+}
+
+.resultado-group {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+.group-header {
+  background: #f8fafc;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.group-items {
+  padding: 0.5rem 0;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.item-row:last-child {
+  border-bottom: none;
+}
+
+.item-row .label {
+  color: #64748b;
+}
+
+.item-row .value {
+  font-family: 'Monaco', 'Consolas', monospace;
+  font-weight: 600;
+}
+
+.item-row .value.negative {
+  color: #ef4444;
+}
+
+.resultado-principal.final {
+  margin-top: 1rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  color: white;
+}
+
+.resultado-principal.final .resultado-label {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.resultado-principal.final .resultado-value {
+  color: white;
+  margin-top: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 2.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .resultado-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .resultado-row .value {
+    width: 100%;
+    text-align: right;
+  }
+}

@@ -58,6 +58,11 @@ const ValuacionResumenCard = ({
   const porcentajeEjecutado =
     budgetTotalUSD > 0 ? (cumulativeProgressUSD / budgetTotalUSD) * 100 : 0;
 
+  // Filter by valuation NUMBER instead of date range
+  const facturasValuacion = facturas ? facturas.filter(item => item.valuacion === numero_valuacion) : [];
+  const comprasSinFacturaValuacion = comprasSinFactura ? comprasSinFactura.filter(item => item.valuacion === numero_valuacion) : [];
+
+  // Pagos remain filtered by period as they are payroll related
   const filterDataByPeriod = (data, dateField) => {
     if (!data) return [];
     const startDate = new Date(periodo_inicio);
@@ -72,29 +77,15 @@ const ValuacionResumenCard = ({
     });
   };
 
-  const facturasPeriodo = filterDataByPeriod(facturas, "fechaFactura");
-  const comprasSinFacturaPeriodo = filterDataByPeriod(comprasSinFactura, "fechaCompra");
   const pagosPeriodo = filterDataByPeriod(pagos, "fechaPago");
 
   // Agrupar gastos por categoría
   const gastosPorCategoria = {};
 
-  console.log('=== DEBUG VALUACION ===');
-  console.log('Período:', periodo_inicio, 'a', periodo_fin);
-  console.log('Facturas en período:', facturasPeriodo.length);
-  console.log('Compras sin factura en período:', comprasSinFacturaPeriodo.length);
-
   // Procesar facturas (compras con factura)
-  facturasPeriodo.forEach((factura) => {
+  facturasValuacion.forEach((factura) => {
     const categoria = factura.categoria || 'Sin Categoría';
     const monto = parseFloat(factura.pagadoDolares || 0);
-
-    console.log('Factura:', {
-      numeroFactura: factura.numeroFactura,
-      categoria: categoria,
-      pagadoDolares: monto,
-      proveedor: factura.proveedor
-    });
 
     if (!gastosPorCategoria[categoria]) {
       gastosPorCategoria[categoria] = {
@@ -109,16 +100,9 @@ const ValuacionResumenCard = ({
   });
 
   // Procesar compras sin factura
-  comprasSinFacturaPeriodo.forEach((compra) => {
+  comprasSinFacturaValuacion.forEach((compra) => {
     const categoria = compra.categoria || 'Sin Categoría';
     const monto = parseFloat(compra.totalDolares || 0);
-
-    console.log('Compra sin factura:', {
-      numeroReferencia: compra.numeroNotaEntrega || 'N/A',
-      categoria: categoria,
-      totalDolares: monto,
-      proveedor: compra.proveedor
-    });
 
     if (!gastosPorCategoria[categoria]) {
       gastosPorCategoria[categoria] = {
@@ -132,14 +116,11 @@ const ValuacionResumenCard = ({
     gastosPorCategoria[categoria].total += monto;
   });
 
-  console.log('Gastos agrupados por categoría:', gastosPorCategoria);
-  console.log('=== FIN DEBUG ===');
-
   // Calcular totales
-  const totalComprasConFacturaUSD = facturasPeriodo
+  const totalComprasConFacturaUSD = facturasValuacion
     .reduce((acc, curr) => acc + parseFloat(curr.pagadoDolares || 0), 0);
 
-  const totalComprasSinFacturaUSD = comprasSinFacturaPeriodo
+  const totalComprasSinFacturaUSD = comprasSinFacturaValuacion
     .reduce((acc, curr) => acc + parseFloat(curr.totalDolares || 0), 0);
 
   const totalPagosNominaUSD = pagosPeriodo.reduce((acc, curr) => {
@@ -158,6 +139,64 @@ const ValuacionResumenCard = ({
     .sort((a, b) => b[1].total - a[1].total);
 
   const utilidadNeta = subtotalValuacionUSD - totalGastosUSD;
+
+  // State para el modal
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const handleCategoryClick = (categoria) => {
+    setSelectedCategory(categoria);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedCategory(null);
+  };
+
+  const handlePrevCategory = () => {
+    if (!selectedCategory) return;
+    const currentIndex = categoriasOrdenadas.findIndex(([cat]) => cat === selectedCategory);
+    if (currentIndex > 0) {
+      setSelectedCategory(categoriasOrdenadas[currentIndex - 1][0]);
+    }
+  };
+
+  const handleNextCategory = () => {
+    if (!selectedCategory) return;
+    const currentIndex = categoriasOrdenadas.findIndex(([cat]) => cat === selectedCategory);
+    if (currentIndex < categoriasOrdenadas.length - 1) {
+      setSelectedCategory(categoriasOrdenadas[currentIndex + 1][0]);
+    }
+  };
+
+  // Filtrar items para el modal
+  const getCategoryItems = () => {
+    if (!selectedCategory) return [];
+
+    const facturas = facturasValuacion
+      .filter(f => (f.categoria || 'Sin Categoría') === selectedCategory)
+      .map(f => ({
+        id: f.id,
+        fecha: f.fechaFactura,
+        proveedor: f.proveedor,
+        descripcion: f.descripcion,
+        subcategoria: Array.isArray(f.subcategorias) ? f.subcategorias.join(', ') : f.subcategoria,
+        monto: parseFloat(f.pagadoDolares || 0),
+        tipo: 'Factura'
+      }));
+
+    const compras = comprasSinFacturaValuacion
+      .filter(c => (c.categoria || 'Sin Categoría') === selectedCategory)
+      .map(c => ({
+        id: c.id,
+        fecha: c.fechaCompra,
+        proveedor: c.proveedor,
+        descripcion: c.descripcion,
+        subcategoria: Array.isArray(c.subcategorias) ? c.subcategorias.join(', ') : c.subcategoria,
+        monto: parseFloat(c.totalDolares || 0),
+        tipo: 'Sin Factura'
+      }));
+
+    return [...facturas, ...compras].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  };
 
   return (
     <div className="valuacion-resumen-card">
@@ -227,7 +266,13 @@ const ValuacionResumenCard = ({
                       : 0;
 
                     return (
-                      <div key={categoria} className="categoria-item">
+                      <div
+                        key={categoria}
+                        className="categoria-item clickable"
+                        onClick={() => handleCategoryClick(categoria)}
+                        style={{ cursor: 'pointer' }}
+                        title="Ver detalle"
+                      >
                         <div className="categoria-header-simple">
                           <span className="categoria-nombre">{categoria}</span>
                           <div className="categoria-stats">
@@ -323,6 +368,420 @@ const ValuacionResumenCard = ({
           </div>
         </div>
       </div >
+
+      {/* Modal de Detalle */}
+      {/* Modal de Detalle */}
+      {selectedCategory && (
+        <div className="category-detail-modal-overlay">
+          <div className="category-detail-modal">
+            <div className="modal-header">
+              <div className="nav-controls">
+                <button
+                  onClick={handlePrevCategory}
+                  disabled={categoriasOrdenadas.findIndex(([cat]) => cat === selectedCategory) === 0}
+                  className="nav-btn"
+                  title="Categoría anterior"
+                >
+                  <span className="arrow">←</span>
+                </button>
+                <button
+                  onClick={handleNextCategory}
+                  disabled={categoriasOrdenadas.findIndex(([cat]) => cat === selectedCategory) === categoriasOrdenadas.length - 1}
+                  className="nav-btn"
+                  title="Categoría siguiente"
+                >
+                  <span className="arrow">→</span>
+                </button>
+              </div>
+              <h3 className="modal-title">{selectedCategory}</h3>
+              <button onClick={handleCloseModal} className="close-btn" title="Cerrar">×</button>
+            </div>
+
+            <div className="modal-content">
+              {/* Vista de Tabla (Desktop) */}
+              <div className="desktop-view">
+                <div className="table-responsive">
+                  <table className="detail-table">
+                    <thead>
+                      <tr>
+                        <th className="th-date">Fecha</th>
+                        <th className="th-provider">Proveedor</th>
+                        <th className="th-desc">Descripción</th>
+                        <th className="th-subcat">Subcategoría</th>
+                        <th className="th-amount">Monto ($)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getCategoryItems().map((item, idx) => (
+                        <tr key={idx}>
+                          <td className="td-date">{item.fecha ? new Date(item.fecha).toLocaleDateString() : 'N/A'}</td>
+                          <td className="td-provider font-medium">{item.proveedor}</td>
+                          <td className="td-desc text-muted">{item.descripcion}</td>
+                          <td className="td-subcat">
+                            <span className="badge">{item.subcategoria || 'General'}</span>
+                          </td>
+                          <td className="td-amount text-right font-bold">
+                            {new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2 }).format(item.monto)}
+                          </td>
+                        </tr>
+                      ))}
+                      {getCategoryItems().length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="text-center py-4 text-muted">No hay items registrados</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Vista de Tarjetas (Mobile) */}
+              <div className="mobile-view">
+                {getCategoryItems().map((item, idx) => (
+                  <div key={idx} className="mobile-card">
+                    <div className="mobile-card-header">
+                      <span className="mobile-date">{item.fecha ? new Date(item.fecha).toLocaleDateString() : 'N/A'}</span>
+                      <span className="mobile-amount">${new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2 }).format(item.monto)}</span>
+                    </div>
+                    <div className="mobile-card-body">
+                      <div className="mobile-row">
+                        <span className="label">Proveedor:</span>
+                        <span className="value font-medium">{item.proveedor}</span>
+                      </div>
+                      <div className="mobile-row">
+                        <span className="label">Subcategoría:</span>
+                        <span className="value"><span className="badge small">{item.subcategoria || 'General'}</span></span>
+                      </div>
+                      {item.descripcion && (
+                        <div className="mobile-row column">
+                          <span className="label">Descripción:</span>
+                          <span className="value text-muted">{item.descripcion}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {getCategoryItems().length === 0 && (
+                  <div className="text-center py-4 text-muted">No hay items registrados</div>
+                )}
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <div className="total-label">Total Categoría</div>
+              <div className="total-amount">
+                $ {new Intl.NumberFormat("de-DE", { minimumFractionDigits: 2 }).format(gastosPorCategoria[selectedCategory]?.total || 0)}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        /* Animations */
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+
+        .category-detail-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(5px);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 9999;
+          animation: fadeIn 0.2s ease-out;
+          padding: 1rem;
+        }
+
+        .category-detail-modal {
+          background: #ffffff;
+          border-radius: 12px;
+          width: 95vw;
+          max-width: 1100px;
+          max-height: 85vh;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+          animation: slideUp 0.3s ease-out;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .modal-header {
+          padding: 1rem 1.5rem;
+          border-bottom: 1px solid #f0f0f0;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #fff;
+          z-index: 10;
+        }
+
+        .modal-header h3 {
+          margin: 0;
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1a1a1a;
+          text-align: center;
+          flex: 1;
+        }
+
+        .nav-controls {
+          display: flex;
+          gap: 0.5rem;
+        }
+
+        .nav-btn {
+          background: #f8f9fa;
+          border: 1px solid #e9ecef;
+          border-radius: 8px;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #495057;
+          transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+          background: #e9ecef;
+          color: #000;
+          transform: translateY(-1px);
+        }
+
+        .nav-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          border-color: #f0f0f0;
+        }
+
+        .close-btn {
+          background: #fff0f0;
+          border: none;
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          font-size: 1.5rem;
+          line-height: 1;
+          cursor: pointer;
+          color: #dc3545;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+          background: #ffe6e6;
+          transform: rotate(90deg);
+        }
+
+        .modal-content {
+          padding: 0;
+          overflow-y: auto;
+          flex: 1;
+          background: #f8f9fa;
+        }
+
+        /* Desktop View - Table */
+        .desktop-view {
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          overflow: hidden;
+        }
+        
+        .table-responsive {
+          flex: 1;
+          overflow: auto;
+          width: 100%;
+        }
+        
+        .detail-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+          background: white;
+        }
+
+        .detail-table th {
+          background: #f8fafc;
+          padding: 1rem;
+          font-weight: 600;
+          color: #475569;
+          text-transform: uppercase;
+          font-size: 0.75rem;
+          letter-spacing: 0.5px;
+          border-bottom: 2px solid #e2e8f0;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+          white-space: nowrap;
+          box-shadow: 0 1px 0 #e2e8f0;
+        }
+
+        .detail-table td {
+          padding: 1rem;
+          border-bottom: 1px solid #f0f0f0;
+          color: #333;
+          font-size: 0.9rem;
+          vertical-align: top;
+        }
+        
+        .detail-table td:first-child { /* Fecha */
+            white-space: nowrap;
+            color: #64748b;
+        }
+
+        .detail-table td:nth-child(3) { /* Estilo para Descripción */
+            min-width: 300px; 
+            max-width: 400px;
+            white-space: normal;
+        }
+        
+        .detail-table td:last-child { /* Monto */
+            white-space: nowrap;
+        }
+
+        .detail-table tr:hover td {
+          background-color: #f8f9fa;
+        }
+
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-muted { color: #868e96; font-size: 0.85rem; }
+        .font-medium { font-weight: 500; }
+        .font-bold { font-weight: 700; color: #1a1a1a; }
+
+        .badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          background: #e7f5ff;
+          color: #007bff;
+          border-radius: 50px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        /* Mobile View - Cards */
+        .mobile-view {
+          display: none;
+          padding: 1rem;
+          gap: 1rem;
+        }
+
+        .mobile-card {
+          background: white;
+          border-radius: 8px;
+          padding: 1rem;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+          border: 1px solid #f0f0f0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .mobile-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid #f0f0f0;
+        }
+
+        .mobile-date {
+          font-size: 0.85rem;
+          color: #868e96;
+        }
+
+        .mobile-amount {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #28a745;
+        }
+
+        .mobile-row {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.9rem;
+        }
+        
+        .mobile-row.column {
+          flex-direction: column;
+          gap: 0.25rem;
+        }
+
+        .mobile-row .label {
+          color: #868e96;
+          font-size: 0.8rem;
+          text-transform: uppercase;
+        }
+
+        .badge.small {
+          padding: 0.15rem 0.5rem;
+          font-size: 0.7rem;
+        }
+
+        .modal-footer {
+          padding: 1.25rem 1.5rem;
+          border-top: 1px solid #e9ecef;
+          background: #fff;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .total-label {
+          font-size: 1rem;
+          color: #6c757d;
+        }
+
+        .total-amount {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #28a745;
+          letter-spacing: -0.5px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+          .desktop-view {
+            display: none !important;
+          }
+          .mobile-view {
+            display: flex !important;
+            flex-direction: column;
+          }
+          
+          .category-detail-modal {
+            max-height: 90vh;
+            border-radius: 12px 12px 0 0;
+            position: absolute;
+            bottom: 0;
+            margin-bottom: 0;
+            animation: slideUp 0.3s ease-out;
+            max-width: 100%;
+          }
+          
+          .category-detail-modal-overlay {
+            align-items: flex-end;
+            padding: 0;
+          }
+        }
+      `}</style>
     </div >
   );
 };
