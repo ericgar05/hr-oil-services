@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useCurrency } from "../../../../contexts/CurrencyContext";
 import { useOperaciones } from "../../../../contexts/OperacionesContext";
 import { usePersonal } from "../../../../contexts/PersonalContext";
@@ -21,7 +21,6 @@ const ValuacionResumenCard = ({
   const [pagos, setPagos] = useState([]);
   const [loadingPagos, setLoadingPagos] = useState(true);
   const [showCategories, setShowCategories] = useState(false);
-  const [showProfitDetails, setShowProfitDetails] = useState(false);
   const [seniatAmount, setSeniatAmount] = useState(0);
 
   useEffect(() => {
@@ -498,8 +497,8 @@ const ValuacionResumenCard = ({
                     </div>
                   </div>
 
-                  {/* SENIAT Anual Card */}
-                  <div className="valuacion-totales-grid seniat-grid" style={{ marginBottom: '1rem', marginTop: '0.5rem' }}>
+                  {/* SENIAT Anual Card (if needed separately, or included in deductions? usually separate as per prev design) */}
+                  <div className="valuacion-totales-grid seniat-grid" style={{ marginBottom: '1.5rem', marginTop: '0.5rem' }}>
                     <div className="valuacion-total-card gray seniat-card-dashed">
                       <div className="valuacion-card-content seniat-content-row">
                         <div className="seniat-icon-wrapper">
@@ -515,103 +514,6 @@ const ValuacionResumenCard = ({
                     </div>
                   </div>
 
-                  {/* Detalle Desplegable */}
-                  <div className="details-toggle-container" style={{ marginBottom: '1.5rem' }}>
-                    <button
-                      className="details-toggle-btn"
-                      onClick={() => setShowProfitDetails(!showProfitDetails)}
-                      style={{
-                        background: 'transparent',
-                        border: '1px solid #e2e8f0',
-                        color: '#64748b',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '6px',
-                        cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        margin: '0 auto',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <span>{showProfitDetails ? 'Ocultar Desglose' : 'Ver Desglose Detallado'}</span>
-                      <span style={{ transform: showProfitDetails ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
-                    </button>
-
-                    {showProfitDetails && (
-                      <div className="resultados-grid-detailed" style={{ marginTop: '1rem', animation: 'slideIn 0.3s ease-out' }}>
-                        {/* 2. Deducciones Gubernamentales Detalle */}
-                        <div className="resultado-group">
-                          <div className="group-header">Deducciones Gubernamentales</div>
-                          <div className="group-items">
-                            <div className="item-row">
-                              <span className="label">Alcaldía (3%)</span>
-                              <span className="value negative">
-                                - {formatCurrency(dedAlcaldia, "USD")}
-                              </span>
-                            </div>
-                            <div className="item-row">
-                              <span className="label">Anticipo ISLR (1%)</span>
-                              <span className="value negative">
-                                - {formatCurrency(dedISLR, "USD")}
-                              </span>
-                            </div>
-                            <div className="item-row">
-                              <span className="label">SENIAT (10%)</span>
-                              <span className="value negative">
-                                - {formatCurrency(dedSENIAT, "USD")}
-                              </span>
-                            </div>
-                            <div className="item-row">
-                              <span className="label">SENIAT (Cuota Anual)</span>
-                              <span className="value negative">
-                                - {formatCurrency(seniatAmount, "USD")}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 3. Comisiones Detalle */}
-                        <div className="resultado-group">
-                          <div className="group-header">Comisiones y Deducciones</div>
-                          <div className="group-items">
-                            <div className="item-row">
-                              <span className="label">Comisión por Cobro (15%)</span>
-                              <span className="value negative">
-                                - {formatCurrency(comisionCobro, "USD")}
-                              </span>
-                            </div>
-                            <div className="item-row">
-                              <span className="label">D25%</span>
-                              <span className="value negative">
-                                - {formatCurrency(d25, "USD")}
-                              </span>
-                            </div>
-                            <div className="item-row">
-                              <span className="label">Otras (P:8%, R:2%, L:2%)</span>
-                              <span className="value negative">
-                                - {formatCurrency(comisionP + comisionR + comisionL, "USD")}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* 4. Gastos Realizados Detalle */}
-                        <div className="resultado-group">
-                          <div className="group-header">Gastos Operativos</div>
-                          <div className="group-items">
-                            <div className="item-row">
-                              <span className="label">Total Gastos Registrados</span>
-                              <span className="value negative">
-                                - {formatCurrency(totalGastosUSD, "USD")}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
 
                   {/* Utilidad Final Dashboard */}
                   <div className="profit-dashboard">
