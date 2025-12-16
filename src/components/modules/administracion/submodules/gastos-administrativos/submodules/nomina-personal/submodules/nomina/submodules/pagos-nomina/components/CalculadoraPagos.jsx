@@ -153,52 +153,51 @@ const CalculadoraPagos = ({
     
     // Mapeo inverso si hay initialData
     const savedDataMap = {};
+    let dataLoadedCounter = 0;
+
     if (initialData && initialData.pagos) {
-      console.log("CalculadoraPagos received initialData:", initialData);
       initialData.pagos.forEach(p => {
-        // Asegurar que usamos el ID correcto. A veces empleado es un objeto, a veces un ID si la estructura varía, pero en 'pagos' guardados suele ser objeto.
         if (p.empleado && p.empleado.id) {
-            savedDataMap[p.empleado.id] = p;
+            // Usar String() para asegurar coincidencia de tipos (firebase ids vs sql ids etc)
+            savedDataMap[String(p.empleado.id)] = p;
         }
       });
-      console.log("Saved Data Map prepared:", savedDataMap);
-
+      console.log("Datos de edición preparados para:", Object.keys(savedDataMap).length, "empleados");
+      
       const hasQuincenal = initialData.pagos.some(p => p.empleado.frecuenciaPago === 'Quincenal');
       if (hasQuincenal) setIncluirQuincenal(true);
-    } else {
-        console.log("CalculadoraPagos: No initialData or pagos found");
     }
 
     employees.forEach((emp) => {
-      // Intentar obtener datos guardados
-      const saved = savedDataMap[emp.id];
-      if (saved) {
-          console.log(`Found saved data for ${emp.nombre} (${emp.id}):`, saved);
-      }
+      // Intentar obtener datos guardados usando String ID
+      const saved = savedDataMap[String(emp.id)];
+      if (saved) dataLoadedCounter++;
 
       if (emp.frecuenciaPago === "Quincenal") {
-        initialDias[emp.id] = saved?.diasTrabajados || diasPagoQuincenal[emp.id] || 15;
-        // Recuperar mitad de pago del saved o usar default
-        // Nota: en el objeto saved pago.mitadPago es lo que guardamos
-        initialMitad[emp.id] = saved?.mitadPago || mitadPagoQuincenal[emp.id] || "primera";
+        initialDias[emp.id] = saved?.diasTrabajados ?? diasPagoQuincenal[emp.id] ?? 15;
+        // Nota: saved.mitadPagoQuincenal debería ser lo correcto si lo guardamos así, o saved.mitadPago.
+        initialMitad[emp.id] = saved?.mitadPagoQuincenal || saved?.mitadPago || mitadPagoQuincenal[emp.id] || "primera";
       }
       
       initialBancos[emp.id] = saved?.bancoPago || bancosPago[emp.id] || "";
       initialObservaciones[emp.id] = saved?.observaciones || observaciones[emp.id] || "";
       
-      initialHorasExtras[emp.id] = saved?.horasExtras ? {
-         diurna: saved.horasExtras.diurna || 0,
-         nocturna: saved.horasExtras.nocturna || 0
-      } : (horasExtras[emp.id] || {
-        diurna: 0,
-        nocturna: 0,
-      });
+      // Manejo robusto de horas extras
+      if (saved?.horasExtras) {
+         initialHorasExtras[emp.id] = {
+             diurna: parseFloat(saved.horasExtras.diurna) || 0,
+             nocturna: parseFloat(saved.horasExtras.nocturna) || 0
+         };
+      } else {
+         initialHorasExtras[emp.id] = horasExtras[emp.id] || { diurna: 0, nocturna: 0 };
+      }
 
-      initialDeducciones[emp.id] = saved?.deduccionesManualesUSD || deduccionesManuales[emp.id] || 0;
-      initialAdelantos[emp.id] = saved?.adelantosUSD || adelantosSueldo[emp.id] || 0;
-      // OJO: montoExtraBs en state guarda el monto en USD (input), aunque se llame Bs. 
-      // En saved tenemos montoExtraUSD que es lo que queremos.
-      initialMontoExtra[emp.id] = saved?.montoExtraUSD || montoExtraBs[emp.id] || 0;
+      initialDeducciones[emp.id] = saved?.deduccionesManualesUSD ?? deduccionesManuales[emp.id] ?? 0;
+      initialAdelantos[emp.id] = saved?.adelantosUSD ?? adelantosSueldo[emp.id] ?? 0;
+      
+      // OJO: montoExtraBs en state guarda el monto en USD (input).
+      // saved.montoExtraUSD es lo que queremos recuperar.
+      initialMontoExtra[emp.id] = saved?.montoExtraUSD ?? montoExtraBs[emp.id] ?? 0;
       
       initialSoloExtras[emp.id] = saved ? (saved.soloExtras || false) : (soloHorasExtras[emp.id] || false);
     });
@@ -206,7 +205,6 @@ const CalculadoraPagos = ({
     setDiasPagoQuincenal((prev) => ({ ...prev, ...initialDias }));
     setMitadPagoQuincenal((prev) => ({ ...prev, ...initialMitad }));
     
-    // Setear valores iniciales
     setBancosPago((prev) => ({ ...prev, ...initialBancos }));
     setObservaciones((prev) => ({ ...prev, ...initialObservaciones }));
     setHorasExtras((prev) => ({ ...prev, ...initialHorasExtras }));
@@ -214,6 +212,11 @@ const CalculadoraPagos = ({
     setAdelantosSueldo((prev) => ({ ...prev, ...initialAdelantos }));
     setMontoExtraBs((prev) => ({ ...prev, ...initialMontoExtra }));
     setSoloHorasExtras((prev) => ({ ...prev, ...initialSoloExtras }));
+
+    if (dataLoadedCounter > 0 && initialData) {
+        // showToast(`Datos cargados para ${dataLoadedCounter} empleados en la edición`, 'info');
+        // Comentado para no spamear, pero útil si se quiere feedback
+    }
     
   }, [employees, fechaPago, initialData]); // Agregar initialData a dependencias
 
@@ -269,7 +272,21 @@ const CalculadoraPagos = ({
     }
   };
 
-  // CORRECCIÓN: Helper para parsear fecha localmente sin problemas de zona horaria
+  // Debug / Feedback VISUAL para el usuario
+  const matchedInfo = React.useMemo(() => {
+     if (!initialData?.pagos) return { total: 0, matched: 0 };
+     const total = initialData.pagos.length;
+     let matched = 0;
+     const savedIds = new Set(initialData.pagos.map(p => String(p.empleado?.id)));
+     employees.forEach(e => {
+         if (savedIds.has(String(e.id))) matched++;
+     });
+     return { total, matched };
+  }, [initialData, employees]);
+
+
+
+  // Helper para parsear fecha localmente sin problemas de zona horaria
   const parseDateLocal = (dateStr) => {
     if (!dateStr) return null;
     const parts = dateStr.split('-');
@@ -948,6 +965,27 @@ const CalculadoraPagos = ({
 
   return (
     <div className="calculadora-pagos">
+      {initialData && (
+        <div style={{ 
+            backgroundColor: '#eff6ff', 
+            border: '1px solid #1d4ed8', 
+            borderRadius: '8px', 
+            padding: '12px', 
+            marginBottom: '16px',
+            color: '#1e3a8a'
+        }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>✏️ Modo Edición Activo</div>
+            <div style={{ fontSize: '0.9em' }}>
+                Se están editando datos del pago del {initialData.fechaPago}. <br/>
+                Coincidencias encontradas: <strong>{matchedInfo.matched}</strong> de {matchedInfo.total} registros guardados.
+                {matchedInfo.matched === 0 && matchedInfo.total > 0 && (
+                    <div style={{ color: '#ef4444', marginTop: '4px', fontWeight: 'bold' }}>
+                        ⚠ No se han podido vincular los datos guardados con los empleados actuales. Es posible que los IDs no coincidan.
+                    </div>
+                )}
+            </div>
+        </div>
+      )}
       <div className="calculadora-header">
         <h3>
           Calculadora de Pagos -{" "}
@@ -1094,7 +1132,7 @@ const CalculadoraPagos = ({
                   <div className="horas-extra-input">
                     <input
                       type="number"
-                      // value={horasExtrasEmpleado.diurna}
+                      value={horasExtrasEmpleado.diurna}
                       onChange={(e) =>
                         handleHorasExtrasChange(
                           empleado.id,
@@ -1111,7 +1149,7 @@ const CalculadoraPagos = ({
                   <div className="horas-extra-input">
                     <input
                       type="number"
-                      // value={horasExtrasEmpleado.nocturna}
+                      value={horasExtrasEmpleado.nocturna}
                       onChange={(e) =>
                         handleHorasExtrasChange(
                           empleado.id,
@@ -1128,7 +1166,7 @@ const CalculadoraPagos = ({
                   <div className="deduccion-manual-input">
                     <input
                       type="number"
-                      // value={deduccionManual}
+                      value={deduccionManual}
                       onChange={(e) =>
                         handleDeduccionManualChange(empleado.id, e.target.value)
                       }
@@ -1141,7 +1179,7 @@ const CalculadoraPagos = ({
                   <div className="deduccion-manual-input">
                     <input
                       type="number"
-                      // value={adelanto}
+                      value={adelanto}
                       onChange={(e) =>
                         handleAdelantoChange(empleado.id, e.target.value)
                       }
@@ -1154,7 +1192,7 @@ const CalculadoraPagos = ({
                   <div className="monto-extra-input">
                     <input
                       type="number"
-                      // value={montoExtra}
+                      value={montoExtra}
                       onChange={(e) =>
                         handleMontoExtraChange(empleado.id, e.target.value)
                       }
@@ -1166,7 +1204,7 @@ const CalculadoraPagos = ({
 
                   <div className="banco-input">
                     <select
-                      // value={bancoPago}
+                      value={bancoPago}
                       onChange={(e) =>
                         handleBancoChange(empleado.id, e.target.value)
                       }
