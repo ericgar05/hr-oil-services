@@ -37,13 +37,13 @@ const AdministracionMain = ({ projectId }) => {
       icon: <BankIcon />,
       path: "gastos-financieros",
     },
-    {
-      id: "gestion-usuarios",
-      title: "GESTIÓN DE USUARIOS",
-      description: "Administración de usuarios, roles y permisos",
-      icon: <MultiUsersIcon />,
-      path: "gestion-usuarios",
-    },
+    // {
+    //   id: "gestion-usuarios",
+    //   title: "GESTIÓN DE USUARIOS",
+    //   description: "Administración de usuarios, roles y permisos",
+    //   icon: <MultiUsersIcon />,
+    //   path: "gestion-usuarios",
+    // },
   ];
 
   const handleCardClick = (path) => {
@@ -55,9 +55,8 @@ const AdministracionMain = ({ projectId }) => {
     <div className="administracion-main">
       <ModuleDescription
         title="Módulo de Administración"
-        description={`Gestión integral de los aspectos administrativos y financieros del proyecto ${
-          selectedProject?.name || ""
-        }`}
+        description={`Gestión integral de los aspectos administrativos y financieros del proyecto ${selectedProject?.name || ""
+          }`}
       />
 
       <div className="admin-main-grid">
