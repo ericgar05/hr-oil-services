@@ -7,7 +7,6 @@ import { useNotification } from "../../../../../../../../../../../../contexts/No
 import "./HistorialPagos.css";
 import { DelateIcon, EditIcon, EyesIcon, ExportIcon } from "../../../../../../../../../../../../assets/icons/Icons";
 import Modal from "../../../../../../../../../../../../components/common/Modal/Modal";
-
 const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDetalles, onDeletePago, onEditarPago, selectedProject, onRefresh }) => {
   const { showToast } = useNotification();
   const [activeTab, setActiveTab] = useState("personal"); // 'personal' or 'contratistas'
@@ -231,10 +230,10 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
                     </div>
                   </div>
                   <div className="pago-actions">
-                    <button className="btn-outline" onClick={() => onVerDetalles(pago)}>👁️ Ver Detalles</button>
-                    <button className="btn-secondary" onClick={() => onEditarPago(pago)} style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: 'white' }}>✏️ Editar</button>
-                    <button className="btn-secondary" onClick={() => exportPagoToExcel(pago)}>📊 Excel</button>
-                    <button className="btn-danger" onClick={() => handleDeleteClick(pago, "personal")}>🗑️ Eliminar</button>
+                    {/* <button className="btn-outline" onClick={() => onVerDetalles(pago)}>👁️ Ver Detalles</button> */}
+                    <button className="btn-historial-pagos" onClick={() => onEditarPago(pago)} style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: 'white' }} title="Editar pago"><EditIcon /></button>
+                    <button className="btn-historial-pagos" onClick={() => exportPagoToExcel(pago)} title="Exportar a Excel">📊 Excel</button>
+                    <button className="btn-historial-pagos" onClick={() => handleDeleteClick(pago, "personal")} title="Eliminar pago"><DelateIcon /></button>
                   </div>
 
                   {/* Personal Details Expansion */}
@@ -284,9 +283,9 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
                     </div>
                   </div>
                   <div className="pago-actions">
-                    <button className="btn-secondary" onClick={() => onEditarPago(pago, "contratista")} style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: 'white' }}>✏️ Editar</button>
-                    <button className="btn-secondary" onClick={() => exportContractorToExcel(pago)}>📊 Excel</button>
-                    <button className="btn-danger" onClick={() => handleDeleteClick(pago, "contratista")}>🗑️ Eliminar</button>
+                    <button className="btn-secondary" onClick={() => onEditarPago(pago, "contratista")} style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: 'white' }} title="Editar pago"><EditIcon /></button>
+                    <button className="btn-secondary" onClick={() => exportContractorToExcel(pago)} title="Exportar a Excel">📊 Excel</button>
+                    <button className="btn-danger" onClick={() => handleDeleteClick(pago, "contratista")} title="Eliminar pago"><DelateIcon /></button>
                   </div>
 
                   {/* Contractor Details Expansion */}
