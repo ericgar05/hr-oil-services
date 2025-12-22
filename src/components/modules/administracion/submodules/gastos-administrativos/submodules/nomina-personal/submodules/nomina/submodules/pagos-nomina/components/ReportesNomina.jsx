@@ -4,6 +4,7 @@ import "./ReportesNomina.css";
 
 const ReportesNomina = ({
     pagosGuardados,
+    pagosContratistas,
     employees,
     asistencias,
     selectedProject,
@@ -145,10 +146,14 @@ const ReportesNomina = ({
         } else {
             // Historical Payments Report
             let filteredPagos = [];
+            let filteredContratistas = [];
 
             if (filterType === "mes") {
                 filteredPagos = pagosGuardados.filter((p) =>
                     p.fechaPago.startsWith(selectedMonth)
+                );
+                filteredContratistas = (pagosContratistas || []).filter((p) =>
+                    p.fecha_pago.startsWith(selectedMonth)
                 );
             } else if (filterType === "periodo") {
                 if (!dateRange.start || !dateRange.end) return;
@@ -156,9 +161,13 @@ const ReportesNomina = ({
                     (p) =>
                         p.fechaPago >= dateRange.start && p.fechaPago <= dateRange.end
                 );
+                filteredContratistas = (pagosContratistas || []).filter(
+                    (p) =>
+                        p.fecha_pago >= dateRange.start && p.fecha_pago <= dateRange.end
+                );
             }
 
-            // Flatten payments
+            // Flatten payments (Payroll)
             filteredPagos.forEach((pago) => {
                 pago.pagos.forEach((pagoEmp) => {
                     const montoTotal = pagoEmp.montoTotalUSD ||
@@ -175,6 +184,23 @@ const ReportesNomina = ({
                     });
                     totalAmt += montoTotal;
                     uniqueEmployees.add(pagoEmp.empleado.id);
+                });
+            });
+
+            // Flatten payments (Contractors)
+            filteredContratistas.forEach((pago) => {
+                (pago.pagos || []).forEach((c) => {
+                    data.push({
+                        fecha: pago.fecha_pago,
+                        empleado: c.nombre_contratista,
+                        cedula: "N/A",
+                        cargo: "Contratista",
+                        tipo: "Pago Contratista",
+                        monto: parseFloat(c.monto_total_usd || 0),
+                        detalle: `Tasa: ${pago.tasa_cambio} | ${c.observaciones || ''}`
+                    });
+                    totalAmt += parseFloat(c.monto_total_usd || 0);
+                    uniqueEmployees.add(c.contratista_id || c.nombre_contratista);
                 });
             });
         }

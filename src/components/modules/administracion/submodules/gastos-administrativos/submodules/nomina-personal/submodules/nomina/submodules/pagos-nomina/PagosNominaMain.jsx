@@ -1,6 +1,7 @@
 // src/components/modules/administracion/submodules/gastos-administrativos/submodules/nomina-personal/submodules/nomina/submodules/pagos-nomina/PagosNominaMain.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import supabase from "../../../../../../../../../../../api/supaBase";
 import { useProjects } from "../../../../../../../../../../../contexts/ProjectContext";
 import { usePersonal } from "../../../../../../../../../../../contexts/PersonalContext";
 import { useNotification } from "../../../../../../../../../../../contexts/NotificationContext";
@@ -12,6 +13,7 @@ import ResumenPagos from "./components/ResumenPagos";
 import ReportesNomina from "./components/ReportesNomina";
 import FeedbackModal from "../../../../../../../../../../../components/common/FeedbackModal/FeedbackModal";
 import "./PagosNominaMain.css";
+import CalculadoraContratistas from "./components/CalculadoraContratistas";
 
 const PagosNominaMain = () => {
   const navigate = useNavigate();
@@ -33,6 +35,7 @@ const PagosNominaMain = () => {
   const [tasaCambio, setTasaCambio] = useState("");
   const [pagosCalculados, setPagosCalculados] = useState([]);
   const [pagosGuardados, setPagosGuardados] = useState([]);
+  const [pagosContratistas, setPagosContratistas] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [asistencias, setAsistencias] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -73,6 +76,14 @@ const PagosNominaMain = () => {
 
     setLoading(true);
     try {
+      const { data: contratistasData, error: contratistasError } = await supabase
+        .from('pagos_contratistas')
+        .select('*')
+        .eq('project_id', selectedProject.id)
+        .order('fecha_pago', { ascending: false });
+
+      if (contratistasError) throw contratistasError;
+
       const [employeesData, asistenciasData, pagosData] = await Promise.all([
         getEmployeesByProject(selectedProject.id),
         getAsistenciasByProject(selectedProject.id),
@@ -81,6 +92,7 @@ const PagosNominaMain = () => {
       setEmployees(employeesData);
       setAsistencias(asistenciasData);
       setPagosGuardados(pagosData);
+      setPagosContratistas(contratistasData || []);
     } catch (error) {
       console.error("Error cargando datos:", error);
       showToast("Error al cargar datos: " + error.message, "error");
@@ -110,7 +122,7 @@ const PagosNominaMain = () => {
         pagos: pagosData,
         projectId: selectedProject?.id,
       };
-      
+
       // Si estamos editando, podríamos querer reemplazar el pago existente o guardar uno nuevo.
       // Por simplicidad y seguridad, la lógica actual "savePagos" típicamente crea uno nuevo.
       // Si queremos actualizar, necesitaríamos un método "updatePago" en el contexto.
@@ -118,10 +130,10 @@ const PagosNominaMain = () => {
       // Si savePagos genera nuevo ID siempre, entonces duplicará.
       // Para un flujo de edición completo, idealmente updatePago.
       // Si pagoParaEditar existe, usamos su ID si la API lo soporta, o borramos el anterior y creamos nuevo.
-      
+
       if (pagoParaEditar && pagoParaEditar.id) {
-          // Opción: Eliminar el anterior y guardar el nuevo para simular edición
-          await deletePago(pagoParaEditar.id);
+        // Opción: Eliminar el anterior y guardar el nuevo para simular edición
+        await deletePago(pagoParaEditar.id);
       }
 
       await savePagos(nuevoPago);
@@ -163,12 +175,21 @@ const PagosNominaMain = () => {
       });
     }
   };
-  
-  const handleEditarPago = (pago) => {
-      setPagoParaEditar(pago);
-      setFechaPago(pago.fechaPago);
-      setTasaCambio(pago.tasaCambio);
+
+  const handleEditarPago = (pago, type = "personal") => {
+    // Inject type into the object for downstream logic
+    const pagoWithMeta = { ...pago, type };
+    setPagoParaEditar(pagoWithMeta);
+
+    // Set common fields
+    setFechaPago(pago.fechaPago || pago.fecha_pago); // Handle both naming conventions
+    setTasaCambio(pago.tasaCambio || pago.tasa_cambio);
+
+    if (type === "contratista") {
+      setCurrentView("contratistas");
+    } else {
       setCurrentView("calculadora");
+    }
   };
 
   return (
@@ -213,14 +234,21 @@ const PagosNominaMain = () => {
             <button
               className={currentView === "calculadora" ? "active" : ""}
               onClick={() => {
-                  setCurrentView("calculadora");
-                  setPagoParaEditar(null); // Reset al volver manualmente a calculadora
+                setCurrentView("calculadora");
+                setPagoParaEditar(null); // Reset al volver manualmente a calculadora
               }}
               disabled={loading}
             >
               Calculadora
             </button>
           )}
+          <button
+            className={currentView === "contratistas" ? "active" : ""}
+            onClick={() => setCurrentView("contratistas")}
+            disabled={loading}
+          >
+            Contratistas
+          </button>
           <button
             className={currentView === "resumen" ? "active" : ""}
             onClick={() => setCurrentView("resumen")}
@@ -277,6 +305,7 @@ const PagosNominaMain = () => {
           {currentView === "historial" && (
             <HistorialPagos
               pagosGuardados={pagosGuardados}
+              pagosContratistas={pagosContratistas}
               employees={employees}
               onVerDetalles={(pago) => {
                 setPagosCalculados(pago.pagos);
@@ -287,17 +316,33 @@ const PagosNominaMain = () => {
               onDeletePago={handleDeletePago}
               onEditarPago={handleEditarPago}
               selectedProject={selectedProject}
+              onRefresh={loadData} // Add refresh handler for contractors deletion
             />
           )}
 
           {currentView === "reportes" && (
             <ReportesNomina
               pagosGuardados={pagosGuardados}
+              pagosContratistas={pagosContratistas}
               employees={employees}
               asistencias={asistencias}
               selectedProject={selectedProject}
             />
           )}
+
+          {currentView === "contratistas" && (
+            <CalculadoraContratistas
+              projectId={selectedProject?.id}
+              fechaPago={fechaPago}
+              tasaCambio={tasaCambio}
+              onGuardar={() => {
+                loadData();
+                setPagoParaEditar(null); // Clear edit state after save
+              }}
+              initialData={pagoParaEditar && pagoParaEditar.type === 'contratista' ? pagoParaEditar : null}
+            />
+          )}
+
         </div>
       )}
 

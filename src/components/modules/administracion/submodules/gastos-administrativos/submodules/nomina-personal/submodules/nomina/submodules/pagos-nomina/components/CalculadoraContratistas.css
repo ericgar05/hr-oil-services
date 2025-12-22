@@ -1,0 +1,272 @@
+.calculadora-contratistas {
+    background-color: #1f2937;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: #f3f4f6;
+    margin-top: 1rem;
+}
+
+.calculadora-contratistas h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 0.5rem;
+    color: #60a5fa;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.contratistas-pay-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.contratistas-pay-table th {
+    background-color: #374151;
+    color: #e5e7eb;
+    padding: 0.75rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+/* Helper Text Classes */
+.contratistas-pay-table .text-left {
+    text-align: left;
+}
+
+.contratistas-pay-table .text-center {
+    text-align: center;
+}
+
+.contratistas-pay-table .text-right {
+    text-align: right;
+}
+
+.contratistas-pay-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #374151;
+    vertical-align: middle;
+}
+
+.days-inputs {
+    display: flex;
+    gap: 0.5rem;
+    /* Increased gap */
+    justify-content: center;
+}
+
+.day-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.day-label {
+    font-size: 0.7rem;
+    color: #9ca3af;
+    font-weight: 600;
+}
+
+.check-input-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.day-checkbox-small {
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: #3b82f6;
+}
+
+.day-number-input {
+    width: 36px;
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: white;
+    text-align: center;
+    border-radius: 0.25rem;
+    padding: 0.2rem;
+    font-size: 0.8rem;
+    height: 24px;
+    /* Hide spinners in Firefox */
+    -moz-appearance: textfield;
+}
+
+/* Hide spinners in Chrome, Safari, Edge, Opera */
+.day-number-input::-webkit-inner-spin-button,
+.day-number-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.day-number-input:focus {
+    outline: none;
+    border-color: #60a5fa;
+    background-color: #1f2937;
+}
+
+.day-number-input.dimmed {
+    opacity: 0.3;
+    border-color: #374151;
+    background-color: #1f2937;
+    cursor: not-allowed;
+}
+
+.c-name {
+    font-weight: 600;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.c-desc {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin-top: 0.1rem;
+}
+
+.c-meta {
+    font-size: 0.75rem;
+    color: #60a5fa;
+    margin-top: 0.25rem;
+    background-color: rgba(96, 165, 250, 0.1);
+    display: inline-block;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.25rem;
+}
+
+.highlight-val {
+    color: #60a5fa;
+    font-weight: 600;
+    font-size: 1rem;
+    vertical-align: middle !important;
+}
+
+.label-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e5e7eb;
+}
+
+.val-total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #4ade80;
+    /* Green */
+}
+
+.actions-footer {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-save-pay {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-save-pay:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.loading-text {
+    text-align: center;
+    padding: 2rem;
+    color: #9ca3af;
+}
+
+/* Ensure table cells align middle generally, but top for the inputs row */
+.contratistas-pay-table td:first-child {
+    vertical-align: middle;
+}
+
+.contratistas-pay-table td:nth-child(n+3) {
+    vertical-align: middle;
+}
+
+/* New Inputs Styles */
+.banco-select,
+.observacion-input {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: #374151;
+    border: 1px solid #4b5563;
+    color: white;
+}
+
+.banco-select:focus,
+.observacion-input:focus {
+    outline: none;
+    border-color: #60a5fa;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-content {
+    background: #1f2937;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    min-width: 300px;
+}
+
+.modal-content h4 {
+    margin-top: 0;
+    color: white;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 1rem 0;
+    background: #374151;
+    border: 1px solid #4b5563;
+    color: white;
+    border-radius: 0.25rem;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.modal-actions button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background: #2563eb;
+    color: white;
+}
