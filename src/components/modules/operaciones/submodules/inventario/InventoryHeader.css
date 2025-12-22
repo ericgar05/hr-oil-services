@@ -1,0 +1,89 @@
+/* Container */
+.inventory-header-container {
+    margin-bottom: 24px;
+}
+
+/* Desktop View (Default) */
+.inventory-desktop-view {
+    display: flex;
+    flex-direction: row;
+    background: var(--gray-800);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-700);
+    gap: 4px;
+    position: relative;
+    z-index: 10;
+}
+
+.inventory-desktop-view button {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gray-400);
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.inventory-desktop-view button:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--gray-200);
+}
+
+.inventory-desktop-view button.active {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile View */
+.inventory-mobile-view {
+    display: none; /* Hidden on desktop */
+    flex-direction: column;
+    gap: 8px;
+    background: var(--gray-800);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-700);
+}
+
+.inventory-mobile-view label {
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    font-weight: 500;
+}
+
+.inventory-mobile-view select {
+    background-color: var(--gray-900);
+    border: 1px solid var(--gray-600);
+    color: var(--white);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    outline: none;
+    width: 100%;
+    cursor: pointer;
+}
+
+.inventory-mobile-view select:focus {
+    border-color: var(--primary-color);
+}
+
+/* Responsive Breakpoint */
+@media (max-width: 768px) {
+    .inventory-desktop-view {
+        display: none;
+    }
+
+    .inventory-mobile-view {
+        display: flex;
+    }
+}

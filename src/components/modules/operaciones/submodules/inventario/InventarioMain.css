@@ -2,23 +2,46 @@
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+
+  .inventory-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: #222D39;
+    border-radius: 8px;
+    padding: 20px;
+  } 
+
+  .controls-search {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 0px 10px;
+    align-items: center;
+    gap: 10px;
+
+    input{
+      width: 20%;
+      border: none;
+      color: #999;
+      border-radius: 5px;
+      padding: 10px 12px;
+    }
+
+    select{
+      width: 20%;
+      border: none;
+      color: #999;
+      border-radius: 5px;
+      padding: 10px 12px;
+    }
+
+  }
+
+
 }
 
-.inventory-controls {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  align-items: center;
-}
 
-.search-box input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  min-width: 250px;
-  font-size: 14px;
-}
 
 .filter-controls select {
   padding: 8px 12px;

@@ -1,21 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useOperaciones } from '../../../../../contexts/OperacionesContext';
 import ModuleDescription from '../../../_core/ModuleDescription/ModuleDescription';
 import Modal from '../../../../common/Modal/Modal';
 import RetirosTable from './RetirosTable';
 import InventoryStats from './InventoryStats';
+import InventoryHeader from './InventoryHeader';
 import './InventarioMain.css';
+import { BoxIcon } from '../../../../../assets/icons/Icons';
 
 const InventarioMain = () => {
-  const { 
-    inventory, 
-    loading, 
-    withdrawInventory, 
+  const tabs = [
+    { value: 'inventory', label: 'Inventario', icon: <BoxIcon /> },
+    { value: 'withdrawals', label: 'Historial de Retiros' },
+  ];
+  const [activeTab, setActiveTab] = useState('inventory');
+  const {
+    inventory,
+    loading,
+    withdrawInventory,
     retiros,
     getLowStockItems,
     updateInventoryItem
   } = useOperaciones();
-  
+
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [filterCategory, setFilterCategory] = useState('all');
@@ -26,8 +33,10 @@ const InventarioMain = () => {
     observaciones: '',
   });
 
-  const lowStockItems = useMemo(() => getLowStockItems(), [getLowStockItems]);
   
+
+  const lowStockItems = useMemo(() => getLowStockItems(), [getLowStockItems]);
+
   const filteredInventory = useMemo(() => {
     return inventory.filter(item => {
       const matchesCategory = filterCategory === 'all' || item.categoria_producto === filterCategory;
@@ -89,29 +98,36 @@ const InventarioMain = () => {
   };
 
   return (
-    <div className="inventario-main">
+    <main className="inventario-main">
       <ModuleDescription
         title="Inventario de Operaciones"
         description="Materiales, equipos y suministros disponibles en stock."
       />
 
-      <InventoryStats 
-        inventory={inventory} 
-        lowStockItems={lowStockItems} 
+      <InventoryStats
+        inventory={inventory}
+        lowStockItems={lowStockItems}
       />
+    <section className="inventory-content">
 
-      <div className="inventory-controls">
-        <div className="search-box">
+        <InventoryHeader 
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+
+        />
+        {activeTab === 'inventory' && (
+          <>
+            <section className="controls-search">
           <input
             type="text"
             placeholder="Buscar producto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-        </div>
-        <div className="filter-controls">
-          <select 
-            value={filterCategory} 
+
+          <select
+            value={filterCategory}
             onChange={(e) => setFilterCategory(e.target.value)}
           >
             <option value="all">Todas las categorías</option>
@@ -119,8 +135,9 @@ const InventarioMain = () => {
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>
-        </div>
-      </div>
+       
+        </section>
+        
 
       {lowStockItems.length > 0 && (
         <div className="low-stock-alert">
@@ -139,7 +156,7 @@ const InventarioMain = () => {
 
       {!loading && Object.keys(groupedInventory).map(category => (
         <div key={category} className="inventory-category">
-          <h3>{category} 
+          <h3>{category}
             <span className="category-count">
               ({groupedInventory[category].length} items)
             </span>
@@ -201,8 +218,8 @@ const InventarioMain = () => {
                     </td>
                     <td>{new Date(item.last_updated.replace(/-/g, '/')).toLocaleDateString()}</td>
                     <td>
-                      <button 
-                        onClick={() => handleOpenWithdrawModal(item)} 
+                      <button
+                        onClick={() => handleOpenWithdrawModal(item)}
                         className="btn-withdraw"
                         disabled={isOutOfStock}
                       >
@@ -222,6 +239,8 @@ const InventarioMain = () => {
           <p>No hay productos en el inventario para este proyecto.</p>
         </div>
       )}
+          </>
+        )}
 
       {showWithdrawModal && (
         <Modal isOpen={showWithdrawModal} title={`Retirar ${selectedItem?.nombre_producto}`} onClose={handleCloseWithdrawModal}>
@@ -266,8 +285,11 @@ const InventarioMain = () => {
         </Modal>
       )}
 
-      <RetirosTable retiros={retiros} />
-    </div>
+      {activeTab === 'withdrawals' && (
+        <RetirosTable retiros={retiros} />
+      )}
+    </section>
+    </main>
   );
 };
 

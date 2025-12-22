@@ -1,4 +1,4 @@
-import React from 'react';
+import { BoxIcon, BudgetIcon, ClassificationIcon, WarningIcon, XIcon } from '../../../../../assets/icons/Icons';
 import './InventoryStats.css';
 
 const InventoryStats = ({ inventory, lowStockItems }) => {
@@ -9,34 +9,44 @@ const InventoryStats = ({ inventory, lowStockItems }) => {
   }, 0);
   const outOfStock = inventory.filter(item => item.cantidad_disponible <= 0).length;
   const categories = [...new Set(inventory.map(item => item.categoria_producto))].length;
-
+  const inventoryCard = [
+    {
+      icon: <BoxIcon/>,
+      title: 'Total de Productos',
+      number: totalItems,
+    },
+    {
+      icon: <BudgetIcon/>,
+      title: 'Valor Total Estimado',
+      number: totalValue,
+    },
+    {
+      icon: <ClassificationIcon/>,
+      title: 'Categorías',
+      number: categories,
+    },
+    {
+      icon: <WarningIcon/>,
+      title: 'Bajo Stock',
+      number: lowStockItems.length,
+    },
+    {
+      icon: <XIcon/>,
+      title: 'Sin Stock',
+      number: outOfStock,
+    },
+  ]
   return (
     <div className="inventory-stats">
-      <div className="stat-card">
-        <div className="stat-icon">📦</div>
-        <h4>Total de Productos</h4>
-        <span className="stat-number">{totalItems}</span>
-      </div>
-      <div className="stat-card">
-        <div className="stat-icon">💰</div>
-        <h4>Valor Total Estimado</h4>
-        <span className="stat-number">${totalValue.toFixed(2)}</span>
-      </div>
-      <div className="stat-card">
-        <div className="stat-icon">🏷️</div>
-        <h4>Categorías</h4>
-        <span className="stat-number">{categories}</span>
-      </div>
-      <div className="stat-card warning">
-        <div className="stat-icon">⚠️</div>
-        <h4>Bajo Stock</h4>
-        <span className="stat-number">{lowStockItems.length}</span>
-      </div>
-      <div className="stat-card danger">
-        <div className="stat-icon">❌</div>
-        <h4>Sin Stock</h4>
-        <span className="stat-number">{outOfStock}</span>
-      </div>
+      {inventoryCard.map((card, index) => (
+        <div className="stat-Card" key={index}>
+          <h4>{card.title}</h4>
+          <div className="stat-icon">
+            {card.icon}
+            <span className="stat-number">{card.number}</span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

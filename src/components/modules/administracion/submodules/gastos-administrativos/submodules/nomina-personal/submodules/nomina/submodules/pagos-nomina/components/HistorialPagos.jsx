@@ -1,11 +1,12 @@
 
 
-// src/components/modules/administracion/submodules/gastos-administrativos/submodules/nomina-personal/submodules/nomina/submodules/pagos-nomina/components/HistorialPagos.jsx
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import supabase from "../../../../../../../../../../../../api/supaBase";
 import { useNotification } from "../../../../../../../../../../../../contexts/NotificationContext";
 import "./HistorialPagos.css";
+import { DelateIcon, EditIcon, EyesIcon, ExportIcon } from "../../../../../../../../../../../../assets/icons/Icons";
+import Modal from "../../../../../../../../../../../../components/common/Modal/Modal";
 
 const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDetalles, onDeletePago, onEditarPago, selectedProject, onRefresh }) => {
   const { showToast } = useNotification();
@@ -13,7 +14,7 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
   const [filterMonth, setFilterMonth] = useState(
     new Date().toISOString().slice(0, 7)
   );
-  const [expandedPaymentId, setExpandedPaymentId] = useState(null);
+  const [selectedPaymentDetail, setSelectedPaymentDetail] = useState(null);
   const [paymentToDelete, setPaymentToDelete] = useState(null);
 
   // Filter Logic
@@ -141,27 +142,7 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
     XLSX.writeFile(wb, fileName);
   };
 
-  const exportContractorToExcel = (pago) => {
-    const wb = XLSX.utils.book_new();
-    const data = (pago.pagos || []).map(p => ({
-      "Contratista": p.nombre_contratista,
-      "Monto Diario ($)": parseFloat(p.monto_diario).toFixed(2),
-      "Total Personas/Días": p.total_personal_dias,
-      "Total ($)": parseFloat(p.monto_total_usd).toFixed(2),
-      "Total (Bs)": parseFloat(p.monto_total_bs).toFixed(2),
-      "Banco": p.banco_pago || "",
-      "Observaciones": p.observaciones || ""
-    }));
 
-    const ws = XLSX.utils.json_to_sheet(data);
-    XLSX.utils.book_append_sheet(wb, ws, "Contratistas");
-    XLSX.writeFile(wb, `pagos_contratistas_${pago.fecha_pago}.xlsx`);
-  };
-
-
-  const toggleExpand = (id) => {
-    setExpandedPaymentId(expandedPaymentId === id ? null : id);
-  };
 
   const handleDeleteClick = (pago, type = "personal") => {
     setPaymentToDelete({ ...pago, type });
@@ -339,8 +320,8 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
               <button className="btn-danger" onClick={confirmDelete}>Eliminar</button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };

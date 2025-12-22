@@ -1,6 +1,5 @@
 import { useParams, Routes, Route, Navigate } from "react-router-dom";
 import { useProjects } from "../contexts/ProjectContext";
-import { useAuth } from "../contexts/AuthContext";
 import MainLayout from "../components/layout/MainLayout/MainLayout";
 import ResumenPage from "./ResumenPage";
 import AdministracionPage from "./AdministracionPage";
