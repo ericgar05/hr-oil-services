@@ -2,59 +2,57 @@
 
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
+import supabase from "../../../../../../../../../../../../api/supaBase";
+import { useNotification } from "../../../../../../../../../../../../contexts/NotificationContext";
 import "./HistorialPagos.css";
 import { DelateIcon, EditIcon, EyesIcon, ExportIcon } from "../../../../../../../../../../../../assets/icons/Icons";
 import Modal from "../../../../../../../../../../../../components/common/Modal/Modal";
 
-const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago, onEditarPago, selectedProject }) => { // onEditarPago AGREGADO
+const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDetalles, onDeletePago, onEditarPago, selectedProject, onRefresh }) => {
+  const { showToast } = useNotification();
+  const [activeTab, setActiveTab] = useState("personal"); // 'personal' or 'contratistas'
   const [filterMonth, setFilterMonth] = useState(
     new Date().toISOString().slice(0, 7)
   );
   const [selectedPaymentDetail, setSelectedPaymentDetail] = useState(null);
   const [paymentToDelete, setPaymentToDelete] = useState(null);
 
-  const pagosFiltrados = pagosGuardados
+  // Filter Logic
+  const filteredPersonal = (pagosGuardados || [])
     .filter((pago) => pago.fechaPago.startsWith(filterMonth))
     .sort((a, b) => new Date(b.fechaPago) - new Date(a.fechaPago));
 
-  // Calcular período de pago (Helper function)
+  const filteredContratistas = (pagosContratistas || [])
+    .filter((pago) => pago.fecha_pago.startsWith(filterMonth))
+    .sort((a, b) => new Date(b.fecha_pago) - new Date(a.fecha_pago));
+
+  // --- Helper Functions ---
   const calcularPeriodoPago = (empleado, fechaPago) => {
     const fecha = new Date(fechaPago.replace(/-/g, '\/'));
 
     if (empleado.frecuenciaPago === "Semanal") {
-      // Encontrar lunes de la semana del pago
       const lunes = new Date(fecha);
       const diaSemana = fecha.getDay();
       const diffLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
       lunes.setDate(fecha.getDate() + diffLunes);
 
-      // Encontrar viernes de la semana del pago
       const viernes = new Date(lunes);
       viernes.setDate(lunes.getDate() + 4);
 
-      return `Semana del ${lunes.toLocaleDateString(
-        "es-ES"
-      )} al ${viernes.toLocaleDateString("es-ES")}`;
+      return `Semana del ${lunes.toLocaleDateString("es-ES")} al ${viernes.toLocaleDateString("es-ES")}`;
     } else {
-      // Pago quincenal
       const mes = fecha.getMonth();
       const año = fecha.getFullYear();
-
-      const mitad =
-        empleado.mitadPagoQuincenal || empleado.mitadPago || "primera";
+      const mitad = empleado.mitadPagoQuincenal || empleado.mitadPago || "primera";
 
       if (mitad === "primera") {
         const primerDia = new Date(año, mes, 1);
         const ultimoDia = new Date(año, mes, 15);
-        return `Pago del ${primerDia.toLocaleDateString(
-          "es-ES"
-        )} al ${ultimoDia.toLocaleDateString("es-ES")}`;
+        return `Pago del ${primerDia.toLocaleDateString("es-ES")} al ${ultimoDia.toLocaleDateString("es-ES")}`;
       } else {
         const primerDia = new Date(año, mes, 16);
         const ultimoDia = new Date(año, mes + 1, 0);
-        return `Pago del ${primerDia.toLocaleDateString(
-          "es-ES"
-        )} al ${ultimoDia.toLocaleDateString("es-ES")}`;
+        return `Pago del ${primerDia.toLocaleDateString("es-ES")} al ${ultimoDia.toLocaleDateString("es-ES")}`;
       }
     }
   };
@@ -70,12 +68,19 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
     );
   };
 
+  const calculateContractorTotals = (pago) => {
+    const totalUSD = (pago.pagos || []).reduce((acc, p) => acc + (p.monto_total_usd || 0), 0);
+    return {
+      totalUSD: totalUSD,
+      totalBs: totalUSD * (pago.tasa_cambio || 0),
+      count: (pago.pagos || []).length
+    };
+  };
+
   const exportPagoToExcel = (pago) => {
-    // Separar pagos por frecuencia
     const pagosSemanal = pago.pagos.filter(p => p.empleado.frecuenciaPago === "Semanal");
     const pagosQuincenal = pago.pagos.filter(p => p.empleado.frecuenciaPago === "Quincenal");
 
-    // Función auxiliar para formatear datos
     const formatPagoData = (pagoEmp, includeLegalDeductions) => {
       const periodoPago = calcularPeriodoPago(pagoEmp.empleado, pago.fechaPago);
       const datos = {
@@ -98,10 +103,8 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
         Observaciones: pagoEmp.observaciones || "",
       };
 
-      // Si se deben incluir deducciones de ley
       if (includeLegalDeductions) {
         const esAdministrativo = ["Administrativa", "Ejecucion"].includes(pagoEmp.empleado.tipoNomina);
-
         datos["Porcentaje ISLR Individual (%)"] = esAdministrativo ? (pagoEmp.empleado.porcentajeIslr || "0") : "";
         datos["Deducciones Ley IVSS (Bs)"] = esAdministrativo ? (pagoEmp.desgloseDeduccionesLey?.ivss?.toFixed(2) || "0.00") : "";
         datos["Deducciones Ley Paro Forzoso (Bs)"] = esAdministrativo ? (pagoEmp.desgloseDeduccionesLey?.paroForzoso?.toFixed(2) || "0.00") : "";
@@ -114,17 +117,13 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
     };
 
     const wb = XLSX.utils.book_new();
-
-    // Helper para determinar si una lista tiene empleados administrativos
     const hasAdmin = (lista) => lista.some(p => ["Administrativa", "Ejecucion"].includes(p.empleado.tipoNomina));
 
-    // Hoja 1: Resumen General
     const generalHasAdmin = hasAdmin(pago.pagos);
     const generalData = pago.pagos.map(p => formatPagoData(p, generalHasAdmin));
     const wsGeneral = XLSX.utils.json_to_sheet(generalData);
     XLSX.utils.book_append_sheet(wb, wsGeneral, "Resumen General");
 
-    // Hoja 2: Nómina Semanal (si hay)
     if (pagosSemanal.length > 0) {
       const semanalHasAdmin = hasAdmin(pagosSemanal);
       const semanalData = pagosSemanal.map(p => formatPagoData(p, semanalHasAdmin));
@@ -132,7 +131,6 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
       XLSX.utils.book_append_sheet(wb, wsSemanal, "Nómina Semanal");
     }
 
-    // Hoja 3: Nómina Quincenal (si hay)
     if (pagosQuincenal.length > 0) {
       const quincenalHasAdmin = hasAdmin(pagosQuincenal);
       const quincenalData = pagosQuincenal.map(p => formatPagoData(p, quincenalHasAdmin));
@@ -146,13 +144,26 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
 
 
 
-  const handleDeleteClick = (pago) => {
-    setPaymentToDelete(pago);
+  const handleDeleteClick = (pago, type = "personal") => {
+    setPaymentToDelete({ ...pago, type });
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (paymentToDelete) {
-      onDeletePago(paymentToDelete.id);
+      if (paymentToDelete.type === "personal") {
+        onDeletePago(paymentToDelete.id);
+      } else {
+        // Delete Contractor Payment
+        try {
+          const { error } = await supabase.from('pagos_contratistas').delete().eq('id', paymentToDelete.id);
+          if (error) throw error;
+          showToast("Pago de contratistas eliminado", "success");
+          if (onRefresh) onRefresh();
+        } catch (err) {
+          console.error(err);
+          showToast("Error eliminando pago", "error");
+        }
+      }
       setPaymentToDelete(null);
     }
   };
@@ -160,16 +171,6 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
   const cancelDelete = () => {
     setPaymentToDelete(null);
   };
-
-  if (pagosGuardados.length === 0) {
-    return (
-      <div className="empty-historial">
-        <div className="empty-icon">📋</div>
-        <h4>No hay pagos guardados</h4>
-        <p>Comienza calculando y guardando los pagos de nómina</p>
-      </div>
-    );
-  }
 
   return (
     <div className="historial-pagos">
@@ -185,166 +186,138 @@ const HistorialPagos = ({ pagosGuardados, employees, onVerDetalles, onDeletePago
         </div>
       </div>
 
-      <div className="pagos-list">
-        {pagosFiltrados.map((pago) => {
-          const totales = calcularTotalesPago(pago);
-
-
-          return (
-            <div key={pago.id} className="pago-item">
-              <div className="pago-header">
-                <div className="pago-info">
-                  <h4>
-                    Pago del{" "}
-                    {new Date(pago.fechaPago.replace(/-/g, '\/')).toLocaleDateString("es-ES", {
-                      weekday: "long",
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </h4>
-                  <div className="pago-details">
-                    <span>
-                      <strong>Tasa:</strong> Bs {pago.tasaCambio.toFixed(4)}
-                    </span>
-                    <span>
-                      <strong>Empleados:</strong> {pago.pagos.length}
-                    </span>
-                    <span>
-                      <strong>Guardado:</strong>{" "}
-                      {new Date(pago.timestamp).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-               
-              </div>
-                     <div className="pago-totales">
-                  <div className="pago-total">
-                    <span className="label">Total USD</span>
-                    <span className="value">
-                      $ {totales.totalUSD.toFixed(2)}
-                    </span>
-                  </div>
-
-                  <div className="pago-total highlight">
-                    <span className="label">A Pagar</span>
-                    <span className="value">
-                      Bs {totales.totalPagar.toFixed(2)}
-                    </span>
-                  </div>
-                </div>
-
-              <div className="pago-employees-list">
-                <button 
-                  className="btn-view-employees"
-                  onClick={() => setSelectedPaymentDetail(pago)}
-                >
-                  Ver empleados incluidos ({pago.pagos.length})
-                </button>
-              </div>
-              <div className="pago-actions">
-                <button
-                  className="btn-outline-pago"
-                  onClick={() => onVerDetalles(pago)}
-                >
-                  <EyesIcon />
-                </button>
-                <button
-                    className="btn-secondary"
-                    onClick={() => onEditarPago(pago)}
-                >
-                    <EditIcon /> 
-                </button>
-                <button
-                  className="btn-secondary"
-                  onClick={() => exportPagoToExcel(pago)}
-                >
-                  <ExportIcon/>
-                </button>
-                <button
-                  className="btn-danger"
-                  onClick={() => handleDeleteClick(pago)}
-                >
-                   <DelateIcon/>
-                </button>
-              </div>
-            </div>
-          );
-        })}
+      {/* TABS */}
+      <div className="historial-tabs">
+        <button
+          className={`tab-btn ${activeTab === 'personal' ? 'active' : ''}`}
+          onClick={() => setActiveTab('personal')}
+        >
+          Nómina Personal
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'contratistas' ? 'active' : ''}`}
+          onClick={() => setActiveTab('contratistas')}
+        >
+          Contratistas
+        </button>
       </div>
 
-      {pagosFiltrados.length === 0 && (
-        <div className="no-results">
-          <p>No hay pagos guardados para el mes seleccionado</p>
-        </div>
-      )}
+      <div className="pagos-list">
+        {activeTab === 'personal' ? (
+          filteredPersonal.length === 0 ? (
+            <div className="no-results"><p>No hay pagos de personal para el mes seleccionado</p></div>
+          ) : (
+            filteredPersonal.map((pago) => {
+              const totales = calcularTotalesPago(pago);
+              const isExpanded = expandedPaymentId === pago.id;
+              return (
+                <div key={pago.id} className="pago-item">
+                  <div className="pago-header">
+                    <div className="pago-info">
+                      <h4>Pago Personal: {new Date(pago.fechaPago.replace(/-/g, '\/')).toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</h4>
+                      <div className="pago-details">
+                        <span><strong>Tasa:</strong> Bs {pago.tasaCambio.toFixed(4)}/$</span>
+                        <span><strong>Empleados:</strong> {pago.pagos.length}</span>
+                      </div>
+                    </div>
+                    <div className="pago-totales">
+                      <div className="pago-total"><span className="label">Total USD</span><span className="value">$ {totales.totalUSD.toFixed(2)}</span></div>
+                      <div className="pago-total highlight"><span className="label">A Pagar</span><span className="value">Bs {totales.totalPagar.toFixed(2)}</span></div>
+                    </div>
+                  </div>
+                  <div className="pago-actions">
+                    <button className="btn-outline" onClick={() => onVerDetalles(pago)}>👁️ Ver Detalles</button>
+                    <button className="btn-secondary" onClick={() => onEditarPago(pago)} style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: 'white' }}>✏️ Editar</button>
+                    <button className="btn-secondary" onClick={() => exportPagoToExcel(pago)}>📊 Excel</button>
+                    <button className="btn-danger" onClick={() => handleDeleteClick(pago, "personal")}>🗑️ Eliminar</button>
+                  </div>
 
-      {/* Modal de Detalle de Empleados */}
-      <Modal
-        isOpen={!!selectedPaymentDetail}
-        onClose={() => setSelectedPaymentDetail(null)}
-        title={`Empleados del Pago (${selectedPaymentDetail?.pagos.length || 0})`}
-        size="lg"
-      >
-        {selectedPaymentDetail && (
-          <div className="modal-employees-grid">
-            {selectedPaymentDetail.pagos.map((pagoEmp) => (
-              <div key={pagoEmp.empleado.id} className="modal-employee-card">
-                <span className="employee-name">
-                  {pagoEmp.empleado.nombre} {pagoEmp.empleado.apellido}
-                </span>
-                <div className="employee-amounts">
-                  {(pagoEmp.deduccionesManualesUSD > 0) && (
-                    <span className="amount-deduc">
-                      Ded: ${pagoEmp.deduccionesManualesUSD.toFixed(2)}
-                    </span>
-                  )}
-                  {(pagoEmp.adelantosUSD > 0) && (
-                    <span className="amount-adel">
-                      Adel: ${pagoEmp.adelantosUSD.toFixed(2)}
-                    </span>
-                  )}
-                  <span className="amount-total">
-                    Total: $ {(pagoEmp.montoTotalUSD || 0).toFixed(2)}
-                  </span>
+                  {/* Personal Details Expansion */}
+                  <div className="pago-employees-list">
+                    <div className="employees-toggle-header" onClick={() => toggleExpand(pago.id)}>
+                      <span className={`toggle-icon ${isExpanded ? 'expanded' : ''}`}>▼</span>
+                      <span>Empleados incluidos ({pago.pagos.length})</span>
+                    </div>
+                    {isExpanded && (
+                      <div className="employees-grid">
+                        {pago.pagos.map((pagoEmp) => (
+                          <div key={pagoEmp.empleado.id} className="employee-preview">
+                            <span className="name">{pagoEmp.empleado.nombre} {pagoEmp.empleado.apellido}</span>
+                            <div className="amounts">
+                              <span className="amount-usd" style={{ fontWeight: 'bold' }}>Total: $ {(pagoEmp.montoTotalUSD || 0).toFixed(2)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Modal>
+              );
+            })
+          )
+        ) : (
+          // CONTRACTOR LIST RENDERING
+          filteredContratistas.length === 0 ? (
+            <div className="no-results"><p>No hay pagos de contratistas para el mes seleccionado</p></div>
+          ) : (
+            filteredContratistas.map((pago) => {
+              const totals = calculateContractorTotals(pago);
+              const isExpanded = expandedPaymentId === pago.id;
+              return (
+                <div key={pago.id} className="pago-item">
+                  <div className="pago-header">
+                    <div className="pago-info">
+                      <h4>Pago Contratistas: {new Date(pago.fecha_pago.replace(/-/g, '\/')).toLocaleDateString("es-ES", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</h4>
+                      <div className="pago-details">
+                        <span><strong>Tasa:</strong> Bs {pago.tasa_cambio.toFixed(4)}/$</span>
+                        <span><strong>Contratistas:</strong> {totals.count}</span>
+                      </div>
+                    </div>
+                    <div className="pago-totales">
+                      <div className="pago-total"><span className="label">Total USD</span><span className="value">$ {totals.totalUSD.toFixed(2)}</span></div>
+                      <div className="pago-total highlight"><span className="label">Total Bs</span><span className="value">Bs {totals.totalBs.toFixed(2)}</span></div>
+                    </div>
+                  </div>
+                  <div className="pago-actions">
+                    <button className="btn-secondary" onClick={() => onEditarPago(pago, "contratista")} style={{ backgroundColor: '#f59e0b', borderColor: '#f59e0b', color: 'white' }}>✏️ Editar</button>
+                    <button className="btn-secondary" onClick={() => exportContractorToExcel(pago)}>📊 Excel</button>
+                    <button className="btn-danger" onClick={() => handleDeleteClick(pago, "contratista")}>🗑️ Eliminar</button>
+                  </div>
 
-      {/* Confirmation Modal */}
-      <Modal
-        isOpen={!!paymentToDelete}
-        onClose={cancelDelete}
-        title="Confirmar Eliminación"
-        size="sm"
-      >
-        {paymentToDelete && (
-          <div className="confirmation-content">
-            <p>
-              ¿Estás seguro de que deseas eliminar el registro de pago del{" "}
-              <strong>
-                {new Date(paymentToDelete.fechaPago.replace(/-/g, '/')).toLocaleDateString("es-ES", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </strong>
-              ?
-            </p>
-            <p className="warning-text">
-              Esta acción no se puede deshacer.
-            </p>
-            <div className="confirmation-actions">
-              <button className="btn-outline" onClick={cancelDelete}>
-                Cancelar
-              </button>
-              <button className="btn-danger" onClick={confirmDelete}>
-                Eliminar
-              </button>
+                  {/* Contractor Details Expansion */}
+                  <div className="pago-employees-list">
+                    <div className="employees-toggle-header" onClick={() => toggleExpand(pago.id)}>
+                      <span className={`toggle-icon ${isExpanded ? 'expanded' : ''}`}>▼</span>
+                      <span>Contratistas incluidos ({totals.count})</span>
+                    </div>
+                    {isExpanded && (
+                      <div className="employees-grid">
+                        {(pago.pagos || []).map((c, idx) => (
+                          <div key={idx} className="employee-preview">
+                            <span className="name">{c.nombre_contratista}</span>
+                            <div className="amounts">
+                              <span className="amount-usd">Total: $ {parseFloat(c.monto_total_usd).toFixed(2)}</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )
+        )}
+      </div>
+
+      {paymentToDelete && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>Confirmar Eliminación</h3>
+            <p>¿Estás seguro de que deseas eliminar este registro?</p>
+            <div className="modal-actions">
+              <button className="btn-outline" onClick={cancelDelete}>Cancelar</button>
+              <button className="btn-danger" onClick={confirmDelete}>Eliminar</button>
             </div>
           </div>
         )}
