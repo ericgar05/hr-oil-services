@@ -1,4 +1,4 @@
-import { BudgetIcon, XIcon } from '../../../../../assets/icons/Icons';
+import { BoxIcon, BudgetIcon, ClassificationIcon, WarningIcon, XIcon } from '../../../../../assets/icons/Icons';
 import './InventoryStats.css';
 
 const InventoryStats = ({ inventory, lowStockItems }) => {
@@ -11,27 +11,27 @@ const InventoryStats = ({ inventory, lowStockItems }) => {
   const categories = [...new Set(inventory.map(item => item.categoria_producto))].length;
   const inventoryCard = [
     {
-      icon: '📦',
+      icon: <BoxIcon/>,
       title: 'Total de Productos',
       number: totalItems,
     },
     {
-      icon: <BudgetIcon />,
+      icon: <BudgetIcon/>,
       title: 'Valor Total Estimado',
       number: totalValue,
     },
     {
-      icon: '🏷️',
+      icon: <ClassificationIcon/>,
       title: 'Categorías',
       number: categories,
     },
     {
-      icon: Danger,
+      icon: <WarningIcon/>,
       title: 'Bajo Stock',
       number: lowStockItems.length,
     },
     {
-      icon: <XIcon />,
+      icon: <XIcon/>,
       title: 'Sin Stock',
       number: outOfStock,
     },
@@ -39,10 +39,12 @@ const InventoryStats = ({ inventory, lowStockItems }) => {
   return (
     <div className="inventory-stats">
       {inventoryCard.map((card, index) => (
-        <div className="stat-card" key={index}>
-          <div className="stat-icon">{card.icon}</div>
+        <div className="stat-Card" key={index}>
           <h4>{card.title}</h4>
-          <span className="stat-number">{card.number}</span>
+          <div className="stat-icon">
+            {card.icon}
+            <span className="stat-number">{card.number}</span>
+          </div>
         </div>
       ))}
     </div>
