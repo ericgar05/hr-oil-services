@@ -187,7 +187,16 @@ const VistaFacturaNomina = ({
                } else {
                    // Contractor Row
                    const nombre = item.nombre_contratista || item.empleado?.nombre || "Contratista";
-                   const count = item.total_personal_dias || item.diasTrabajados || 0;
+                   
+                   // Calculate calendar days if detail exists (count of days with attendance > 0)
+                   let count = 0;
+                   if (item.dias_trabajados_detalle) {
+                       count = Object.values(item.dias_trabajados_detalle).filter(v => Number(v) > 0).length;
+                   } else {
+                       // Fallback to man-days if no detail (legacy)
+                       count = item.total_personal_dias || item.diasTrabajados || 0;
+                   }
+
                    const daily = item.monto_diario || 0;
                    const totalUSD = item.monto_total_usd || 0;
                    const totalBs = item.monto_total_bs || (totalUSD * tasaCambio) || 0;
