@@ -291,7 +291,7 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
                         style={{ flex: 1, maxWidth: '200px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}
                      >
                         <EyesIcon /> 
-                        Ver Factura
+                        Ver Pagos
                      </button>
                      <button 
                         className="btn-historial-pagos" 

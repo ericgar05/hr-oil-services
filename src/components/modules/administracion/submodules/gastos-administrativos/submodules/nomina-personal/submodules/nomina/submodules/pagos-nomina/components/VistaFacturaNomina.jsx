@@ -131,8 +131,8 @@ const VistaFacturaNomina = ({
               ) : (
                 <>
                   <th>Nombre del Contratista</th>
-                  <th>Empleados</th>
-                  <th>Monto Diario ($)</th>
+                  <th>Días Trabajados</th>
+                  <th>Monto Diario X Persona ($)</th>
                   <th>Monto Total ($)</th>
                   <th>Tasa del Día</th>
                   <th>Total Pagar (Bs)</th>
