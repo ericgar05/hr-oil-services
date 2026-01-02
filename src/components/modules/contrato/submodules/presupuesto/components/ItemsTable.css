@@ -1,10 +1,14 @@
 /* src/components/modules/contrato/submodules/presupuesto/components/ItemsTable.css */
 .items-table {
   margin: 30px 0;
-  background: white;
+  background: rgb(255, 255, 255);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  td{
+    color:#070a0c
+  }
 }
 
 .table-header {
@@ -22,7 +26,7 @@
 }
 
 .table-info {
-  color: #6c757d;
+  color: #070a0c;
   font-weight: 500;
 }
 
