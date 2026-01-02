@@ -32,11 +32,19 @@ const RequerimientosMain = () => {
   const { showToast } = useNotification();
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
+  
+  // State for populating form from suggestions
+  const [suggestionToFill, setSuggestionToFill] = useState(null);
 
   const lowStockItems = useMemo(() => getLowStockItems ? getLowStockItems() : [], [getLowStockItems]);
 
   const handleUseSuggestion = (suggestion) => {
-    showToast("Función de sugerencia pendiente de integración con el nuevo formulario", "info");
+    // Pass suggestion to form (add timestamp to force update if same item clicked again)
+    setSuggestionToFill({ ...suggestion, _timestamp: Date.now() });
+    
+    // Scroll to top to see form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast("Cargando sugerencia en el formulario...", "info");
   };
 
   const getRequerimientoStats = () => {
@@ -140,7 +148,7 @@ const RequerimientosMain = () => {
         </section>
       )}
 
-      <RequerimientosForm />
+      <RequerimientosForm prefilledProduct={suggestionToFill} />
 
       <div className="filter-controls">
         <label>Filtrar por estado:</label>

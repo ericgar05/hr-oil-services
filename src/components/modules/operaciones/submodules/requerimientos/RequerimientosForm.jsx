@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useOperaciones } from '../../../../../contexts/OperacionesContext';
 import { useNotification } from '../../../../../contexts/NotificationContext';
 import './RequerimientosForm.css'
 
-export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null }) => {
+export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefilledProduct = null }) => {
     const { addRequerimiento, loading, productos } = useOperaciones();
     const { showToast } = useNotification();
 
@@ -23,6 +23,45 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null }) => 
         monto_dolares_aprox: '',
     };
     const [currentItem, setCurrentItem] = useState(initialItemState);
+
+    // --- EFFECT: Handle Prefilled Product from Suggestions ---
+    useEffect(() => {
+        if (prefilledProduct) {
+            // Calculate recommended quantity
+            // If suggestion has explicit suggested quantity, use it. Otherwise use (Target - Available)
+            let recommendedQty = parseFloat(prefilledProduct.cantidad_sugerida);
+            if (!recommendedQty && prefilledProduct.stock_objetivo) {
+                 recommendedQty = parseFloat(prefilledProduct.stock_objetivo) - parseFloat(prefilledProduct.cantidad_disponible || 0);
+            }
+            if (!recommendedQty || recommendedQty < 0) recommendedQty = 0;
+
+            const existingPrice = parseFloat(prefilledProduct.precio_unitario || 0);
+
+            // Try to complete data from main product list if available
+            let category = prefilledProduct.categoria_producto || '';
+            let unit = prefilledProduct.unidad || '';
+
+            if (productos) {
+                const fullProd = productos.find(p => p.nombre_producto === prefilledProduct.nombre_producto);
+                if (fullProd) {
+                    category = fullProd.categoria_producto || category;
+                    unit = fullProd.unidad || unit;
+                }
+            }
+
+            setCurrentItem({
+                nombre_producto: prefilledProduct.nombre_producto,
+                categoria_producto: category,
+                unidad: unit,
+                cantidad_requerida: recommendedQty > 0 ? recommendedQty : '',
+                precio_unitario_usd_aprox: existingPrice > 0 ? existingPrice : '',
+                monto_dolares_aprox: (recommendedQty * existingPrice).toFixed(2)
+            });
+
+            // Optional: User feedback
+            // showToast(`Producto sugerido cargado: ${prefilledProduct.nombre_producto}`, 'info');
+        }
+    }, [prefilledProduct, productos]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
