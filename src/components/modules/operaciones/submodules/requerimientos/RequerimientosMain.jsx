@@ -5,7 +5,6 @@ import { useAuth } from '../../../../../contexts/AuthContext'; // Importar Auth
 import { ROLES } from '../../../../../config/permissions'; // Importar ROLES
 import ModuleDescription from '../../../_core/ModuleDescription/ModuleDescription';
 import Modal from '../../../../common/Modal/Modal';
-import { InfoIcon, EditIcon, SaveIcon, CancelIcon, PlusIcon, BoxIcon, WarningIcon, BudgetIcon, CheckCircleIcon, XIcon } from '../../../../../assets/icons/Icons'; 
 import StatsCard from '../../../../common/StatsCard/StatsCard';
 
 // ... (in component render)
@@ -13,12 +12,12 @@ import StatsCard from '../../../../common/StatsCard/StatsCard';
 
 import './RequerimientosMain.css';
 import { RequerimientosForm } from './RequerimientosForm';
+import RequerimientosGroupList from './RequerimientosGroupList';
 
 const RequerimientosMain = () => {
   const {
-    addRequerimiento,
+    getRequerimientos,
     loading,
-    productos,
     requerimientos,
     cancelRequerimientoItem,
     approveRequerimientoItem, // Nueva función
@@ -33,21 +32,6 @@ const RequerimientosMain = () => {
   const { showToast } = useNotification();
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
-
-  // State for Editing Item
-  const [editingItemId, setEditingItemId] = useState(null);
-  const [editItemData, setEditItemData] = useState({});
-
-  // State for Adding NEW Item to a Requirement Group
-  const [addingItemToReqId, setAddingItemToReqId] = useState(null);
-  const [newItemData, setNewItemData] = useState({
-    nombre_producto: '',
-    categoria_producto: '',
-    unidad: '',
-    cantidad_requerida: '',
-    precio_unitario_usd_aprox: '',
-    monto_dolares_aprox: ''
-  });
 
   const lowStockItems = useMemo(() => getLowStockItems ? getLowStockItems() : [], [getLowStockItems]);
 
@@ -90,122 +74,8 @@ const RequerimientosMain = () => {
     })).filter(req => req.requerimiento_items.length > 0);
   }, [requerimientos, filterStatus]);
 
-
-  // --- Handlers for Editing ---
-  const handleEditClick = (item) => {
-    setEditingItemId(item.id);
-    setEditItemData({ ...item });
-  };
-
-  const handleCancelEdit = () => {
-    setEditingItemId(null);
-    setEditItemData({});
-  };
-
-  const handleSaveEdit = async () => {
-    // Validate
-    if (!editItemData.cantidad_requerida || editItemData.cantidad_requerida <= 0) {
-      showToast("La cantidad requerida debe ser mayor a 0", "warning");
-      return;
-    }
-    if (!editItemData.nombre_producto) {
-      showToast("El nombre del producto es obligatorio", "warning");
-      return;
-    }
-
-    await updateRequerimientoItem(editItemData.id, {
-      nombre_producto: editItemData.nombre_producto,
-      categoria_producto: editItemData.categoria_producto,
-      unidad: editItemData.unidad,
-      cantidad_requerida: editItemData.cantidad_requerida,
-      precio_unitario_usd_aprox: editItemData.precio_unitario_usd_aprox,
-    });
-    showToast("Item actualizado correctamente", "success");
-    setEditingItemId(null);
-  };
-
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    let updatedData = { ...editItemData, [name]: value };
-
-    // If product name changes, maybe auto-fill category/unit if it matches a known product?
-    // Optional: keep it simple for now, or add that logic.
-    // Let's add simple auto-fill if they pick a known product from list
-    if (name === 'nombre_producto' && productos) {
-      const selectedProduct = productos.find(p => p.nombre_producto === value);
-      if (selectedProduct) {
-        updatedData.categoria_producto = selectedProduct.categoria_producto;
-        updatedData.unidad = selectedProduct.unidad;
-      }
-    }
-
-    setEditItemData(updatedData);
-  };
-
-
-  // --- Handlers for Adding New Item to Group ---
-  const handleStartAdd = (reqId) => {
-    setAddingItemToReqId(reqId);
-    setNewItemData({
-      nombre_producto: '',
-      categoria_producto: '',
-      unidad: '',
-      cantidad_requerida: '',
-      precio_unitario_usd_aprox: '',
-      monto_dolares_aprox: ''
-    });
-  };
-
-  const handleCancelAdd = () => {
-    setAddingItemToReqId(null);
-  };
-
-  const handleNewItemChange = (e) => {
-    const { name, value } = e.target;
-    const updatedItem = { ...newItemData, [name]: value };
-
-    // Auto-calc total
-    if (name === 'cantidad_requerida' || name === 'precio_unitario_usd_aprox') {
-      const cantidad = name === 'cantidad_requerida' ? parseFloat(value) : parseFloat(updatedItem.cantidad_requerida) || 0;
-      const precio = name === 'precio_unitario_usd_aprox' ? parseFloat(value) : parseFloat(updatedItem.precio_unitario_usd_aprox) || 0;
-      updatedItem.monto_dolares_aprox = (cantidad * precio).toFixed(2);
-    }
-
-    // Product lookup
-    if (name === 'nombre_producto' && productos) {
-      const selectedProduct = productos.find(p => p.nombre_producto === value);
-      if (selectedProduct) {
-        updatedItem.categoria_producto = selectedProduct.categoria_producto;
-        updatedItem.unidad = selectedProduct.unidad;
-      }
-    }
-
-    setNewItemData(updatedItem);
-  };
-
-  const handleSaveNewItem = async (reqId) => {
-    if (!newItemData.nombre_producto || !newItemData.cantidad_requerida) {
-      showToast("Complete los campos obligatorios", "warning");
-      return;
-    }
-
-    await addRequerimientoItem({
-      ...newItemData,
-      requerimiento_id: reqId,
-      cantidad_requerida: parseFloat(newItemData.cantidad_requerida),
-      precio_unitario_usd_aprox: parseFloat(newItemData.precio_unitario_usd_aprox) || 0
-    });
-
-    showToast("Item agregado al requerimiento", "success");
-    setAddingItemToReqId(null);
-  };
-
-
-  const handleCancelItem = async (itemId) => {
-    if (window.confirm('¿Está seguro de que desea cancelar este ítem del requerimiento?')) {
-      await cancelRequerimientoItem(itemId);
-      showToast('Item cancelado exitosamente', 'info');
-    }
+  const handleDataChange = async () => {
+    await getRequerimientos();
   };
 
   const stats = getRequerimientoStats();
@@ -221,7 +91,7 @@ const RequerimientosMain = () => {
             onClick={() => setShowInfoModal(true)}
             title="Ver información del módulo"
           >
-            <InfoIcon />
+          
           </button>
         }
       />
@@ -314,247 +184,10 @@ const RequerimientosMain = () => {
         )}
 
         {!loading && filteredRequerimientos && filteredRequerimientos.length > 0 && (
-          <div className="requerimientos-table-container">
-            {filteredRequerimientos.map(req => {
-                  // Determinar si mostramos la columna de acciones para este grupo
-                  const isJefe = ROLES[user?.role]?.level >= 50;
-                  const showActionsColumn = isJefe || addingItemToReqId === req.id;
-
-                  return (
-                  <div key={req.id} className="requerimiento-group">
-                <div className="requerimiento-header">
-                  <h4>Requerimiento del {new Date(req.fecha_requerimiento.replace(/-/g, '/')).toLocaleDateString()}</h4>
-
-                  <span className="total-amount">
-                    Monto Total: ${req.requerimiento_items.reduce((acc, item) => acc + (item.cantidad_requerida * item.precio_unitario_usd_aprox), 0).toFixed(2)}
-                  </span>
-                </div>
-
-                <table className="requerimientos-table">
-                  <thead>
-                    <tr>
-                      <th>Producto</th>
-                      <th>Categoría</th>
-                      <th>Unidad</th>
-                      <th>Requerido</th>
-                      <th>Comprado</th>
-                      <th>Pendiente</th>
-                      <th>Monto Aprox. (USD)</th>
-                      <th>Estado</th>
-                      {showActionsColumn && <th>Acciones</th>}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* EXISTING ITEMS */}
-                    {req.requerimiento_items.map(item => (
-                      <tr key={item.id} className={`status-${item.status}`}>
-                        {editingItemId === item.id ? (
-                          // EDIT MODE ROW
-                          <>
-                            <td>
-                              <input
-                                list={`prod-datalist-edit-${item.id}`}
-                                type="text"
-                                name="nombre_producto"
-                                value={editItemData.nombre_producto}
-                                onChange={handleEditChange}
-                                style={{ width: '100%' }}
-                              />
-                              <datalist id={`prod-datalist-edit-${item.id}`}>
-                                {productos && productos.map(p => (
-                                  <option key={p.id} value={p.nombre_producto} />
-                                ))}
-                              </datalist>
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                name="categoria_producto"
-                                value={editItemData.categoria_producto}
-                                onChange={handleEditChange}
-                                style={{ width: '100%' }}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                name="unidad"
-                                value={editItemData.unidad}
-                                onChange={handleEditChange}
-                                style={{ width: '60px' }}
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="cantidad_requerida"
-                                value={editItemData.cantidad_requerida}
-                                onChange={handleEditChange}
-                                style={{ width: '60px' }}
-                              />
-                            </td>
-                            <td>{item.cantidad_comprada || 0}</td>
-                            <td> - </td>
-                            <td>
-                              <input
-                                type="number"
-                                name="precio_unitario_usd_aprox"
-                                value={editItemData.precio_unitario_usd_aprox}
-                                onChange={handleEditChange}
-                                style={{ width: '80px' }}
-                              />
-                            </td>
-                            <td>{item.status}</td>
-                            {showActionsColumn && (
-                              <td>
-                                <button onClick={handleSaveEdit} className="btn-action-icon save" title="Guardar">💾</button>
-                                <button onClick={handleCancelEdit} className="btn-action-icon cancel" title="Cancelar">❌</button>
-                              </td>
-                            )}
-                          </>
-                        ) : (
-                          // VIEW MODE ROW
-                          <>
-                            <td>{item.nombre_producto}</td>
-                            <td>{item.categoria_producto}</td>
-                            <td>{item.unidad}</td>
-                            <td>{item.cantidad_requerida}</td>
-                            <td>{item.cantidad_comprada || 0}</td>
-                            <td>{item.cantidad_requerida - (item.cantidad_comprada || 0)}</td>
-                            <td>{`$${(item.cantidad_requerida * item.precio_unitario_usd_aprox).toFixed(2)}`}</td>
-                            <td>
-                              <span className={`status-badge ${item.status}`}>
-                                {item.status === 'por_aprobar' ? 'Por Aprobar' : item.status}
-                              </span>
-                            </td>
-                            {showActionsColumn && (
-                              <td>
-                                <div style={{ display: 'flex', gap: '5px' }}>
-                                  {/* Acciones de Aprobación (Solo Jefes) */}
-                                  {item.status === 'por_aprobar' && isJefe && (
-                                    <>
-                                      <button 
-                                        onClick={() => approveRequerimientoItem(item.id)} 
-                                        className="btn-action-icon approve" 
-                                        title="Aprobar"
-                                        style={{ backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '4px', padding: '2px 6px', cursor: 'pointer' }}
-                                      >
-                                        ✓
-                                      </button>
-                                      <button 
-                                        onClick={() => rejectRequerimientoItem(item.id)} 
-                                        className="btn-action-icon reject" 
-                                        title="Rechazar"
-                                        style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', padding: '2px 6px', cursor: 'pointer' }}
-                                      >
-                                        ✕
-                                      </button>
-                                      <button onClick={() => handleEditClick(item)} className="btn-action-icon edit" title="Editar antes de aprobar">✏️</button>
-                                    </>
-                                  )}
-
-                                  {/* Acciones Estándar - SOLO JEFES (Nivel >= 50) pueden editar/eliminar items ya creados */}
-                                  {isJefe && (item.status === 'pendiente' || item.status === 'en_progreso' || item.status === 'por_aprobar') && (
-                                    <>
-                                      <button onClick={() => handleEditClick(item)} className="btn-action-icon edit" title="Editar">✏️</button>
-                                      <button
-                                        onClick={() => handleCancelItem(item.id)}
-                                        className="btn-action-icon delete"
-                                        title="Cancelar este item"
-                                      >
-                                        🚫
-                                      </button>
-                                    </>
-                                  )}
-                                  {item.status === 'cancelado' && <span className="canceled-text">Cancelado</span>}
-                                  {item.status === 'completado' && <span className="completed-text">Completado</span>}
-                                  {item.status === 'rechazado' && <span className="canceled-text">Rechazado</span>}
-                                </div>
-                              </td>
-                            )}
-                          </>
-                        )}
-                      </tr>
-                    ))}
-
-                    {/* NEW ITEM ROW (If active) */}
-                    {addingItemToReqId === req.id && (
-                      <tr className="adding-row" style={{ backgroundColor: '#e8f5e9' }}>
-                        <td>
-                          <input
-                            list={`prod-datalist-new-${req.id}`}
-                            type="text"
-                            name="nombre_producto"
-                            value={newItemData.nombre_producto}
-                            onChange={handleNewItemChange}
-                            placeholder="Producto..."
-                            style={{ width: '100%' }}
-                          />
-                          <datalist id={`prod-datalist-new-${req.id}`}>
-                            {productos && productos.map(p => (
-                              <option key={p.id} value={p.nombre_producto} />
-                            ))}
-                          </datalist>
-                        </td>
-                        <td>{newItemData.categoria_producto}</td>
-                        <td>{newItemData.unidad}</td>
-                        <td>
-                          <input
-                            type="number"
-                            name="cantidad_requerida"
-                            value={newItemData.cantidad_requerida}
-                            onChange={handleNewItemChange}
-                            placeholder="Cant."
-                            style={{ width: '60px' }}
-                          />
-                        </td>
-                        <td>0</td>
-                        <td>-</td>
-                        <td>
-                          <input
-                            type="number"
-                            name="precio_unitario_usd_aprox"
-                            value={newItemData.precio_unitario_usd_aprox}
-                            onChange={handleNewItemChange}
-                            placeholder="$$"
-                            style={{ width: '80px' }}
-                          />
-                        </td>
-                        <td>Pendiente</td>
-                        {showActionsColumn && (
-                          <td>
-                            <button onClick={() => handleSaveNewItem(req.id)} className="btn-action-icon save" title="Agregar">✅</button>
-                            <button onClick={handleCancelAdd} className="btn-action-icon cancel" title="Cancelar">❌</button>
-                          </td>
-                        )}
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-                <div className="req-group-actions" style={{ marginTop: '10px', textAlign: 'left' }}>
-                  {!addingItemToReqId && (
-                    <button
-                      onClick={() => handleStartAdd(req.id)}
-                      className="btn-text-icon"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#0288d1',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '5px'
-                      }}
-                    >
-                      + Agregar Item
-                    </button>
-                  )}
-                </div>
-              </div>
-                  );
-            })}
-          </div>
+          <RequerimientosGroupList
+            requerimientos={filteredRequerimientos}
+            onDataChange={handleDataChange}
+          />
         )}
       </div>
 

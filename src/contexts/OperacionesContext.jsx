@@ -362,6 +362,21 @@ export const OperacionesProvider = ({ children }) => {
     setLoading(false);
   }, [getRequerimientos]);
 
+  const deleteRequerimientoItem = useCallback(async (itemId) => {
+    setLoading(true);
+    const { error } = await supabase
+      .from('requerimiento_items')
+      .delete()
+      .eq('id', itemId);
+
+    if (error) {
+      console.error('Error deleting requerimiento item:', error);
+    } else {
+      await getRequerimientos();
+    }
+    setLoading(false);
+  }, [getRequerimientos]);
+
   const withdrawInventory = useCallback(async (withdrawalData) => {
     if (!selectedProject) return;
     setLoading(true);
@@ -679,6 +694,7 @@ export const OperacionesProvider = ({ children }) => {
     addRequerimientoItem,
     updateRequerimientoItem,
     cancelRequerimientoItem,
+    deleteRequerimientoItem,
     getInventorySummary,
     getLowStockItems,
     updateInventoryItem,
@@ -704,6 +720,7 @@ export const OperacionesProvider = ({ children }) => {
     addRequerimientoItem,
     updateRequerimientoItem,
     cancelRequerimientoItem,
+    deleteRequerimientoItem,
     getInventorySummary,
     getLowStockItems,
     updateInventoryItem,
