@@ -1,0 +1,2 @@
+ALTER TABLE plan_actividades 
+ADD COLUMN IF NOT EXISTS cantidad_real DECIMAL(15, 2) DEFAULT 0;

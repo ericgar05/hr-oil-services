@@ -101,6 +101,19 @@ export const DiasEjecucion = ({ semanaId }) => {
                     <span>💰 Plan:</span>
                     <strong>${(dia.monto_planificado || 0).toLocaleString()}</strong>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                    <span>✅ Ejec:</span>
+                    <strong style={{ color: '#22c55e' }}>${(dia.monto_ejecutado || 0).toLocaleString()}</strong>
+                  </div>
+                  {(() => {
+                    const diff = (dia.monto_planificado || 0) - (dia.monto_ejecutado || 0);
+                    return (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginTop: '2px', paddingTop: '2px', borderTop: '1px dashed #e2e8f0' }}>
+                        <span>📉 Pend:</span>
+                        <strong style={{ color: diff > 0 ? '#f59e0b' : '#94a3b8' }}>${diff.toLocaleString()}</strong>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 <div style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: '600', marginTop: 'auto' }}>

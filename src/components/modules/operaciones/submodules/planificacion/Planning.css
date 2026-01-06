@@ -576,3 +576,144 @@
     gap: 16px;
   }
 }
+
+/* --- Activity Cards (ActividadesList) --- */
+.planning-actividades-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.planning-actividad-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* Subtle shadow */
+}
+
+/* Status Indicator Strip on the left */
+.planning-actividad-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--primary-color);
+  /* Default to primary */
+}
+
+.planning-actividad-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
+}
+
+.actividad-main-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.actividad-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.actividad-partida {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.actividad-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.metric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.metric-badge.money {
+  background-color: #f0fdf4;
+  /* Green-50 */
+  color: #15803d;
+  /* Green-700 */
+  border-color: #dcfce7;
+  /* Green-100 */
+}
+
+.metric-badge.quantity {
+  background-color: #eff6ff;
+  /* Blue-50 */
+  color: #1d4ed8;
+  /* Blue-700 */
+  border-color: #dbeafe;
+  /* Blue-100 */
+}
+
+.metric-badge.resources {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.actividad-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: flex-start;
+  padding-left: 8px;
+  border-left: 1px solid #f1f5f9;
+}
+
+.btn-action-sm {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  /* Ghost style */
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.btn-action-sm:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-color);
+}
+
+.btn-action-sm.danger:hover {
+  background-color: #fef2f2;
+  color: #ef4444;
+}

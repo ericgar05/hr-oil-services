@@ -76,16 +76,27 @@ export const DiaPlanning = ({ dia, onBack, allDias, onNavigate }) => {
         setShowActividadForm(true);
     };
 
-    const handleDelete = async (actividadId) => {
-        if (window.confirm('¿Estás seguro de que quieres eliminar esta actividad?')) {
-            try {
-                await deleteActividad(actividadId);
-                // Refrescar datos después de eliminar
-                handleSuccess();
-                showToast('Actividad eliminada exitosamente', 'success');
-            } catch (error) {
-                showToast('No se pudo eliminar la actividad.', 'error');
-            }
+    // Delete Modal State
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [actividadToDelete, setActividadToDelete] = useState(null);
+
+    const handleDelete = (actividadId) => {
+        setActividadToDelete(actividadId);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!actividadToDelete) return;
+        try {
+            await deleteActividad(actividadToDelete);
+            // Refrescar datos después de eliminar
+            handleSuccess();
+            showToast('Actividad eliminada exitosamente', 'success');
+        } catch (error) {
+            showToast('No se pudo eliminar la actividad.', 'error');
+        } finally {
+            setShowDeleteModal(false);
+            setActividadToDelete(null);
         }
     };
 
@@ -187,6 +198,32 @@ export const DiaPlanning = ({ dia, onBack, allDias, onNavigate }) => {
                     onClose={() => { setShowActividadForm(false); setActividadParaEditar(null); }}
                     onSuccess={handleSuccess}
                 />
+            </Modal>
+
+            {/* Modal de Confirmación de Eliminación */}
+            <Modal
+                isOpen={showDeleteModal}
+                onClose={() => { setShowDeleteModal(false); setActividadToDelete(null); }}
+                title="Confirmar Eliminación"
+            >
+                <div style={{ padding: '20px' }}>
+                    <p>¿Estás seguro de que deseas eliminar esta actividad? Esta acción no se puede deshacer.</p>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+                        <button
+                            onClick={() => setShowDeleteModal(false)}
+                            className="btn-secondary"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={confirmDelete}
+                            className="btn-danger"
+                            style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px' }}
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
             </Modal>
         </div>
     );
