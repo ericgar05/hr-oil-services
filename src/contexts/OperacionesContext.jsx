@@ -282,6 +282,40 @@ export const OperacionesProvider = ({ children }) => {
     setLoading(false);
   }, [getRequerimientos, showToast]);
 
+  const approveRequerimiento = useCallback(async (reqId) => {
+    setLoading(true);
+    
+    // 1. Aprobar todos los items pendientes de este requerimiento
+    const { error: itemsError } = await supabase
+      .from('requerimiento_items')
+      .update({ status: 'pendiente' }) // 'pendiente' = Aprobado para compra
+      .eq('requerimiento_id', reqId)
+      .eq('status', 'por_aprobar');
+
+    if (itemsError) {
+      console.error('Error approving items:', itemsError);
+      showToast("Error al aprobar items", "error");
+      setLoading(false);
+      return;
+    }
+
+    // 2. Aprobar el requerimiento padre
+    const { error: reqError } = await supabase
+      .from('requerimientos')
+      .update({ status: 'pendiente' })
+      .eq('id', reqId);
+
+    if (reqError) {
+        console.error('Error approving requirement parent:', reqError);
+        showToast("Error al actualizar estado del requerimiento", "error");
+    } else {
+        await getRequerimientos();
+        showToast("Solicitud aprobada correctamente", "success");
+    }
+    
+    setLoading(false);
+  }, [getRequerimientos, showToast]);
+
   const approveRequerimientoItem = useCallback(async (itemId) => {
     setLoading(true);
     
@@ -703,6 +737,7 @@ export const OperacionesProvider = ({ children }) => {
     getFacturas,
     getComprasSinFactura,
     approveRequerimientoItem,
+    approveRequerimiento,
     rejectRequerimientoItem,
   }), [
     inventory,
@@ -725,6 +760,7 @@ export const OperacionesProvider = ({ children }) => {
     getLowStockItems,
     updateInventoryItem,
     approveRequerimientoItem,
+    approveRequerimiento,
     rejectRequerimientoItem,
     facturas,
     comprasSinFactura,

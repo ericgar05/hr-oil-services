@@ -7,13 +7,10 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
     const { addRequerimiento, loading, productos } = useOperaciones();
     const { showToast } = useNotification();
 
-    // 1. Requirement Header State
     const [fechaRequerimiento, setFechaRequerimiento] = useState(new Date().toISOString().split('T')[0]);
 
-    // 2. Added Items List State
     const [itemsList, setItemsList] = useState([]);
 
-    // 3. Current Item Editing State
     const initialItemState = {
         nombre_producto: '',
         categoria_producto: '',
@@ -24,11 +21,8 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
     };
     const [currentItem, setCurrentItem] = useState(initialItemState);
 
-    // --- EFFECT: Handle Prefilled Product from Suggestions ---
     useEffect(() => {
         if (prefilledProduct) {
-            // Calculate recommended quantity
-            // If suggestion has explicit suggested quantity, use it. Otherwise use (Target - Available)
             let recommendedQty = parseFloat(prefilledProduct.cantidad_sugerida);
             if (!recommendedQty && prefilledProduct.stock_objetivo) {
                  recommendedQty = parseFloat(prefilledProduct.stock_objetivo) - parseFloat(prefilledProduct.cantidad_disponible || 0);
@@ -37,7 +31,6 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
             const existingPrice = parseFloat(prefilledProduct.precio_unitario || 0);
 
-            // Try to complete data from main product list if available
             let category = prefilledProduct.categoria_producto || '';
             let unit = prefilledProduct.unidad || '';
 
@@ -58,8 +51,7 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
                 monto_dolares_aprox: (recommendedQty * existingPrice).toFixed(2)
             });
 
-            // Optional: User feedback
-            // showToast(`Producto sugerido cargado: ${prefilledProduct.nombre_producto}`, 'info');
+            showToast(`Producto sugerido cargado: ${prefilledProduct.nombre_producto}`, 'info');
         }
     }, [prefilledProduct, productos]);
 
@@ -79,9 +71,8 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
                 newItem.categoria_producto = selectedProduct.categoria_producto;
                 newItem.unidad = selectedProduct.unidad;
             }
-            // Note: We don't auto-clear here to allow free typing if needed, 
-            // but could replicate original logic if strict validation is desired.
-        }
+            
+        }       
 
         setCurrentItem(newItem);
     };
@@ -136,6 +127,7 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
     return (
         <main className="requerimientos-form-container">
+
             <header>
                 <label>Fecha del Requerimiento</label>
                 <input
@@ -148,12 +140,14 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
             </header>
 
             <h4>Agregar Nuevo Item</h4>
-
+            {/* Item Input Section */}
             <section className="requerimiento-item-grid">
+            
+            <div>
+                
                 <div className="form-group">
                     <label>Producto
-
-                    <input
+                        <input
                         list="productos-datalist"
                         type="text"
                         name="nombre_producto"
@@ -173,7 +167,6 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
                 <div className="form-group">
                     <label>Categoría
-
                     <input
                         type="text"
                         name="categoria_producto"
@@ -187,7 +180,6 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
                 <div className="form-group">
                     <label>Unidad
-
                     <input
                         type="text"
                         name="unidad"
@@ -201,7 +193,6 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
                 <div className="form-group">
                     <label>Cantidad 
-
                     <input
                         type="number"
                         name="cantidad_requerida"
@@ -217,7 +208,6 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
                 <div className="form-group">
                     <label>Precio Unit. (Ref)
-
                     <input
                         type="number"
                         name="precio_unitario_usd_aprox"
@@ -232,7 +222,6 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
 
                 <div className="form-group">
                     <label>Total Aprox.
-
                     <input
                         type="text"
                         value={`$${currentItem.monto_dolares_aprox || '0.00'}`}
@@ -242,62 +231,15 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
                         </label>
                 </div>
 
-               
-            </section>
+                   <div className="form-actions">
 
-            {/* Temporary List Table */}
-            {itemsList.length > 0 && (
-                <div className="items-list-preview">
-                    <h4>Items por Registrar ({itemsList.length})</h4>
-                    <table className="items-table">
-                        <thead>
-                            <tr>
-                                <th>Producto</th>
-                                <th>Cant.</th>
-                                <th>Total Ref.</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {itemsList.map((item, idx) => (
-                                <tr key={idx}>
-                                    <td>
-                                        <div className="product-name">{item.nombre_producto}</div>
-                                        <div className="product-details">{item.categoria_producto} - {item.unidad}</div>
-                                    </td>
-                                    <td>{item.cantidad_requerida}</td>
-                                    <td>${item.monto_dolares_aprox}</td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleRemoveItemFromList(idx)}
-                                            className="btn-remove"
-                                        >
-                                            ✕
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-
-            <div className="form-actions">
-
-                {onCancel && (
-                    <button type="button" className="btn-secondary" onClick={onCancel}>
-                        Cancelar
+                    <button
+                        onClick={handleSubmit}
+                        className="btn-submit-requerimiento"
+                        disabled={loading || itemsList.length === 0}
+                    >
+                        {loading ? 'Guardando...' : `Registrar Requerimiento (${itemsList.length})`}
                     </button>
-                )}
-
-                <button
-                    onClick={handleSubmit}
-                    className="btn-submit-requerimiento"
-                    disabled={loading || itemsList.length === 0}
-                >
-                    {loading ? 'Guardando...' : `Registrar Requerimiento (${itemsList.length})`}
-                </button>
 
                 <button
                     type="button"
@@ -309,6 +251,55 @@ export const RequerimientosForm = ({ onSuccess, onCancel, semanaId = null, prefi
               
                 
             </div>
+            </div>
+             {/* Aqui va un componente y ver lo de no hay items agregados */}
+            <div className='preview-item'>
+
+                {!itemsList.length > 0 ?
+
+                <h4>No hay items agregados</h4>
+                
+                :
+                 (
+               
+
+                    
+                     
+                    <div className="items-list-container">
+                            {itemsList.map((item, idx) => (
+                                <div key={idx} className="item-card">
+                                    <div className="item-info">
+                                        <h4 className="product-name">{item.nombre_producto}</h4>
+                                        <h4 className="product-details">{item.categoria_producto} - {item.unidad}</h4>
+                                        <span className="badge-qty">Cant: {item.cantidad_requerida}</span>
+                                    </div>
+                                    
+                                    <div className="item-values">
+                                        <span className="price-tag">TOTAL:${item.monto_dolares_aprox}</span>
+                                    </div>
+
+                                    <button
+                                        onClick={() => handleRemoveItemFromList(idx)}
+                                        className="btn-remove-item"
+                                        title="Eliminar"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                       
+                  
+                    </div>
+                )}
+               
+               
+            </div>
+
+                
+
+               
+            </section>
+         
         </main>
     );
 };

@@ -7,9 +7,6 @@ import ModuleDescription from '../../../_core/ModuleDescription/ModuleDescriptio
 import Modal from '../../../../common/Modal/Modal';
 import StatsCard from '../../../../common/StatsCard/StatsCard';
 
-// ... (in component render)
-
-
 import './RequerimientosMain.css';
 import { RequerimientosForm } from './RequerimientosForm';
 import RequerimientosGroupList from './RequerimientosGroupList';
@@ -20,29 +17,26 @@ const RequerimientosMain = () => {
     loading,
     requerimientos,
     cancelRequerimientoItem,
-    approveRequerimientoItem, // Nueva función
-    rejectRequerimientoItem,  // Nueva función
+    approveRequerimientoItem, 
+    rejectRequerimientoItem,  
     getLowStockItems,
     addRequerimientoItem,
     updateRequerimientoItem
   } = useOperaciones();
 
-  const { userData: user } = useAuth(); // Obtener usuario para permisos
+  const { userData: user } = useAuth(); 
 
   const { showToast } = useNotification();
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState('all');
   
-  // State for populating form from suggestions
   const [suggestionToFill, setSuggestionToFill] = useState(null);
 
   const lowStockItems = useMemo(() => getLowStockItems ? getLowStockItems() : [], [getLowStockItems]);
 
   const handleUseSuggestion = (suggestion) => {
-    // Pass suggestion to form (add timestamp to force update if same item clicked again)
     setSuggestionToFill({ ...suggestion, _timestamp: Date.now() });
     
-    // Scroll to top to see form
     window.scrollTo({ top: 0, behavior: 'smooth' });
     showToast("Cargando sugerencia en el formulario...", "info");
   };
@@ -54,7 +48,7 @@ const RequerimientosMain = () => {
       completados: 0,
       en_progreso: 0,
       cancelados: 0,
-      por_aprobar: 0 // Nuevo contador
+      por_aprobar: 0 
     };
 
     requerimientos.forEach(req => {

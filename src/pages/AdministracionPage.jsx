@@ -19,14 +19,13 @@ import IngresosPagosMain from "../components/modules/administracion/submodules/i
 import ComisionesMain from "../components/modules/administracion/submodules/ingresos-comisiones/submodules/comisiones/ComisionesMain";
 // import GestionUsariosPage from "./GestionUsariosPage";
 
-import { PersonalProvider } from "../contexts/PersonalContext";
+
 
 const AdministracionPage = () => {
   const { selectedProject } = useProjects();
   const projectId = selectedProject?.id;
   return (
     <ModulePage moduleId="administracion" showSubRoutes={true}>
-      <PersonalProvider>
         <Routes>
           <Route index element={<AdministracionMain />} />
           <Route path="gastos-administrativos" element={<GastosAdminMain />} />
@@ -74,7 +73,6 @@ const AdministracionPage = () => {
           {/* Ruta para Gestión de Usuarios */}
           {/* <Route path="gestion-usuarios/*" element={<GestionUsariosPage />} /> */}
         </Routes>
-      </PersonalProvider>
     </ModulePage>
   );
 };
