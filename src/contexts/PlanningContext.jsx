@@ -234,12 +234,16 @@ export const PlanningProvider = ({ children }) => {
 
       // 3. Insertar Personal si existe
       if (personal && personal.length > 0) {
-        const personalToInsert = personal.map(p => ({
-          actividad_id: actividad.id,
-          personal_id: p.id,
-          nombre_personal: p.nombre, // Optimización para display
-          rol_en_actividad: p.rol || 'General'
-        }));
+        const personalToInsert = personal.map(p => {
+          // Fix: Ensure ID is a valid UUID by stripping prefixes like "contractor-" or "employee-"
+          const cleanId = p.id.replace(/^(contractor-|employee-)/, '');
+          return {
+            actividad_id: actividad.id,
+            personal_id: cleanId,
+            nombre_personal: p.nombre, // Optimización para display
+            rol_en_actividad: p.rol || 'General'
+          };
+        });
         const { error: errorPers } = await supabase
           .from('plan_actividad_personal')
           .insert(personalToInsert);
@@ -260,17 +264,56 @@ export const PlanningProvider = ({ children }) => {
 
   const updateActividad = useCallback(async (actividadId, actividadData) => {
     setLoading(true);
+
+    // Destructure properties not belonging to plan_actividades
+    const { subactividades, personal, monto_programado, ...mainData } = actividadData;
+
     try {
+      // 1. Actividad Principal
       const { data, error } = await supabase
         .from('plan_actividades')
-        .update(actividadData)
+        .update(mainData)
         .eq('id', actividadId)
         .select()
         .single();
 
       if (error) throw error;
 
-      // Recalcular montos (necesitamos dia_id, si no viene en data, habría que buscarlo, pero generalmente update viene del form con todo o no cambiamos dia)
+      // 2. Subactividades (Replace Strategy: Delete all for this activity and Insert new)
+      // Note: This resets 'completada' status. acceptable for planning phase edits.
+      if (subactividades) {
+        await supabase.from('plan_subactividades').delete().eq('actividad_id', actividadId);
+
+        if (subactividades.length > 0) {
+          const subToInsert = subactividades.map(s => ({
+            actividad_id: actividadId,
+            descripcion: s.descripcion,
+            completada: false
+          }));
+          await supabase.from('plan_subactividades').insert(subToInsert);
+        }
+      }
+
+      // 3. Personal (Replace Strategy)
+      if (personal) {
+        await supabase.from('plan_actividad_personal').delete().eq('actividad_id', actividadId);
+
+        if (personal.length > 0) {
+          const persToInsert = personal.map(p => {
+            // Clean ID just like in create
+            const cleanId = p.id.replace(/^(contractor-|employee-)/, '');
+            return {
+              actividad_id: actividadId,
+              personal_id: cleanId,
+              nombre_personal: p.nombre,
+              rol_en_actividad: p.rol || 'General'
+            };
+          });
+          await supabase.from('plan_actividad_personal').insert(persToInsert);
+        }
+      }
+
+      // Recalcular montos
       if (data.dia_id) {
         await recalcularTotalesDia(data.dia_id);
       }

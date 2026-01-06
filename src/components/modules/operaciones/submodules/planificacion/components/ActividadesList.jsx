@@ -28,46 +28,54 @@ export const ActividadesList = ({ actividades, onEdit, onDelete, loading }) => {
 
         return (
           <div key={actividad.id} className="planning-actividad-item">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1, paddingRight: '10px' }}>
-                <h4 style={{ margin: '0 0 5px 0' }}>{actividad.descripcion || 'Sin descripción'}</h4>
+            <div className="actividad-main-info">
+              <h4 className="actividad-title">{actividad.descripcion || 'Sin descripción'}</h4>
 
-                <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '5px' }}>
-                  {actividad.nombre_partida || actividad.budget_items?.description}
-                </p>
+              <div className="actividad-partida">
+                <span style={{ opacity: 0.7 }}>📂</span>
+                {actividad.nombre_partida || actividad.budget_items?.description || 'Partida no asignada'}
+              </div>
 
-                <div style={{ display: 'flex', gap: '15px', fontSize: '0.8rem', color: '#666', marginTop: '8px' }}>
-
-                  <span title="Cantidad Programada">
-                    📊 <strong>{actividad.cantidad_programada}</strong> {actividad.unidad_medida}
-                  </span>
-
-                  <span title="Monto Programado">
-                    💰 <strong>{formatCurrency(actividad.monto_programado, 'USD')}</strong>
-                  </span>
-
-                  {subCount > 0 && (
-                    <span title="Subactividades">
-                      ✅ {subCount} tareas
-                    </span>
-                  )}
-
-                  {persCount > 0 && (
-                    <span title="Personal Involucrado">
-                      👥 {persCount} pers.
-                    </span>
-                  )}
+              <div className="actividad-metrics">
+                <div className="metric-badge quantity" title="Cantidad Programada">
+                  <span>📊</span>
+                  <strong>{actividad.cantidad_programada}</strong> {actividad.unidad_medida}
                 </div>
-              </div>
 
-              <div className="planning-actividad-actions" style={{ display: 'flex', gap: '5px' }}>
-                <button onClick={() => onEdit(actividad)} className="btn-icon" title="Editar">
-                  ✏️
-                </button>
-                <button onClick={() => onDelete(actividad.id)} className="btn-icon btn-icon-danger" title="Eliminar">
-                  🗑️
-                </button>
+                <div className="metric-badge money" title="Monto Programado">
+                  <span>💰</span>
+                  <strong>{formatCurrency(actividad.monto_programado, 'USD')}</strong>
+                </div>
+
+                {subCount > 0 && (
+                  <div className="metric-badge resources" title="Subactividades">
+                    <span>✅</span> {subCount} tareas
+                  </div>
+                )}
+
+                {persCount > 0 && (
+                  <div className="metric-badge resources" title="Personal Involucrado">
+                    <span>👥</span> {persCount} pers.
+                  </div>
+                )}
               </div>
+            </div>
+
+            <div className="actividad-actions">
+              <button
+                onClick={() => onEdit(actividad)}
+                className="btn-action-sm"
+                title="Editar"
+              >
+                ✏️
+              </button>
+              <button
+                onClick={() => onDelete(actividad.id)}
+                className="btn-action-sm danger"
+                title="Eliminar"
+              >
+                🗑️
+              </button>
             </div>
           </div>
         );
