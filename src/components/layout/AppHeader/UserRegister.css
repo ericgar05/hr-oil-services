@@ -37,7 +37,9 @@
 .user-icon-svg {
   width: 24px;
   height: 24px;
-  fill: #555;
+  fill: none;
+  stroke: #555;
+  stroke-width: 2;
 }
 
 .user-register-form {

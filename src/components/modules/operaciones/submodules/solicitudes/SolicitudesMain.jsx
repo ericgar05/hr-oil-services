@@ -10,6 +10,7 @@ const SolicitudesMain = () => {
   const {
     requerimientos,
     approveRequerimientoItem,
+    approveRequerimiento,
     rejectRequerimientoItem,
     updateRequerimientoItem, // Necesario para guardar edición
     loading
@@ -19,20 +20,32 @@ const SolicitudesMain = () => {
 
   const [editingItem, setEditingItem] = useState(null); // Estado para item en edición
 
-  // Filtrar SOLO los items por aprobar
+  // Filtrar y AGRUPAR los items por aprobar por Requerimiento ID
   const itemsPorAprobar = useMemo(() => {
-    const items = [];
+    const groups = {};
+    
     requerimientos.forEach(req => {
-      if (req.requerimiento_items) {
-        req.requerimiento_items.forEach(item => {
-          if (item.status === 'por_aprobar') {
-            items.push({ ...item, fecha_req: req.fecha_requerimiento });
+      if (req.requerimiento_items) { // Check if items exist
+          // Filter items specific to THIS requirement that are 'por_aprobar'
+          const pendingItems = req.requerimiento_items.filter(item => item.status === 'por_aprobar');
+          
+          if (pendingItems.length > 0) {
+             groups[req.id] = {
+                 reqId: req.id,
+                 date: req.fecha_requerimiento,
+                 items: pendingItems
+             };
           }
-        });
       }
     });
-    return items;
+    return groups;
   }, [requerimientos]);
+
+  const handleApproveGroup = async (reqId) => {
+    if (window.confirm("¿Aprobar TODA la solicitud? Esto aprobará todos los items pendientes en este bloque.")) {
+        await approveRequerimiento(reqId);
+    }
+  };
 
   const handleApprove = async (itemId) => {
     await approveRequerimientoItem(itemId);
@@ -56,75 +69,86 @@ const SolicitudesMain = () => {
   };
 
   return (
-    <div className="solicitudes-main">
+    <main className="solicitudes-main">
       <ModuleDescription
         title="Bandeja de Solicitudes"
         description="Gestione y apruebe las solicitudes pendientes de operaciones."
-        action={<button className="btn-info-circle"><InfoIcon /></button>}
+       
       />
 
       <div className="solicitudes-container">
         {loading && <p>Cargando solicitudes...</p>}
         
-        {!loading && itemsPorAprobar.length === 0 && (
+        {!loading && Object.keys(itemsPorAprobar).length === 0 && (
           <div className="empty-state">
             <p>No hay solicitudes pendientes de aprobación.</p>
           </div>
         )}
 
-        {!loading && itemsPorAprobar.length > 0 && (
-          <table className="solicitudes-table">
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Producto</th>
-                <th>Cant. Requerida</th>
-                <th>Monto Aprox. (USD)</th>
-                <th>Solicitante</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {itemsPorAprobar.map(item => (
-                <tr key={item.id}>
-                  <td>{new Date(item.fecha_req).toLocaleDateString()}</td>
-                  <td>
-                    <strong>{item.nombre_producto}</strong>
-                    <br />
-                    <small>{item.categoria_producto} - {item.unidad}</small>
-                  </td>
-                  <td>{item.cantidad_requerida}</td>
-                  <td>${(item.cantidad_requerida * (item.precio_unitario_usd_aprox || 0)).toFixed(2)}</td>
-                  <td>Auxiliar Operaciones</td> 
-                  <td>
-                    <div className="actions-cell">
-                      <button
-                        onClick={() => handleEdit(item)}
-                        className="btn-edit"
-                        title="Editar"
-                      >
-                       <EditIcon />
-                      </button>
-                      <button 
-                        onClick={() => handleApprove(item.id)}
-                        className="btn-approve"
-                        title="Aprobar"
-                      >
-                       <CheckCircleIcon />
-                      </button>
-                      <button 
-                        onClick={() => handleReject(item.id)}
-                        className="btn-reject"
-                        title="Rechazar"
-                      >
-                       <XCircleIcon />
-                      </button>
+        {!loading && Object.keys(itemsPorAprobar).length > 0 && (
+          <div className="solicitudes-groups-container">
+            {Object.values(itemsPorAprobar).map(group => (
+              <div key={group.reqId} className="solicitud-group-card">
+                 <div className="solicitud-header">
+                    <div>
+                        <h4>Solicitud #{group.reqId}</h4>
+                        <span className="date-badge">{new Date(group.date).toLocaleDateString()}</span>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    <button
+                        onClick={() => handleApproveGroup(group.reqId)}
+                        className="btn-approve-group"
+                    >
+                        <CheckCircleIcon /> Aprobar Solicitud
+                    </button>
+                 </div>
+                 
+                 <table className="solicitudes-table">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cant. Requerida</th>
+                        <th>Monto Aprox. (USD)</th>
+                        <th>Solicitante</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {group.items.map(item => (
+                        <tr key={item.id}>
+                          <td>
+                            <strong>{item.nombre_producto}</strong>
+                            <br />
+                            <small>{item.categoria_producto} - {item.unidad}</small>
+                          </td>
+                          <td>{item.cantidad_requerida}</td>
+                          <td>${(item.cantidad_requerida * (item.precio_unitario_usd_aprox || 0)).toFixed(2)}</td>
+                          <td>Auxiliar Operaciones</td>
+                          <td>
+                            <div className="actions-cell">
+                              <button
+                                onClick={() => handleEdit(item)}
+                                className="btn-edit"
+                                title="Editar"
+                              >
+                               <EditIcon />
+                              </button>
+                              {/* Item Approval Removed - Bulk Action Only */}
+                              <button 
+                                onClick={() => handleReject(item.id)}
+                                className="btn-reject"
+                                title="Rechazar"
+                              >
+                               <XCircleIcon />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                 </table>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
@@ -136,7 +160,7 @@ const SolicitudesMain = () => {
             onSave={handleSaveEdit}
         />
       )}
-    </div>
+    </main>
   );
 };
 

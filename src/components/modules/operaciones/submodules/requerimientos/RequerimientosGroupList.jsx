@@ -168,7 +168,12 @@ const RequerimientosGroupList = ({ requerimientos, onDataChange, user }) => {
                 return (
                 <div key={req.id} className="requerimiento-group">
                     <div className="requerimiento-header">
-                        <h4>Solicitud del {new Date(req.fecha_requerimiento.replace(/-/g, '/')).toLocaleDateString()}</h4>
+                        <div>
+                            <h4>Solicitud #{req.id}</h4>
+                            <span style={{ fontSize: '0.9rem', color: '#666' }}>
+                                Fecha: {new Date(req.fecha_requerimiento.replace(/-/g, '/')).toLocaleDateString()}
+                            </span>
+                        </div>
 
                         <span className="total-amount">
                             Total: ${req.requerimiento_items.reduce((acc, item) => acc + (item.cantidad_requerida * item.precio_unitario_usd_aprox), 0).toFixed(2)}

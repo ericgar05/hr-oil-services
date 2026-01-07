@@ -33,16 +33,22 @@
     }
 
     .requerimiento-item-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-start; /* Force items to align to the top */
         border: none;
         background-color: transparent;
-        gap: 15px;
+        gap: 1rem;
         padding: 15px;
         border-radius: 8px;
         color: #fff;
 
        .form-group {
+        width: 50vh;
+
+        
        
            label{
                color: #9ca3af;
@@ -54,6 +60,48 @@
               border: none;
            }
        }
+
+       .preview-item{
+        width: 50vh;
+        height: 50vh;
+        background-color: #e4eaf5;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 10px;
+        overflow-y: auto;
+
+        h4{
+            color:#b8b8b8;
+            text-align: center;
+            margin-top: 2rem;
+        }
+           /* Las cards que van a un componente */
+
+           .item-card{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #1f2937;
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .item-info h4 {
+            padding: 0;
+            margin: 0;
+        }
+
+        .item-values{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+       }
+
+       
 
     }
 

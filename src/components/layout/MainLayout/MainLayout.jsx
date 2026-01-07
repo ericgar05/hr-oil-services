@@ -96,14 +96,17 @@ const MainLayout = ({ children }) => {
         const reqIds = reqs.map(r => r.id);
         
         if (reqIds.length > 0) {
-          const { count, error: countError } = await supabase
+          // Modificado: Traemos los IDs para contar requerimientos UNICOS, no items totales
+          const { data: items, error: countError } = await supabase
             .from('requerimiento_items')
-            .select('*', { count: 'exact', head: true })
+            .select('requerimiento_id')
             .in('requerimiento_id', reqIds)
             .eq('status', 'por_aprobar');
             
-          if (!countError) {
-            setPendingCount(count || 0);
+          if (!countError && items) {
+            // Usamos Set para contar IDs únicos de requerimientos
+            const uniqueReqs = new Set(items.map(i => i.requerimiento_id));
+            setPendingCount(uniqueReqs.size);
           }
         }
       } catch (err) {
