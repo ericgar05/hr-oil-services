@@ -191,7 +191,7 @@
 
 .categoria-nombre {
   font-weight: 600;
-  color: #334155 !important; /* Force dark gray */
+  color: #1e293b;
   font-size: 0.95rem;
   flex: 1;
   min-width: 0;
@@ -202,7 +202,7 @@
 
 .categoria-total {
   font-weight: 700;
-  color: #000000 !important; /* Force black */
+  color: #3b82f6;
   font-size: 1rem;
   min-width: 90px;
   text-align: right;

@@ -1,4 +1,3 @@
-import React from "react";
 import "./PlanningDayItem.css";
 
 export const PlanningDayItem = ({ dia, onClick }) => {
@@ -10,16 +9,17 @@ export const PlanningDayItem = ({ dia, onClick }) => {
       className={`planning-dia-item ${isToday ? "is-today" : ""}`}
       onClick={() => onClick(dia)}
     >
-      <div className="planning-dia-header">
-        {/* Added Day Name as requested */}
-        <span className="dia-name">
-          {dateObj.toLocaleDateString("es-ES", { weekday: "long" })}
-        </span>
-        <span className="dia-number">{dateObj.getDate()}</span>
-        <span className="dia-month">
-          {dateObj.toLocaleDateString("es-ES", { month: "short" })}
-        </span>
-      </div>
+      <header className="header-item-day">
+        <section className="planning-dia-header">
+          <span className="dia-name">
+            {dateObj.toLocaleDateString("es-ES", { weekday: "long" })}
+          </span>
+          <span className="dia-number">{dateObj.getDate()}</span>
+          <span className="dia-month">
+            {dateObj.toLocaleDateString("es-ES", { month: "short" })}
+          </span>
+        </section>
+      </header>
 
       <div className="dia-content">
         <div className="dia-stats">

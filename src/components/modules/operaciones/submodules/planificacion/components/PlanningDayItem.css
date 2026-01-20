@@ -27,12 +27,20 @@
   background-color: #f0f9ff;
 }
 
+.header-item-day {
+  display: flex;
+  flex-direction: column;
+  background-color: #8381df;
+}
+
 .planning-dia-header {
   display: flex;
   flex-direction: column;
+
   align-items: center;
   border-bottom: 1px solid #f1f5f9;
   padding-bottom: 12px;
+  border-radius: 12px 12px 0 0; /* Ensure header rounds with card */
 }
 
 .dia-name {
