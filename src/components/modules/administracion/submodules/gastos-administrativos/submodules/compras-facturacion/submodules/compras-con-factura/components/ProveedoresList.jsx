@@ -10,8 +10,10 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
   const [proveedores, setProveedores] = useState([])
   const [allProveedores, setAllProveedores] = useState([])
   const [filtroProveedor, setFiltroProveedor] = useState('')
+  const [filtroEstado, setFiltroEstado] = useState('todos')
   const [proveedorSeleccionado, setProveedorSeleccionado] = useState(null)
   const [mostrarModalPago, setMostrarModalPago] = useState(false)
+  const [pagosTemp, setPagosTemp] = useState({})
 
   useEffect(() => {
     cargarFacturas()
@@ -162,10 +164,14 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
     setProveedores(Object.values(proveedoresMap))
   }
 
-  const proveedoresFiltrados = proveedores.filter(proveedor =>
-    proveedor.proveedor.toLowerCase().includes(filtroProveedor.toLowerCase()) ||
-    (proveedor.rif && proveedor.rif.includes(filtroProveedor))
-  )
+  const proveedoresFiltrados = proveedores.filter(proveedor => {
+    const cumpleNombre = proveedor.proveedor.toLowerCase().includes(filtroProveedor.toLowerCase()) ||
+      (proveedor.rif && proveedor.rif.includes(filtroProveedor))
+
+    const cumpleEstado = filtroEstado === 'todos' || proveedor.estadoRetenciones === filtroEstado
+
+    return cumpleNombre && cumpleEstado
+  })
 
   const getEstadoBadge = (estado) => {
     if (estado === 'al-dia') {
@@ -177,48 +183,91 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
 
   const handleMarcarPago = (proveedor) => {
     setProveedorSeleccionado(proveedor)
+
+    // Identificar facturas pendientes de este proveedor
+    const facturasPendientes = proveedor.facturas.filter(f => f.retencionPorCobrar > 0)
+
+    // Inicializar estado temporal de pagos
+    const initialTemp = {}
+    facturasPendientes.forEach(f => {
+      initialTemp[f.id] = {
+        pagoIva: 0,
+        pagoIslr: 0,
+        maxIva: f.retencionIvaPendiente || 0,
+        maxIslr: f.retencionIslrPendiente || 0
+      }
+    })
+    setPagosTemp(initialTemp)
     setMostrarModalPago(true)
   }
 
-  const procesarPago = async (tipoPago) => {
-    if (!proveedorSeleccionado) return
+  const handlePagoChange = (facturaId, field, value) => {
+    let numericValue = 0
+    if (value !== '') {
+      numericValue = parseFloat(value)
+    }
 
-    const facturasAActualizar = facturas
-      .filter(factura =>
-        factura.tipoRif === proveedorSeleccionado.tipoRif &&
-        factura.rif === proveedorSeleccionado.rif &&
-        factura.retencionPorCobrar > 0
-      )
-      .map(factura => {
-        let nuevaRetencionPorCobrar = factura.retencionPorCobrar || 0
-        let nuevaRetencionCobrada = factura.retencionCobrada || 0
-        let nuevaRetencionIvaPendiente = factura.retencionIvaPendiente || 0
-        let nuevaRetencionIslrPendiente = factura.retencionIslrPendiente || 0
-        let nuevaRetencionIvaCobrada = factura.retencionIvaCobrada || 0
-        let nuevaRetencionIslrCobrada = factura.retencionIslrCobrada || 0
+    setPagosTemp(prev => {
+      const current = prev[facturaId]
+      const max = field === 'pagoIva' ? current.maxIva : current.maxIslr
 
-        if (tipoPago === 'todo' && nuevaRetencionIvaPendiente + nuevaRetencionIslrPendiente > 0) {
-          nuevaRetencionCobrada += nuevaRetencionIvaPendiente + nuevaRetencionIslrPendiente
-          nuevaRetencionPorCobrar -= (nuevaRetencionIvaPendiente + nuevaRetencionIslrPendiente)
-          nuevaRetencionIvaCobrada += nuevaRetencionIvaPendiente
-          nuevaRetencionIslrCobrada += nuevaRetencionIslrPendiente
-          nuevaRetencionIvaPendiente = 0
-          nuevaRetencionIslrPendiente = 0
-        } else if (tipoPago === 'iva' && nuevaRetencionIvaPendiente > 0) {
-          nuevaRetencionCobrada += nuevaRetencionIvaPendiente
-          nuevaRetencionPorCobrar -= nuevaRetencionIvaPendiente
-          nuevaRetencionIvaCobrada += nuevaRetencionIvaPendiente
-          nuevaRetencionIvaPendiente = 0
-        } else if (tipoPago === 'islr' && nuevaRetencionIslrPendiente > 0) {
-          nuevaRetencionCobrada += nuevaRetencionIslrPendiente
-          nuevaRetencionPorCobrar -= nuevaRetencionIslrPendiente
-          nuevaRetencionIslrCobrada += nuevaRetencionIslrPendiente
-          nuevaRetencionIslrCobrada += nuevaRetencionIslrPendiente
-          nuevaRetencionIslrPendiente = 0
+      // Validar que no exceda el monto pendiente
+      if (numericValue > max) return prev
+      if (numericValue < 0) return prev
+
+      return {
+        ...prev,
+        [facturaId]: {
+          ...current,
+          [field]: numericValue
+        }
+      }
+    })
+  }
+
+  const handlePagarTodoFactura = (facturaId) => {
+    setPagosTemp(prev => ({
+      ...prev,
+      [facturaId]: {
+        ...prev[facturaId],
+        pagoIva: prev[facturaId].maxIva,
+        pagoIslr: prev[facturaId].maxIslr
+      }
+    }))
+  }
+
+  const procesarPago = async () => {
+    const actualizaciones = []
+
+    console.log("Iniciando procesamiento de pagos:", pagosTemp)
+
+    Object.keys(pagosTemp).forEach(facturaId => {
+      const pago = pagosTemp[facturaId]
+      const totalPagar = (pago.pagoIva || 0) + (pago.pagoIslr || 0)
+
+      if (totalPagar > 0) {
+        // Buscar factura original - Usar == para permitir coincidencia string/numero
+        const facturaOriginal = facturas.find(f => f.id == facturaId)
+
+        if (!facturaOriginal) {
+          console.error(`Factura no encontrada para ID: ${facturaId}`)
+          return
         }
 
-        return {
-          id: factura.id,
+        let nuevaRetencionIvaPendiente = (facturaOriginal.retencionIvaPendiente || 0) - (pago.pagoIva || 0)
+        let nuevaRetencionIslrPendiente = (facturaOriginal.retencionIslrPendiente || 0) - (pago.pagoIslr || 0)
+        let nuevaRetencionIvaCobrada = (facturaOriginal.retencionIvaCobrada || 0) + (pago.pagoIva || 0)
+        let nuevaRetencionIslrCobrada = (facturaOriginal.retencionIslrCobrada || 0) + (pago.pagoIslr || 0)
+
+        // Asegurar no negativos por redondeo
+        if (nuevaRetencionIvaPendiente < 0) nuevaRetencionIvaPendiente = 0
+        if (nuevaRetencionIslrPendiente < 0) nuevaRetencionIslrPendiente = 0
+
+        let nuevaRetencionPorCobrar = nuevaRetencionIvaPendiente + nuevaRetencionIslrPendiente
+        let nuevaRetencionCobrada = nuevaRetencionIvaCobrada + nuevaRetencionIslrCobrada
+
+        actualizaciones.push({
+          id: facturaOriginal.id,
           update: {
             retencionPorCobrar: nuevaRetencionPorCobrar,
             retencionCobrada: nuevaRetencionCobrada,
@@ -228,29 +277,34 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
             retencionIslrCobrada: nuevaRetencionIslrCobrada,
             updatedAt: new Date().toISOString()
           }
-        }
-      })
+        })
+      }
+    })
 
-    if (facturasAActualizar.length === 0) {
-      showToast('No hay retenciones pendientes para procesar con esta opción.', 'warning')
+    if (actualizaciones.length === 0) {
+      showToast('No hay montos ingresados para procesar.', 'warning')
+      return
+    }
+
+    if (!window.confirm(`¿Está seguro de que desea procesar pagos para ${actualizaciones.length} factura(s)?`)) {
       return
     }
 
     try {
-      const updates = facturasAActualizar.map(f =>
-        supabase.from('facturas').update(f.update).eq('id', f.id)
+      const promises = actualizaciones.map(item =>
+        supabase.from('facturas').update(item.update).eq('id', item.id)
       )
-      const results = await Promise.all(updates)
+
+      const results = await Promise.all(promises)
       results.forEach(res => { if (res.error) throw res.error })
 
-      showToast('Pago procesado exitosamente', 'success')
-      cargarFacturas() // Recargar datos
-    } catch (error) {
-      console.error('Error al procesar el pago:', error)
-      showToast(`Error al procesar el pago: ${error.message}`, 'error')
-    } finally {
+      showToast('Pagos de retenciones procesados exitosamente', 'success')
+      cargarFacturas()
       setMostrarModalPago(false)
       setProveedorSeleccionado(null)
+    } catch (error) {
+      console.error('Error al procesar pagos:', error)
+      showToast(`Error al procesar pagos: ${error.message}`, 'error')
     }
   }
 
@@ -258,7 +312,17 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
     <div className="proveedores-list">
       <div className="section-header-proveedores">
         <h3>Proveedores y Retenciones</h3>
-        <div className="filtros">
+        <div className="filtros" style={{ display: 'flex', gap: '10px' }}>
+          <select
+            className="search-input"
+            style={{ width: 'auto', minWidth: '150px' }}
+            value={filtroEstado}
+            onChange={(e) => setFiltroEstado(e.target.value)}
+          >
+            <option value="todos">Todos los Estados</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="al-dia">Al Día</option>
+          </select>
           <input
             type="text"
             placeholder="Buscar por proveedor o RIF..."
@@ -309,7 +373,17 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
               <span className="card-label">TOTAL RET. POR COBRAR</span>
             </div>
             <strong className="card-value">
-              $ {proveedores.reduce((sum, p) => sum + (p.totalRetencionPorCobrar / 50), 0).toFixed(2)}
+              $ {proveedores.reduce((sum, p) => sum + (p.totalRetencionPorCobrar / 50), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </strong>
+          </div>
+
+          <div className="summary-card-proveedores">
+            <div className="card-icon-wrapper icon-money">
+              <SackDollarIcon />
+              <span className="card-label">TOTAL EN DÓLARES</span>
+            </div>
+            <strong className="card-value">
+              $ {proveedores.reduce((sum, p) => sum + (p.totalPagarDolares || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </strong>
           </div>
         </div>
@@ -342,137 +416,186 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
               <p><strong>Tipo:</strong> {proveedor.tipoRif === 'V-' || proveedor.tipoRif === 'E-' ? 'Persona Natural' : 'Persona Jurídica'}</p>
             </div>
 
-            <div className="proveedor-totales">
-              <h5>Totales en Bolívares</h5>
+            {proveedor.facturas && proveedor.facturas.length > 0 ? (
+              <>
+                <div className="proveedor-totales">
+                  <h5>Totales en Bolívares</h5>
 
-              <div className="total-item">
-                <span>Base Imponible:</span>
-                <span>Bs {(Number(proveedor.totalBaseImponible) || 0).toFixed(2)}</span>
-              </div>
+                  <div className="total-item">
+                    <span>Base Imponible:</span>
+                    <span>Bs {(Number(proveedor.totalBaseImponible) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
 
-              <div className="total-item">
-                <span>Excento:</span>
-                <span>Bs {(Number(proveedor.totalExcento) || 0).toFixed(2)}</span>
-              </div>
+                  <div className="total-item">
+                    <span>Excento:</span>
+                    <span>Bs {(Number(proveedor.totalExcento) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
 
-              <div className="total-item">
-                <span>IVA:</span>
-                <span>Bs {(Number(proveedor.totalIva) || 0).toFixed(2)}</span>
-              </div>
+                  <div className="total-item">
+                    <span>IVA:</span>
+                    <span>Bs {(Number(proveedor.totalIva) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
 
-              <div className="total-item">
-                <span>Total a Pagar:</span>
-                <span>Bs {(Number(proveedor.totalPagar) || 0).toFixed(2)}</span>
-              </div>
+                  <div className="total-item">
+                    <span>Total a Pagar:</span>
+                    <span>Bs {(Number(proveedor.totalPagar) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
 
-              <div className="total-item">
-                <span>Pagado:</span>
-                <span>Bs {(Number(proveedor.totalMontoPagado) || 0).toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="proveedor-totales">
-              <h5>Totales en Dólares</h5>
-
-              <div className="total-item">
-                <span>Total a Pagar:</span>
-                <span>$ {(Number(proveedor.totalPagarDolares) || 0).toFixed(2)}</span>
-              </div>
-
-              <div className="total-item">
-                <span>Pagado:</span>
-                <span>$ {proveedor.totalPagadoDolares.toFixed(2)}</span>
-              </div>
-            </div>
-
-            <div className="retenciones-detalle">
-              <h5>Detalle de Retenciones</h5>
-
-              <div className="retencion-tipo">
-                <h6>IVA</h6>
-                <div className="retencion-item">
-                  <span>Por Cobrar:</span>
-                  <span className="estado-pendiente">
-                    Bs {(Number(proveedor.retencionIvaPendiente) || 0).toFixed(2)}
-                  </span>
+                  <div className="total-item">
+                    <span>Pagado:</span>
+                    <span>Bs {(Number(proveedor.totalMontoPagado) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
                 </div>
-                <div className="retencion-item">
-                  <span>Cobrado:</span>
-                  <span className="estado-bueno">
-                    Bs {(Number(proveedor.retencionIvaCobrada) || 0).toFixed(2)}
-                  </span>
-                </div>
-              </div>
 
-              <div className="retencion-tipo">
-                <h6>ISLR</h6>
-                <div className="retencion-item">
-                  <span>Por Cobrar:</span>
-                  <span className="estado-pendiente">
-                    Bs {(Number(proveedor.retencionIslrPendiente) || 0).toFixed(2)}
-                  </span>
-                </div>
-                <div className="retencion-item">
-                  <span>Cobrado:</span>
-                  <span className="estado-bueno">
-                    Bs {(Number(proveedor.retencionIslrCobrada) || 0).toFixed(2)}
-                  </span>
-                </div>
-              </div>
+                <div className="proveedor-totales">
+                  <h5>Totales en Dólares</h5>
 
-              <div className="retencion-total">
-                <div className="total-item">
-                  <strong>Total por Cobrar:</strong>
-                  <strong className="estado-pendiente">
-                    Bs {(Number(proveedor.totalRetencionPorCobrar) || 0).toFixed(2)}
-                  </strong>
+                  <div className="total-item">
+                    <span>Total a Pagar:</span>
+                    <span>$ {(Number(proveedor.totalPagarDolares) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
+
+                  <div className="total-item">
+                    <span>Pagado:</span>
+                    <span>$ {(Number(proveedor.totalPagadoDolares) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  </div>
                 </div>
-                <div className="total-item">
-                  <strong>Total Cobrado:</strong>
-                  <strong className="estado-bueno">
-                    Bs {(Number(proveedor.totalRetencionCobrada) || 0).toFixed(2)}
-                  </strong>
+
+                <div className="retenciones-detalle">
+                  <h5>Detalle de Retenciones</h5>
+
+                  <div className="retencion-tipo">
+                    <h6>IVA</h6>
+                    <div className="retencion-item">
+                      <span>Por Cobrar:</span>
+                      <span className="estado-pendiente">
+                        Bs {(Number(proveedor.retencionIvaPendiente) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="retencion-item">
+                      <span>Cobrado:</span>
+                      <span className="estado-bueno">
+                        Bs {(Number(proveedor.retencionIvaCobrada) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="retencion-tipo">
+                    <h6>ISLR</h6>
+                    <div className="retencion-item">
+                      <span>Por Cobrar:</span>
+                      <span className="estado-pendiente">
+                        Bs {(Number(proveedor.retencionIslrPendiente) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                    <div className="retencion-item">
+                      <span>Cobrado:</span>
+                      <span className="estado-bueno">
+                        Bs {(Number(proveedor.retencionIslrCobrada) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="retencion-total">
+                    <div className="total-item">
+                      <strong>Total por Cobrar:</strong>
+                      <strong className="estado-pendiente">
+                        Bs {(Number(proveedor.totalRetencionPorCobrar) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </strong>
+                    </div>
+                    <div className="total-item">
+                      <strong>Total Cobrado:</strong>
+                      <strong className="estado-bueno">
+                        Bs {(Number(proveedor.totalRetencionCobrada) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </strong>
+                    </div>
+                  </div>
                 </div>
+              </>
+            ) : (
+              <div className="proveedor-info" style={{ textAlign: 'center', padding: '20px', fontStyle: 'italic', color: '#6b7280' }}>
+                Sin movimientos registrados
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>
 
       {mostrarModalPago && proveedorSeleccionado && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content modal-lg">
             <h3>Marcar Pago de Retenciones</h3>
-            <p>Seleccione el tipo de pago para {proveedorSeleccionado.proveedor}:</p>
+            <p className="modal-subtitle">Facturas pendientes para {proveedorSeleccionado.proveedor}</p>
 
-            <div className="detalle-pendiente">
-              <p><strong>Retenciones Pendientes:</strong></p>
-              <div className="detalle-montos">
-                <span>IVA: Bs {proveedorSeleccionado.retencionIvaPendiente.toFixed(2)}</span>
-                <span>ISLR: Bs {proveedorSeleccionado.retencionIslrPendiente.toFixed(2)}</span>
-                <span><strong>Total: Bs {proveedorSeleccionado.totalRetencionPorCobrar.toFixed(2)}</strong></span>
-              </div>
-            </div>
-
-            <div className="opciones-pago">
-              <button
-                className="btn-pago-option"
-                onClick={() => procesarPago('todo')}
-              >
-                Pagar Todo (IVA + ISLR)
-              </button>
-              <button
-                className="btn-pago-option"
-                onClick={() => procesarPago('iva')}
-              >
-                Pagar Solo IVA (Bs {proveedorSeleccionado.retencionIvaPendiente.toFixed(2)})
-              </button>
-              <button
-                className="btn-pago-option"
-                onClick={() => procesarPago('islr')}
-              >
-                Pagar Solo ISLR (Bs {proveedorSeleccionado.retencionIslrPendiente.toFixed(2)})
-              </button>
+            <div className="modal-table-container">
+              <table className="modal-table">
+                <thead>
+                  <tr>
+                    <th>Factura</th>
+                    <th>Fecha</th>
+                    <th className="text-right">Pendiente Total</th>
+                    <th className="text-center">Abonar IVA (Bs)</th>
+                    <th className="text-center">Abonar ISLR (Bs)</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {proveedorSeleccionado.facturas
+                    .filter(f => f.retencionPorCobrar > 0)
+                    .map(factura => (
+                      <tr key={factura.id}>
+                        <td>
+                          <strong>#{factura.numeroFactura}</strong>
+                          <div className="control-num">{factura.numeroControl}</div>
+                        </td>
+                        <td>{factura.fechaFactura}</td>
+                        <td className="text-right">
+                          Bs {factura.retencionPorCobrar.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </td>
+                        <td>
+                          <div className="input-group-sm">
+                            <label className="input-label-sm">
+                              Max: {pagosTemp[factura.id]?.maxIva.toFixed(2)}
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              max={pagosTemp[factura.id]?.maxIva}
+                              step="0.01"
+                              value={pagosTemp[factura.id]?.pagoIva === 0 ? '' : pagosTemp[factura.id]?.pagoIva}
+                              onChange={(e) => handlePagoChange(factura.id, 'pagoIva', e.target.value)}
+                              className="input-sm"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="input-group-sm">
+                            <label className="input-label-sm">
+                              Max: {pagosTemp[factura.id]?.maxIslr.toFixed(2)}
+                            </label>
+                            <input
+                              type="number"
+                              min="0"
+                              max={pagosTemp[factura.id]?.maxIslr}
+                              step="0.01"
+                              value={pagosTemp[factura.id]?.pagoIslr === 0 ? '' : pagosTemp[factura.id]?.pagoIslr}
+                              onChange={(e) => handlePagoChange(factura.id, 'pagoIslr', e.target.value)}
+                              className="input-sm"
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <button
+                            className="btn-link"
+                            onClick={() => handlePagarTodoFactura(factura.id)}
+                          >
+                            Pagar Todo
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
             </div>
 
             <div className="modal-actions">
@@ -481,6 +604,12 @@ const ProveedoresList = ({ projectId, refreshTrigger }) => {
                 onClick={() => setMostrarModalPago(false)}
               >
                 Cancelar
+              </button>
+              <button
+                className="btn-primary"
+                onClick={procesarPago}
+              >
+                Procesar Pagos
               </button>
             </div>
           </div>
