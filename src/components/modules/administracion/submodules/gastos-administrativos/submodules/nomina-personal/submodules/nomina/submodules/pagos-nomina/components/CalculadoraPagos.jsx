@@ -419,7 +419,12 @@ const CalculadoraPagos = forwardRef(
               (r) => r.empleadoId === empleado.id,
             );
             if (registroEmpleado && registroEmpleado.asistio) {
-              diasAsistidos++;
+              // CAMBIO: Sumar horas trabajadas / 8 (default 1 día si no hay horas)
+              const horas =
+                registroEmpleado.horasTrabajadas !== undefined
+                  ? parseFloat(registroEmpleado.horasTrabajadas)
+                  : 8;
+              diasAsistidos += horas / 8;
             }
           }
         }

@@ -1,5 +1,11 @@
 // src/contexts/PersonalContext.jsx
-import React, { createContext, useContext, useEffect, useCallback, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import supabase from "../api/supaBase";
 import { useProjects } from "./ProjectContext";
 import { useNotification } from "./NotificationContext";
@@ -19,109 +25,203 @@ export const PersonalProvider = ({ children }) => {
   const { addNotification } = useNotification();
 
   // ========== EMPLEADOS ==========
-  const getEmployeesByProject = useCallback(async (projectId = null) => {
-    const projectToUse = projectId || selectedProject?.id;
-    if (!projectToUse) {
-      console.log("⚠️ PersonalContext: projectId no definido");
-      return [];
-    }
+  const getEmployeesByProject = useCallback(
+    async (projectId = null) => {
+      const projectToUse = projectId || selectedProject?.id;
+      if (!projectToUse) {
+        console.log("⚠️ PersonalContext: projectId no definido");
+        return [];
+      }
 
-    try {
-      // 1. Fetch Employees
-      const { data: employeesData, error: employeesError } = await supabase
-        .from("employees")
-        .select("*")
-        .eq("project_id", projectToUse)
-        .order("created_at", { ascending: false });
+      try {
+        // 1. Fetch Employees
+        const { data: employeesData, error: employeesError } = await supabase
+          .from("employees")
+          .select("*")
+          .eq("project_id", projectToUse)
+          .order("created_at", { ascending: false });
 
-      if (employeesError) throw employeesError;
+        if (employeesError) throw employeesError;
 
-      // 2. Fetch Contractors
-      const { data: contractorsData, error: contractorsError } = await supabase
-        .from("contratistas")
-        .select("*")
-        .eq("project_id", projectToUse)
-        .eq("activo", true) // Only active contractors
-        .order("nombre_contratista", { ascending: true });
+        // 2. Fetch Contractors
+        const { data: contractorsData, error: contractorsError } =
+          await supabase
+            .from("contratistas")
+            .select("*")
+            .eq("project_id", projectToUse)
+            .eq("activo", true) // Only active contractors
+            .order("nombre_contratista", { ascending: true });
 
-      if (contractorsError) throw contractorsError;
+        if (contractorsError) throw contractorsError;
 
-      // 3. Transform Employees
-      const formattedEmployees = employeesData.map((emp) => ({
-        id: emp.id,
-        projectId: emp.project_id,
-        nombre: emp.nombre,
-        apellido: emp.apellido,
-        cedula: emp.cedula,
-        cargo: emp.cargo,
-        tipoNomina: emp.tipo_nomina,
-        tipoSalario: emp.tipo_salario,
-        frecuenciaPago: emp.frecuencia_pago,
-        montoSalario: parseFloat(emp.monto_salario),
-        montoLey: parseFloat(emp.monto_ley),
-        bonificacionEmpresa: parseFloat(emp.bonificacion_empresa),
-        porcentajeIslr: parseFloat(emp.porcentaje_islr),
-        fechaIngreso: emp.fecha_ingreso,
-        montoBaseIvss: parseFloat(emp.monto_base_ivss),
-        montoBaseParoForzoso: parseFloat(emp.monto_base_paro_forzoso),
-        montoBaseFaov: parseFloat(emp.monto_base_faov),
-        montoBaseIslr: parseFloat(emp.monto_base_islr),
-        estado: emp.estado || "Activo",
-        fechaInactivo: emp.fecha_inactivo,
-        fechaReactivacion: emp.fecha_reactivacion,
-        createdAt: emp.created_at,
-        updatedAt: emp.updated_at,
-        isContractor: false,
-      }));
+        // 3. Transform Employees
+        const formattedEmployees = employeesData.map((emp) => ({
+          id: emp.id,
+          projectId: emp.project_id,
+          nombre: emp.nombre,
+          apellido: emp.apellido,
+          cedula: emp.cedula,
+          cargo: emp.cargo,
+          tipoNomina: emp.tipo_nomina,
+          tipoSalario: emp.tipo_salario,
+          frecuenciaPago: emp.frecuencia_pago,
+          montoSalario: parseFloat(emp.monto_salario),
+          montoLey: parseFloat(emp.monto_ley),
+          bonificacionEmpresa: parseFloat(emp.bonificacion_empresa),
+          porcentajeIslr: parseFloat(emp.porcentaje_islr),
+          fechaIngreso: emp.fecha_ingreso,
+          montoBaseIvss: parseFloat(emp.monto_base_ivss),
+          montoBaseParoForzoso: parseFloat(emp.monto_base_paro_forzoso),
+          montoBaseFaov: parseFloat(emp.monto_base_faov),
+          montoBaseIslr: parseFloat(emp.monto_base_islr),
+          estado: emp.estado || "Activo",
+          fechaInactivo: emp.fecha_inactivo,
+          fechaReactivacion: emp.fecha_reactivacion,
+          createdAt: emp.created_at,
+          updatedAt: emp.updated_at,
+          isContractor: false,
+        }));
 
-      // 4. Transform Contractors to look like Employees
-      const formattedContractors = (contractorsData || []).map((c) => ({
-        id: `contractor-${c.id}`, // Synthetic ID
-        originalId: c.id,
-        projectId: c.project_id,
-        nombre: c.nombre_contratista,
-        apellido: "(Contratista)", // Visual indicator
-        cedula: "N/A",
-        cargo: c.descripcion_trabajo || "Contratista",
-        tipoNomina: "Contratista", // Special type
-        tipoSalario: "Diario", // They have daily rate
-        frecuenciaPago: "Semanal", // Integrated into weekly
-        montoSalario: parseFloat(c.monto_diario || 0),
-        montoLey: 0,
-        bonificacionEmpresa: 0,
-        porcentajeIslr: 0,
-        fechaIngreso: c.created_at,
-        estado: c.activo ? "Activo" : "Inactivo",
-        isContractor: true,
-        cantidadPersonal: c.cantidad_personal, // Extra field for reference
-      }));
+        // 4. Transform Contractors to look like Employees
+        const formattedContractors = (contractorsData || []).map((c) => ({
+          id: `contractor-${c.id}`, // Synthetic ID
+          originalId: c.id,
+          projectId: c.project_id,
+          nombre: c.nombre_contratista,
+          apellido: "(Contratista)", // Visual indicator
+          cedula: "N/A",
+          cargo: c.descripcion_trabajo || "Contratista",
+          tipoNomina: "Contratista", // Special type
+          tipoSalario: "Diario", // They have daily rate
+          frecuenciaPago: "Semanal", // Integrated into weekly
+          montoSalario: parseFloat(c.monto_diario || 0),
+          montoLey: 0,
+          bonificacionEmpresa: 0,
+          porcentajeIslr: 0,
+          fechaIngreso: c.created_at,
+          estado: c.activo ? "Activo" : "Inactivo",
+          isContractor: true,
+          cantidadPersonal: c.cantidad_personal, // Extra field for reference
+        }));
 
-      // 5. Merge
-      const allPersonnel = [...formattedEmployees, ...formattedContractors];
+        // 5. Merge
+        const allPersonnel = [...formattedEmployees, ...formattedContractors];
+
+        console.log(
+          `👥 PersonalContext: ${formattedEmployees.length} Empleados + ${formattedContractors.length} Contratistas del proyecto ${projectToUse}`,
+        );
+        return allPersonnel;
+      } catch (error) {
+        console.error(
+          "Error cargando personal (empleados + contratistas):",
+          error,
+        );
+        return [];
+      }
+    },
+    [selectedProject?.id],
+  );
+
+  const addEmployee = useCallback(
+    async (employeeData) => {
+      if (!employeeData.projectId) {
+        throw new Error("Project ID es requerido");
+      }
 
       console.log(
-        `👥 PersonalContext: ${formattedEmployees.length} Empleados + ${formattedContractors.length} Contratistas del proyecto ${projectToUse}`
+        "➕ PersonalContext: Agregando nuevo empleado:",
+        employeeData,
       );
-      return allPersonnel;
-    } catch (error) {
-      console.error("Error cargando personal (empleados + contratistas):", error);
-      return [];
-    }
-  }, [selectedProject?.id]);
 
-  const addEmployee = useCallback(async (employeeData) => {
-    if (!employeeData.projectId) {
-      throw new Error("Project ID es requerido");
-    }
+      try {
+        const { data, error } = await supabase
+          .from("employees")
+          .insert([
+            {
+              project_id: employeeData.projectId,
+              nombre: employeeData.nombre,
+              apellido: employeeData.apellido,
+              cedula: employeeData.cedula,
+              cargo: employeeData.cargo,
+              tipo_nomina: employeeData.tipoNomina,
+              tipo_salario: employeeData.tipoSalario,
+              frecuencia_pago: employeeData.frecuenciaPago,
+              monto_salario: parseFloat(employeeData.montoSalario || 0),
+              monto_ley: parseFloat(employeeData.montoLey || 0),
+              bonificacion_empresa: parseFloat(
+                employeeData.bonificacionEmpresa || 0,
+              ),
+              porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
+              fecha_ingreso: employeeData.fechaIngreso,
+              monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
+              monto_base_paro_forzoso: parseFloat(
+                employeeData.montoBaseParoForzoso || 0,
+              ),
+              monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+              monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
 
-    console.log("➕ PersonalContext: Agregando nuevo empleado:", employeeData);
+              estado: employeeData.estado || "Activo",
+              fecha_inactivo: employeeData.fechaInactivo,
+              fecha_reactivacion: employeeData.fechaReactivacion,
+            },
+          ])
+          .select()
+          .single();
 
-    try {
-      const { data, error } = await supabase
-        .from("employees")
-        .insert([
-          {
-            project_id: employeeData.projectId,
+        if (error) throw error;
+
+        // Transformar la respuesta
+        const newEmployee = {
+          id: data.id,
+          projectId: data.project_id,
+          nombre: data.nombre,
+          apellido: data.apellido,
+          cedula: data.cedula,
+          cargo: data.cargo,
+          tipoNomina: data.tipo_nomina,
+          tipoSalario: data.tipo_salario,
+          frecuenciaPago: data.frecuencia_pago,
+          montoSalario: parseFloat(data.monto_salario),
+          montoLey: parseFloat(data.monto_ley),
+          bonificacionEmpresa: parseFloat(data.bonificacion_empresa),
+          porcentajeIslr: parseFloat(data.porcentaje_islr),
+          fechaIngreso: data.fecha_ingreso,
+          montoBaseIvss: parseFloat(data.monto_base_ivss),
+          montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
+          montoBaseFaov: parseFloat(data.monto_base_faov),
+          montoBaseIslr: parseFloat(data.monto_base_islr),
+
+          estado: data.estado || "Activo",
+          fechaInactivo: data.fecha_inactivo,
+          fechaReactivacion: data.fecha_reactivacion,
+          createdAt: data.created_at,
+          updatedAt: data.updated_at,
+        };
+
+        console.log("✅ PersonalContext: Empleado agregado exitosamente");
+        addNotification("Empleado agregado exitosamente", "success");
+        return newEmployee;
+      } catch (error) {
+        console.error("Error agregando empleado:", error);
+        addNotification("Error al agregar empleado", "error");
+        throw error;
+      }
+    },
+    [addNotification],
+  );
+
+  const updateEmployee = useCallback(
+    async (id, employeeData) => {
+      console.log(
+        "✏️ PersonalContext: Actualizando empleado:",
+        id,
+        employeeData,
+      );
+
+      try {
+        const { data, error } = await supabase
+          .from("employees")
+          .update({
             nombre: employeeData.nombre,
             apellido: employeeData.apellido,
             cedula: employeeData.cedula,
@@ -132,159 +232,91 @@ export const PersonalProvider = ({ children }) => {
             monto_salario: parseFloat(employeeData.montoSalario || 0),
             monto_ley: parseFloat(employeeData.montoLey || 0),
             bonificacion_empresa: parseFloat(
-              employeeData.bonificacionEmpresa || 0
+              employeeData.bonificacionEmpresa || 0,
             ),
             porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
             fecha_ingreso: employeeData.fechaIngreso,
             monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
             monto_base_paro_forzoso: parseFloat(
-              employeeData.montoBaseParoForzoso || 0
+              employeeData.montoBaseParoForzoso || 0,
             ),
             monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
-            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
 
-            estado: employeeData.estado || "Activo",
+            monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
+            estado: employeeData.estado,
             fecha_inactivo: employeeData.fechaInactivo,
             fecha_reactivacion: employeeData.fechaReactivacion,
-          },
-        ])
-        .select()
-        .single();
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", id)
+          .select()
+          .single();
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Transformar la respuesta
-      const newEmployee = {
-        id: data.id,
-        projectId: data.project_id,
-        nombre: data.nombre,
-        apellido: data.apellido,
-        cedula: data.cedula,
-        cargo: data.cargo,
-        tipoNomina: data.tipo_nomina,
-        tipoSalario: data.tipo_salario,
-        frecuenciaPago: data.frecuencia_pago,
-        montoSalario: parseFloat(data.monto_salario),
-        montoLey: parseFloat(data.monto_ley),
-        bonificacionEmpresa: parseFloat(data.bonificacion_empresa),
-        porcentajeIslr: parseFloat(data.porcentaje_islr),
-        fechaIngreso: data.fecha_ingreso,
-        montoBaseIvss: parseFloat(data.monto_base_ivss),
-        montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
-        montoBaseFaov: parseFloat(data.monto_base_faov),
-        montoBaseIslr: parseFloat(data.monto_base_islr),
+        // Transformar la respuesta
+        const updatedEmployee = {
+          id: data.id,
+          projectId: data.project_id,
+          nombre: data.nombre,
+          apellido: data.apellido,
+          cedula: data.cedula,
+          cargo: data.cargo,
+          tipoNomina: data.tipo_nomina,
+          tipoSalario: data.tipo_salario,
+          frecuenciaPago: data.frecuencia_pago,
+          montoSalario: parseFloat(data.monto_salario),
+          montoLey: parseFloat(data.monto_ley),
+          bonificacionEmpresa: parseFloat(data.bonificacion_empresa),
+          porcentajeIslr: parseFloat(data.porcentaje_islr),
+          fechaIngreso: data.fecha_ingreso,
+          montoBaseIvss: parseFloat(data.monto_base_ivss),
+          montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
+          montoBaseFaov: parseFloat(data.monto_base_faov),
+          montoBaseIslr: parseFloat(data.monto_base_islr),
 
-        estado: data.estado || "Activo",
-        fechaInactivo: data.fecha_inactivo,
-        fechaReactivacion: data.fecha_reactivacion,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      };
+          estado: data.estado || "Activo",
+          fechaInactivo: data.fecha_inactivo,
+          fechaReactivacion: data.fecha_reactivacion,
+          createdAt: data.created_at,
+          updatedAt: data.updated_at,
+        };
 
-      console.log("✅ PersonalContext: Empleado agregado exitosamente");
-      addNotification("Empleado agregado exitosamente", "success");
-      return newEmployee;
-    } catch (error) {
-      console.error("Error agregando empleado:", error);
-      addNotification("Error al agregar empleado", "error");
-      throw error;
-    }
-  }, [addNotification]);
+        console.log("✅ PersonalContext: Empleado actualizado exitosamente");
+        addNotification("Empleado actualizado exitosamente", "success");
+        return updatedEmployee;
+      } catch (error) {
+        console.error("Error actualizando empleado:", error);
+        addNotification("Error al actualizar empleado", "error");
+        throw error;
+      }
+    },
+    [addNotification],
+  );
 
-  const updateEmployee = useCallback(async (id, employeeData) => {
-    console.log("✏️ PersonalContext: Actualizando empleado:", id, employeeData);
+  const deleteEmployee = useCallback(
+    async (id) => {
+      console.log("🗑️ PersonalContext: Eliminando empleado:", id);
 
-    try {
-      const { data, error } = await supabase
-        .from("employees")
-        .update({
-          nombre: employeeData.nombre,
-          apellido: employeeData.apellido,
-          cedula: employeeData.cedula,
-          cargo: employeeData.cargo,
-          tipo_nomina: employeeData.tipoNomina,
-          tipo_salario: employeeData.tipoSalario,
-          frecuencia_pago: employeeData.frecuenciaPago,
-          monto_salario: parseFloat(employeeData.montoSalario || 0),
-          monto_ley: parseFloat(employeeData.montoLey || 0),
-          bonificacion_empresa: parseFloat(
-            employeeData.bonificacionEmpresa || 0
-          ),
-          porcentaje_islr: parseFloat(employeeData.porcentajeIslr || 0),
-          fecha_ingreso: employeeData.fechaIngreso,
-          monto_base_ivss: parseFloat(employeeData.montoBaseIvss || 0),
-          monto_base_paro_forzoso: parseFloat(
-            employeeData.montoBaseParoForzoso || 0
-          ),
-          monto_base_faov: parseFloat(employeeData.montoBaseFaov || 0),
+      try {
+        const { error } = await supabase
+          .from("employees")
+          .delete()
+          .eq("id", id);
 
-          monto_base_islr: parseFloat(employeeData.montoBaseIslr || 0),
-          estado: employeeData.estado,
-          fecha_inactivo: employeeData.fechaInactivo,
-          fecha_reactivacion: employeeData.fechaReactivacion,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", id)
-        .select()
-        .single();
+        if (error) throw error;
 
-      if (error) throw error;
-
-      // Transformar la respuesta
-      const updatedEmployee = {
-        id: data.id,
-        projectId: data.project_id,
-        nombre: data.nombre,
-        apellido: data.apellido,
-        cedula: data.cedula,
-        cargo: data.cargo,
-        tipoNomina: data.tipo_nomina,
-        tipoSalario: data.tipo_salario,
-        frecuenciaPago: data.frecuencia_pago,
-        montoSalario: parseFloat(data.monto_salario),
-        montoLey: parseFloat(data.monto_ley),
-        bonificacionEmpresa: parseFloat(data.bonificacion_empresa),
-        porcentajeIslr: parseFloat(data.porcentaje_islr),
-        fechaIngreso: data.fecha_ingreso,
-        montoBaseIvss: parseFloat(data.monto_base_ivss),
-        montoBaseParoForzoso: parseFloat(data.monto_base_paro_forzoso),
-        montoBaseFaov: parseFloat(data.monto_base_faov),
-        montoBaseIslr: parseFloat(data.monto_base_islr),
-
-        estado: data.estado || "Activo",
-        fechaInactivo: data.fecha_inactivo,
-        fechaReactivacion: data.fecha_reactivacion,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      };
-
-      console.log("✅ PersonalContext: Empleado actualizado exitosamente");
-      addNotification("Empleado actualizado exitosamente", "success");
-      return updatedEmployee;
-    } catch (error) {
-      console.error("Error actualizando empleado:", error);
-      addNotification("Error al actualizar empleado", "error");
-      throw error;
-    }
-  }, [addNotification]);
-
-  const deleteEmployee = useCallback(async (id) => {
-    console.log("🗑️ PersonalContext: Eliminando empleado:", id);
-
-    try {
-      const { error } = await supabase.from("employees").delete().eq("id", id);
-
-      if (error) throw error;
-
-      console.log("✅ PersonalContext: Empleado eliminado exitosamente");
-      addNotification("Empleado eliminado exitosamente", "delete");
-      return true;
-    } catch (error) {
-      console.error("Error eliminando empleado:", error);
-      addNotification("Error al eliminar empleado", "error");
-      throw error;
-    }
-  }, [addNotification]);
+        console.log("✅ PersonalContext: Empleado eliminado exitosamente");
+        addNotification("Empleado eliminado exitosamente", "delete");
+        return true;
+      } catch (error) {
+        console.error("Error eliminando empleado:", error);
+        addNotification("Error al eliminar empleado", "error");
+        throw error;
+      }
+    },
+    [addNotification],
+  );
 
   const getEmployeeById = useCallback(async (id) => {
     try {
@@ -330,188 +362,197 @@ export const PersonalProvider = ({ children }) => {
   }, []);
 
   // ========== ASISTENCIAS ==========
-  const saveAsistencia = useCallback(async (asistenciaData) => {
-    if (!asistenciaData.projectId) {
-      throw new Error("Project ID es requerido");
-    }
-
-    console.log(
-      "📅 PersonalContext: Guardando asistencia:",
-      asistenciaData.fecha
-    );
-
-    try {
-      // 1. Crear o actualizar el registro de asistencia principal
-      const { data: attendance, error: attendanceError } = await supabase
-        .from("attendances")
-        .upsert(
-          {
-            project_id: asistenciaData.projectId,
-            fecha: asistenciaData.fecha,
-          },
-          {
-            onConflict: "project_id,fecha",
-          }
-        )
-        .select()
-        .single();
-
-      if (attendanceError) throw attendanceError;
-
-      // 2. Preparar registros individuales (Excluir Contratistas)
-      const records = asistenciaData.registros
-        .filter(registro => !String(registro.empleadoId).startsWith('contractor-'))
-        .map((registro) => ({
-          attendance_id: attendance.id,
-          employee_id: registro.empleadoId,
-          nombre: registro.nombre, // Guardar nombre para fácil acceso
-          cedula: registro.cedula, // Guardar cédula para fácil acceso
-          cargo: registro.cargo, // Guardar cargo para fácil acceso
-          asistio: registro.asistio,
-          horas_trabajadas: parseFloat(registro.horasTrabajadas || 0),
-          observaciones: registro.observaciones || "",
-        }));
-
-      if (records.length === 0 && asistenciaData.registros.length > 0) {
-        console.warn("⚠️ PersonalContext: Todos los registros eran contratistas, no se guardó detalle de asistencia.");
-        // We still return attendance object as main record was created
+  const saveAsistencia = useCallback(
+    async (asistenciaData) => {
+      if (!asistenciaData.projectId) {
+        throw new Error("Project ID es requerido");
       }
 
-      // 3. Eliminar registros existentes para esta fecha
-      const { error: deleteError } = await supabase
-        .from("attendance_records")
-        .delete()
-        .eq("attendance_id", attendance.id);
+      try {
+        // 1. Crear o actualizar el registro de asistencia principal
+        const { data: attendance, error: attendanceError } = await supabase
+          .from("attendances")
+          .upsert(
+            {
+              project_id: asistenciaData.projectId,
+              fecha: asistenciaData.fecha,
+            },
+            {
+              onConflict: "project_id,fecha",
+            },
+          )
+          .select()
+          .single();
 
-      if (deleteError) throw deleteError;
+        if (attendanceError) throw attendanceError;
 
-      // 4. Insertar nuevos registros
-      const { error: recordsError } = await supabase
-        .from("attendance_records")
-        .insert(records);
+        // 2. Preparar registros individuales (Excluir Contratistas)
+        const records = asistenciaData.registros
+          .filter(
+            (registro) =>
+              !String(registro.empleadoId).startsWith("contractor-"),
+          )
+          .map((registro) => ({
+            attendance_id: attendance.id,
+            employee_id: registro.empleadoId,
+            nombre: registro.nombre, // Guardar nombre para fácil acceso
+            cedula: registro.cedula, // Guardar cédula para fácil acceso
+            cargo: registro.cargo, // Guardar cargo para fácil acceso
+            asistio: registro.asistio,
+            horas_trabajadas: parseFloat(registro.horasTrabajadas || 0),
+            observaciones: registro.observaciones || "",
+          }));
 
-      if (recordsError) throw recordsError;
+        if (records.length === 0 && asistenciaData.registros.length > 0) {
+          // We still return attendance object as main record was created
+        }
 
-      console.log("✅ PersonalContext: Asistencia guardada exitosamente");
-      addNotification("Asistencia guardada exitosamente", "success");
-      return attendance;
-    } catch (error) {
-      console.error("Error guardando asistencia:", error);
-      addNotification("Error al guardar asistencia", "error");
-      throw error;
-    }
-  }, [addNotification]);
+        // 3. Eliminar registros existentes para esta fecha
+        const { error: deleteError } = await supabase
+          .from("attendance_records")
+          .delete()
+          .eq("attendance_id", attendance.id);
 
-  const getAsistenciaByFechaAndProject = useCallback(async (fecha, projectId = null) => {
-    const projectToUse = projectId || selectedProject?.id;
-    if (!projectToUse || !fecha) return null;
+        if (deleteError) throw deleteError;
 
-    try {
-      const { data, error } = await supabase
-        .from("attendances")
-        .select(`*, attendance_records(*)`)
-        .eq("project_id", projectToUse)
-        .eq("fecha", fecha)
-        .single();
+        // 4. Insertar nuevos registros
+        const { data: insertedRecords, error: recordsError } = await supabase
+          .from("attendance_records")
+          .insert(records)
+          .select();
 
-      if (error && error.code !== "PGRST116") throw error;
+        if (recordsError) throw recordsError;
 
-      if (!data) return null;
+        addNotification("Asistencia guardada exitosamente", "success");
+        return attendance;
+      } catch (error) {
+        console.error("Error guardando asistencia:", error);
+        addNotification("Error al guardar asistencia", "error");
+        throw error;
+      }
+    },
+    [addNotification],
+  );
 
-      // Transformar datos
-      return {
-        id: data.id,
-        projectId: data.project_id,
-        fecha: data.fecha,
-        registros: data.attendance_records.map((record) => ({
-          id: record.id,
-          empleadoId: record.employee_id,
-          nombre: record.nombre,
-          cedula: record.cedula,
-          cargo: record.cargo,
-          asistio: record.asistio,
-          horasTrabajadas: parseFloat(record.horas_trabajadas),
-          observaciones: record.observaciones,
-        })),
-        timestamp: data.created_at,
-      };
-    } catch (error) {
-      console.error("Error cargando asistencia:", error);
-      return null;
-    }
-  }, [selectedProject?.id]);
+  const getAsistenciaByFechaAndProject = useCallback(
+    async (fecha, projectId = null) => {
+      const projectToUse = projectId || selectedProject?.id;
+      if (!projectToUse || !fecha) return null;
 
-  const getAsistenciasByProject = useCallback(async (projectId = null) => {
-    const projectToUse = projectId || selectedProject?.id;
-    if (!projectToUse) return [];
+      try {
+        const { data, error } = await supabase
+          .from("attendances")
+          .select(`*, attendance_records(*)`)
+          .eq("project_id", projectToUse)
+          .eq("fecha", fecha)
+          .single();
 
-    try {
-      const { data, error } = await supabase
-        .from("attendances")
-        .select(`*, attendance_records(*)`)
-        .eq("project_id", projectToUse)
-        .order("fecha", { ascending: false });
+        if (error && error.code !== "PGRST116") throw error;
 
-      if (error) throw error;
+        if (!data) return null;
 
-      // Transformar datos
-      const asistencias = data.map((attendance) => ({
-        id: attendance.id,
-        projectId: attendance.project_id,
-        fecha: attendance.fecha,
-        registros: attendance.attendance_records.map((record) => ({
-          id: record.id,
-          empleadoId: record.employee_id,
-          nombre: record.nombre,
-          cedula: record.cedula,
-          cargo: record.cargo,
-          asistio: record.asistio,
-          horasTrabajadas: parseFloat(record.horas_trabajadas),
-          observaciones: record.observaciones,
-        })),
-        timestamp: attendance.created_at,
-      }));
+        // Transformar datos
+        return {
+          id: data.id,
+          projectId: data.project_id,
+          fecha: data.fecha,
+          registros: data.attendance_records.map((record) => ({
+            id: record.id,
+            empleadoId: record.employee_id,
+            nombre: record.nombre,
+            cedula: record.cedula,
+            cargo: record.cargo,
+            asistio: record.asistio,
+            horasTrabajadas: parseFloat(record.horas_trabajadas),
+            observaciones: record.observaciones,
+          })),
+          timestamp: data.created_at,
+        };
+      } catch (error) {
+        console.error("Error cargando asistencia:", error);
+        return null;
+      }
+    },
+    [selectedProject?.id],
+  );
 
-      console.log(
-        `📊 PersonalContext: Asistencias del proyecto ${projectToUse}:`,
-        asistencias.length
-      );
-      return asistencias;
-    } catch (error) {
-      console.error("Error cargando asistencias:", error);
-      return [];
-    }
-  }, [selectedProject?.id]);
+  const getAsistenciasByProject = useCallback(
+    async (projectId = null) => {
+      const projectToUse = projectId || selectedProject?.id;
+      if (!projectToUse) return [];
 
-  const deleteAsistencia = useCallback(async (id) => {
-    console.log("🗑️ PersonalContext: Eliminando asistencia:", id);
+      try {
+        const { data, error } = await supabase
+          .from("attendances")
+          .select(`*, attendance_records(*)`)
+          .eq("project_id", projectToUse)
+          .order("fecha", { ascending: false });
 
-    try {
-      // Eliminar registros asociados primero (aunque cascade delete debería encargarse, es más seguro)
-      const { error: recordsError } = await supabase
-        .from("attendance_records")
-        .delete()
-        .eq("attendance_id", id);
+        if (error) throw error;
 
-      if (recordsError) throw recordsError;
+        // Transformar datos
+        const asistencias = data.map((attendance) => ({
+          id: attendance.id,
+          projectId: attendance.project_id,
+          fecha: attendance.fecha,
+          registros: attendance.attendance_records.map((record) => ({
+            id: record.id,
+            empleadoId: record.employee_id,
+            nombre: record.nombre,
+            cedula: record.cedula,
+            cargo: record.cargo,
+            asistio: record.asistio,
+            horasTrabajadas: parseFloat(record.horas_trabajadas),
+            observaciones: record.observaciones,
+          })),
+          timestamp: attendance.created_at,
+        }));
 
-      // Eliminar el registro principal
-      const { error } = await supabase
-        .from("attendances")
-        .delete()
-        .eq("id", id);
+        console.log(
+          `📊 PersonalContext: Asistencias del proyecto ${projectToUse}:`,
+          asistencias.length,
+        );
+        return asistencias;
+      } catch (error) {
+        console.error("Error cargando asistencias:", error);
+        return [];
+      }
+    },
+    [selectedProject?.id],
+  );
 
-      if (error) throw error;
+  const deleteAsistencia = useCallback(
+    async (id) => {
+      console.log("🗑️ PersonalContext: Eliminando asistencia:", id);
 
-      console.log("✅ PersonalContext: Asistencia eliminada exitosamente");
-      addNotification("Asistencia eliminada exitosamente", "delete");
-      return true;
-    } catch (error) {
-      console.error("Error eliminando asistencia:", error);
-      addNotification("Error al eliminar asistencia", "error");
-      throw error;
-    }
-  }, [addNotification]);
+      try {
+        // Eliminar registros asociados primero (aunque cascade delete debería encargarse, es más seguro)
+        const { error: recordsError } = await supabase
+          .from("attendance_records")
+          .delete()
+          .eq("attendance_id", id);
+
+        if (recordsError) throw recordsError;
+
+        // Eliminar el registro principal
+        const { error } = await supabase
+          .from("attendances")
+          .delete()
+          .eq("id", id);
+
+        if (error) throw error;
+
+        console.log("✅ PersonalContext: Asistencia eliminada exitosamente");
+        addNotification("Asistencia eliminada exitosamente", "delete");
+        return true;
+      } catch (error) {
+        console.error("Error eliminando asistencia:", error);
+        addNotification("Error al eliminar asistencia", "error");
+        throw error;
+      }
+    },
+    [addNotification],
+  );
 
   // ========== PAGOS ==========
   const savePagos = useCallback(async (paymentData) => {
@@ -581,10 +622,15 @@ export const PersonalProvider = ({ children }) => {
       throw new Error("Project ID es requerido");
     }
 
-    console.log("👷‍♂️ PersonalContext: Guardando pagos contratistas:", paymentData.pagos.length);
+    console.log(
+      "👷‍♂️ PersonalContext: Guardando pagos contratistas:",
+      paymentData.pagos.length,
+    );
 
     // Filter valid entries (must have contractor ID and some amount)
-    const validPagos = paymentData.pagos.filter(p => p.contratista_id && p.monto_total_usd > 0);
+    const validPagos = paymentData.pagos.filter(
+      (p) => p.contratista_id && p.monto_total_usd > 0,
+    );
 
     if (validPagos.length === 0) return;
 
@@ -593,7 +639,7 @@ export const PersonalProvider = ({ children }) => {
         project_id: paymentData.projectId,
         fecha_pago: paymentData.fechaPago,
         tasa_cambio: parseFloat(paymentData.tasaCambio),
-        pagos: validPagos
+        pagos: validPagos,
       };
 
       // We are inserting a new record for the batch of payments for this date
@@ -608,10 +654,10 @@ export const PersonalProvider = ({ children }) => {
 
       // Strategy: Upsert based on project_id and fecha_pago IF there's a constraint, but generally we want to add to it.
       // However, managing partial updates to a JSONB array is hard.
-      // For now, we will INSERT a new record. The 'CalculadoraPagos' saves a snapshot. 
-      // BEWARE: If multiple saves happen, multiple records might appear. 
-      // CalculadoraContratistas logic: 
-      // ".eq('id', initialData.id)" -> it edits a specific record. 
+      // For now, we will INSERT a new record. The 'CalculadoraPagos' saves a snapshot.
+      // BEWARE: If multiple saves happen, multiple records might appear.
+      // CalculadoraContratistas logic:
+      // ".eq('id', initialData.id)" -> it edits a specific record.
       // Here we are creating a NEW one from the main payroll flow.
 
       const { error } = await supabase
@@ -620,7 +666,9 @@ export const PersonalProvider = ({ children }) => {
 
       if (error) throw error;
 
-      console.log("✅ PersonalContext: Pagos de contratistas guardados exitosamente");
+      console.log(
+        "✅ PersonalContext: Pagos de contratistas guardados exitosamente",
+      );
       return true;
     } catch (error) {
       console.error("Error guardando pagos contratistas:", error);
@@ -628,83 +676,91 @@ export const PersonalProvider = ({ children }) => {
     }
   }, []);
 
-  const getPagosByProject = useCallback(async (projectId = null) => {
-    const projectToUse = projectId || selectedProject?.id;
-    if (!projectToUse) return [];
+  const getPagosByProject = useCallback(
+    async (projectId = null) => {
+      const projectToUse = projectId || selectedProject?.id;
+      if (!projectToUse) return [];
 
-    try {
-      const { data, error } = await supabase
-        .from("payroll_payments")
-        .select(`*,
+      try {
+        const { data, error } = await supabase
+          .from("payroll_payments")
+          .select(
+            `*,
           payment_details (*,
             employees (*)
-          )`)
-        .eq("project_id", projectToUse)
-        .order("fecha_pago", { ascending: false });
+          )`,
+          )
+          .eq("project_id", projectToUse)
+          .order("fecha_pago", { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Transformar datos
-      const pagos = data.map((payment) => ({
-        id: payment.id,
-        projectId: payment.project_id,
-        fechaPago: payment.fecha_pago,
-        tasaCambio: parseFloat(payment.tasa_cambio),
-        pagos: payment.payment_details.map((detail) => ({
-          id: detail.id,
-          empleado: {
-            id: detail.employees.id,
-            nombre: detail.employees.nombre,
-            apellido: detail.employees.apellido,
-            cedula: detail.employees.cedula,
-            cargo: detail.employees.cargo,
-            tipoNomina: detail.employees.tipo_nomina,
-            tipoSalario: detail.employees.tipo_salario,
-            frecuenciaPago: detail.employees.frecuencia_pago,
-          },
-          diasTrabajados: detail.dias_trabajados,
-          montoDiarioCalculado: parseFloat(detail.monto_diario_calculado),
-          salarioBase: parseFloat(detail.salario_base),
-          horasExtras: {
-            diurna: parseFloat(detail.horas_extras_diurna),
-            nocturna: parseFloat(detail.horas_extras_nocturna),
-          },
-          totalHorasExtrasUSD: parseFloat(detail.total_horas_extras_usd),
-          deduccionesManualesUSD: parseFloat(detail.deducciones_manuales_usd),
-          subtotalUSD: parseFloat(detail.subtotal_usd),
-          subtotalBs: parseFloat(detail.subtotal_bs),
-          deduccionesLeyBs: parseFloat(detail.deducciones_ley_bs),
-          desgloseDeduccionesLey: detail.desglose_deducciones_ley,
-          montoExtraBs: parseFloat(detail.monto_extra_bs || 0),
-          montoExtraUSD: parseFloat(detail.monto_extra_usd || 0),
-          montoTotalUSD: parseFloat(detail.monto_total_usd || 0),
-          adelantosUSD: parseFloat(detail.adelantos_usd || 0),
-          totalPagarBs: parseFloat(detail.total_pagar_bs),
-          bancoPago: detail.banco_pago,
-          observaciones: detail.observaciones,
-        })),
-        timestamp: payment.created_at || payment.createdAt || payment.inserted_at,
-      }));
+        // Transformar datos
+        const pagos = data.map((payment) => ({
+          id: payment.id,
+          projectId: payment.project_id,
+          fechaPago: payment.fecha_pago,
+          tasaCambio: parseFloat(payment.tasa_cambio),
+          pagos: payment.payment_details.map((detail) => ({
+            id: detail.id,
+            empleado: {
+              id: detail.employees.id,
+              nombre: detail.employees.nombre,
+              apellido: detail.employees.apellido,
+              cedula: detail.employees.cedula,
+              cargo: detail.employees.cargo,
+              tipoNomina: detail.employees.tipo_nomina,
+              tipoSalario: detail.employees.tipo_salario,
+              frecuenciaPago: detail.employees.frecuencia_pago,
+            },
+            diasTrabajados: detail.dias_trabajados,
+            montoDiarioCalculado: parseFloat(detail.monto_diario_calculado),
+            salarioBase: parseFloat(detail.salario_base),
+            horasExtras: {
+              diurna: parseFloat(detail.horas_extras_diurna),
+              nocturna: parseFloat(detail.horas_extras_nocturna),
+            },
+            totalHorasExtrasUSD: parseFloat(detail.total_horas_extras_usd),
+            deduccionesManualesUSD: parseFloat(detail.deducciones_manuales_usd),
+            subtotalUSD: parseFloat(detail.subtotal_usd),
+            subtotalBs: parseFloat(detail.subtotal_bs),
+            deduccionesLeyBs: parseFloat(detail.deducciones_ley_bs),
+            desgloseDeduccionesLey: detail.desglose_deducciones_ley,
+            montoExtraBs: parseFloat(detail.monto_extra_bs || 0),
+            montoExtraUSD: parseFloat(detail.monto_extra_usd || 0),
+            montoTotalUSD: parseFloat(detail.monto_total_usd || 0),
+            adelantosUSD: parseFloat(detail.adelantos_usd || 0),
+            totalPagarBs: parseFloat(detail.total_pagar_bs),
+            bancoPago: detail.banco_pago,
+            observaciones: detail.observaciones,
+          })),
+          timestamp:
+            payment.created_at || payment.createdAt || payment.inserted_at,
+        }));
 
-      console.log(
-        `💰 PersonalContext: Pagos del proyecto ${projectToUse}:`,
-        pagos.length
-      );
-      return pagos;
-    } catch (error) {
-      console.error("Error cargando pagos:", error);
-      return [];
-    }
-  }, [selectedProject?.id]);
+        console.log(
+          `💰 PersonalContext: Pagos del proyecto ${projectToUse}:`,
+          pagos.length,
+        );
+        return pagos;
+      } catch (error) {
+        console.error("Error cargando pagos:", error);
+        return [];
+      }
+    },
+    [selectedProject?.id],
+  );
 
   const getPagoById = useCallback(async (id) => {
     try {
       const { data, error } = await supabase
         .from("payroll_payments")
-        .select(`*,
+        .select(
+          `*,
           payment_details (*,
             employees (*)
-          )`)
+          )`,
+        )
         .eq("id", id)
         .single();
 
@@ -757,71 +813,77 @@ export const PersonalProvider = ({ children }) => {
     }
   }, []);
 
-  const deletePago = useCallback(async (id, silent = false) => {
-    console.log("🗑️ PersonalContext: Eliminando pago:", id);
+  const deletePago = useCallback(
+    async (id, silent = false) => {
+      console.log("🗑️ PersonalContext: Eliminando pago:", id);
 
-    try {
-      // Eliminar detalles de pago primero (aunque cascade delete debería encargarse)
-      const { error: detailsError } = await supabase
-        .from("payment_details")
-        .delete()
-        .eq("payroll_payment_id", id);
+      try {
+        // Eliminar detalles de pago primero (aunque cascade delete debería encargarse)
+        const { error: detailsError } = await supabase
+          .from("payment_details")
+          .delete()
+          .eq("payroll_payment_id", id);
 
-      if (detailsError) throw detailsError;
+        if (detailsError) throw detailsError;
 
-      // Eliminar el registro principal
-      const { error } = await supabase
-        .from("payroll_payments")
-        .delete()
-        .eq("id", id);
+        // Eliminar el registro principal
+        const { error } = await supabase
+          .from("payroll_payments")
+          .delete()
+          .eq("id", id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      console.log("✅ PersonalContext: Pago eliminado exitosamente");
-      if (!silent) {
-        addNotification("Pago eliminado exitosamente", "delete");
+        console.log("✅ PersonalContext: Pago eliminado exitosamente");
+        if (!silent) {
+          addNotification("Pago eliminado exitosamente", "delete");
+        }
+        return true;
+      } catch (error) {
+        console.error("Error eliminando pago:", error);
+        addNotification("Error al eliminar pago", "error");
+        throw error;
       }
-      return true;
-    } catch (error) {
-      console.error("Error eliminando pago:", error);
-      addNotification("Error al eliminar pago", "error");
-      throw error;
-    }
-  }, [addNotification]);
+    },
+    [addNotification],
+  );
 
-  const getPagosContratistasByProject = useCallback(async (projectId = null) => {
-    const projectToUse = projectId || selectedProject?.id;
-    if (!projectToUse) return [];
+  const getPagosContratistasByProject = useCallback(
+    async (projectId = null) => {
+      const projectToUse = projectId || selectedProject?.id;
+      if (!projectToUse) return [];
 
-    try {
-      const { data, error } = await supabase
-        .from("pagos_contratistas")
-        .select("*")
-        .eq("project_id", projectToUse)
-        .order("fecha_pago", { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from("pagos_contratistas")
+          .select("*")
+          .eq("project_id", projectToUse)
+          .order("fecha_pago", { ascending: false });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      // Transform
-      const pagos = data.map(p => ({
-        id: p.id,
-        projectId: p.project_id,
-        fechaPago: p.fecha_pago,
-        tasaCambio: p.tasa_cambio,
-        pagos: p.pagos, // Array of objects
-        timestamp: p.created_at
-      }));
+        // Transform
+        const pagos = data.map((p) => ({
+          id: p.id,
+          projectId: p.project_id,
+          fechaPago: p.fecha_pago,
+          tasaCambio: p.tasa_cambio,
+          pagos: p.pagos, // Array of objects
+          timestamp: p.created_at,
+        }));
 
-      console.log(
-        `👷‍♂️ PersonalContext: Pagos contratistas del proyecto ${projectToUse}:`,
-        pagos.length
-      );
-      return pagos;
-    } catch (error) {
-      console.error("Error cargando pagos contratistas:", error);
-      return [];
-    }
-  }, [selectedProject?.id]);
+        console.log(
+          `👷‍♂️ PersonalContext: Pagos contratistas del proyecto ${projectToUse}:`,
+          pagos.length,
+        );
+        return pagos;
+      } catch (error) {
+        console.error("Error cargando pagos contratistas:", error);
+        return [];
+      }
+    },
+    [selectedProject?.id],
+  );
 
   // ========== BANCOS ==========
   const getBancos = useCallback(async () => {
@@ -858,51 +920,53 @@ export const PersonalProvider = ({ children }) => {
     }
   }, []);
 
-  const value = useMemo(() => ({
-    // Empleados
-    getEmployeesByProject,
-    addEmployee,
-    updateEmployee,
-    deleteEmployee,
-    getEmployeeById,
+  const value = useMemo(
+    () => ({
+      // Empleados
+      getEmployeesByProject,
+      addEmployee,
+      updateEmployee,
+      deleteEmployee,
+      getEmployeeById,
 
-    // Asistencias
-    saveAsistencia,
-    getAsistenciaByFechaAndProject,
-    getAsistenciasByProject,
-    deleteAsistencia,
+      // Asistencias
+      saveAsistencia,
+      getAsistenciaByFechaAndProject,
+      getAsistenciasByProject,
+      deleteAsistencia,
 
-    // Pagos
-    savePagos,
-    savePagosContratistas,
-    getPagosByProject,
-    getPagoById,
-    deletePago,
-    getPagosContratistasByProject,
+      // Pagos
+      savePagos,
+      savePagosContratistas,
+      getPagosByProject,
+      getPagoById,
+      deletePago,
+      getPagosContratistasByProject,
 
-    // Bancos
-    getBancos,
-    addBanco,
-
-  }), [
-    getEmployeesByProject,
-    addEmployee,
-    updateEmployee,
-    deleteEmployee,
-    getEmployeeById,
-    saveAsistencia,
-    getAsistenciaByFechaAndProject,
-    getAsistenciasByProject,
-    deleteAsistencia,
-    savePagos,
-    savePagosContratistas,
-    getPagosByProject,
-    getPagoById,
-    deletePago,
-    getPagosContratistasByProject,
-    getBancos,
-    addBanco,
-  ]);
+      // Bancos
+      getBancos,
+      addBanco,
+    }),
+    [
+      getEmployeesByProject,
+      addEmployee,
+      updateEmployee,
+      deleteEmployee,
+      getEmployeeById,
+      saveAsistencia,
+      getAsistenciaByFechaAndProject,
+      getAsistenciasByProject,
+      deleteAsistencia,
+      savePagos,
+      savePagosContratistas,
+      getPagosByProject,
+      getPagoById,
+      deletePago,
+      getPagosContratistasByProject,
+      getBancos,
+      addBanco,
+    ],
+  );
 
   return (
     <PersonalContext.Provider value={value}>

@@ -10,7 +10,6 @@ import {
   InfoIcon,
 } from "../../../../../../../../../../../../assets/icons/Icons";
 
-
 const AsistenciaForm = ({
   employees,
   selectedDate,
@@ -18,14 +17,12 @@ const AsistenciaForm = ({
   onSave,
   readOnly = false, // Default to false
 }) => {
-
   const [asistencias, setAsistencias] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const { showToast } = useNotification();
 
   const [showInstructions, setShowInstructions] = useState(false);
-
 
   useEffect(() => {
     loadExistingAsistencia();
@@ -39,17 +36,18 @@ const AsistenciaForm = ({
       if (existingAsistencia) {
         setAsistencias(existingAsistencia.registros);
         setIsEditing(true);
-
       } else {
         // Inicializar con todos los empleados ACTIVOS como presentes por defecto
-        const activeEmployees = employees.filter(emp => emp.estado !== "Inactivo");
+        const activeEmployees = employees.filter(
+          (emp) => emp.estado !== "Inactivo",
+        );
         const inicialAsistencias = activeEmployees.map((emp) => ({
           empleadoId: emp.id,
           nombre: `${emp.nombre} ${emp.apellido}`,
           cedula: emp.cedula,
           cargo: emp.cargo,
           asistio: true,
-          horasTrabajadas: 8, // Horas por defecto
+          horasTrabajadas: 8, // Horas por defecto (1 día)
           observaciones: "",
         }));
         setAsistencias(inicialAsistencias);
@@ -80,12 +78,12 @@ const AsistenciaForm = ({
       prev.map((registro) =>
         registro.empleadoId === empleadoId
           ? {
-            ...registro,
-            asistio: !registro.asistio,
-            horasTrabajadas: !registro.asistio ? 8 : 0,
-          }
-          : registro
-      )
+              ...registro,
+              asistio: !registro.asistio,
+              horasTrabajadas: !registro.asistio ? 8 : 0,
+            }
+          : registro,
+      ),
     );
   };
 
@@ -96,23 +94,29 @@ const AsistenciaForm = ({
         ...registro,
         asistio,
         horasTrabajadas: asistio ? 8 : 0,
-      }))
+      })),
     );
   };
 
-  const handleHorasTrabajadasChange = (empleadoId, horas) => {
+  // Modified to handle simplified Day/Half-Day logic
+  // We keep 'horasTrabajadas' in state for compatibility with backend (8 hrs = 1 day)
+  const handleWorkAmountChange = (empleadoId, amountType) => {
     if (readOnly) return;
-    const horasNum = parseFloat(horas) || 0;
+
+    let newHours = 0;
+    if (amountType === "FULL") newHours = 8;
+    if (amountType === "HALF") newHours = 4;
+
     setAsistencias((prev) =>
       prev.map((registro) =>
         registro.empleadoId === empleadoId
           ? {
-            ...registro,
-            horasTrabajadas: horasNum,
-            asistio: horasNum > 0, // Si tiene horas trabajadas, se considera presente
-          }
-          : registro
-      )
+              ...registro,
+              horasTrabajadas: newHours,
+              asistio: newHours > 0,
+            }
+          : registro,
+      ),
     );
   };
 
@@ -122,8 +126,8 @@ const AsistenciaForm = ({
       prev.map((registro) =>
         registro.empleadoId === empleadoId
           ? { ...registro, observaciones }
-          : registro
-      )
+          : registro,
+      ),
     );
   };
 
@@ -138,7 +142,7 @@ const AsistenciaForm = ({
     const presentes = asistencias.filter((r) => r.asistio).length;
     if (presentes === 0) {
       const confirmar = window.confirm(
-        "No hay empleados marcados como presentes. ¿Estás seguro de que deseas guardar esta asistencia?"
+        "No hay empleados marcados como presentes. ¿Estás seguro de que deseas guardar esta asistencia?",
       );
       if (!confirmar) return;
     }
@@ -153,7 +157,7 @@ const AsistenciaForm = ({
 
   const handleReset = () => {
     if (readOnly) return;
-    // Resetear a todos presentes
+    // Resetear a todos presentes (Día Completo)
     const resetAsistencias = employees.map((emp) => ({
       empleadoId: emp.id,
       nombre: `${emp.nombre} ${emp.apellido}`,
@@ -170,9 +174,10 @@ const AsistenciaForm = ({
     total: asistencias.length,
     presentes: asistencias.filter((r) => r.asistio).length,
     ausentes: asistencias.filter((r) => !r.asistio).length,
-    horasTotales: asistencias.reduce(
-      (total, registro) => total + (registro.horasTrabajadas || 0),
-      0
+    // Calculate total days (hours / 8)
+    diasTotales: asistencias.reduce(
+      (total, registro) => total + (registro.horasTrabajadas || 0) / 8,
+      0,
     ),
   };
 
@@ -202,9 +207,6 @@ const AsistenciaForm = ({
             </button>
           </div>
           <h3>{formatDate(selectedDate)}</h3>
-          {/* {isEditing && (
-            <span className="edit-badge">📝 Editando registro existente</span>
-          )} */}
         </div>
         {!readOnly && (
           <div className="quick-actions">
@@ -262,9 +264,9 @@ const AsistenciaForm = ({
         </div>
         <div className="stat-card hours-form-asistencia">
           <div className="stat-number-form-asistencia">
-            {estadisticas.horasTotales}h
+            {estadisticas.diasTotales.toFixed(1)}
           </div>
-          <div className="stat-label-form-asistencia">Horas Totales</div>
+          <div className="stat-label-form-asistencia">Días Totales</div>
         </div>
       </div>
 
@@ -277,14 +279,13 @@ const AsistenciaForm = ({
               Para registrar asistencias, primero debes agregar empleados en el
               módulo de Registro de Personal.
             </p>
-
           </div>
         ) : (
           <>
             <div className="list-header-asistencia-form">
               <span className="col-employee">Empleado</span>
               <span className="col-status">Estado</span>
-              <span className="col-hours">Horas</span>
+              <span className="col-hours">Jornada</span>
               <span className="col-observations">Observaciones</span>
             </div>
 
@@ -295,102 +296,162 @@ const AsistenciaForm = ({
                   className={`employee-row ${registro.asistio ? "present" : "absent"}`}
                 >
                   <section className="employee-info">
-
                     <h2>{registro.nombre}</h2>
 
-                    <div className="employee-details">
-
+                    <div className="employeeDetails">
                       <span className="cedula-badge">
                         C.I. {registro.cedula}
                       </span>
 
-                      <span className="cargo-badge">
-                        {registro.cargo}
-                      </span>
+                      <span className="cargo-badge">{registro.cargo}</span>
                     </div>
                   </section>
 
                   <section className="card-section">
                     <div className="card-section-title">ASISTENCIA</div>
                     <div className="attendance-toggle-segmented">
-                      <button 
+                      <button
                         className={`segment-option ${registro.asistio ? "active present" : ""}`}
-                        onClick={() => !readOnly && !isFutureDate && registro.asistio !== true && handleToggleAsistencia(registro.empleadoId)}
+                        onClick={() =>
+                          !readOnly &&
+                          !isFutureDate &&
+                          registro.asistio !== true &&
+                          handleToggleAsistencia(registro.empleadoId)
+                        }
                         disabled={readOnly || isFutureDate}
                       >
-                         <div className="segment-icon">
-                           {registro.asistio && <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
-                         </div>
-                         Presente
+                        <div className="segment-icon">
+                          {registro.asistio && (
+                            <CheckIcon width="16" height="16" />
+                          )}
+                        </div>
+                        Presente
                       </button>
-                      <button 
+                      <button
                         className={`segment-option ${!registro.asistio ? "active absent" : ""}`}
-                        onClick={() => !readOnly && !isFutureDate && registro.asistio !== false && handleToggleAsistencia(registro.empleadoId)}
+                        onClick={() =>
+                          !readOnly &&
+                          !isFutureDate &&
+                          registro.asistio !== false &&
+                          handleToggleAsistencia(registro.empleadoId)
+                        }
                         disabled={readOnly || isFutureDate}
                       >
                         Ausente
                         <div className="segment-icon">
-                           {!registro.asistio && <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>}
+                          {!registro.asistio && (
+                            <XIcon width="16" height="16" />
+                          )}
                         </div>
                       </button>
                     </div>
                   </section>
 
                   <section className="card-section">
-                     <div className="card-section-title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        HORAS TRABAJADAS
-                     </div>
-                     <div className="hours-stepper">
-                        <button 
-                          className="stepper-btn"
-                          disabled={!registro.asistio || isFutureDate || readOnly || registro.horasTrabajadas <= 0}
-                          onClick={() => handleHorasTrabajadasChange(registro.empleadoId, Math.max(0, (registro.horasTrabajadas || 0) - 0.5))}
-                        >
-                          −
-                        </button>
-                        <div className="stepper-value">
-                            <input
-                              type="number"
-                              value={registro.horasTrabajadas || 0}
-                              onChange={(e) =>
-                                handleHorasTrabajadasChange(
-                                  registro.empleadoId,
-                                  e.target.value
-                                )
-                              }
-                              min="0"
-                              max="24"
-                              step="0.5"
-                              disabled={!registro.asistio || isFutureDate || readOnly}
-                              className="stepper-input"
-                            />
-                            <span>hrs</span>
-                        </div>
-                        <button 
-                          className="stepper-btn"
-                          disabled={!registro.asistio || isFutureDate || readOnly || registro.horasTrabajadas >= 24}
-                          onClick={() => handleHorasTrabajadasChange(registro.empleadoId, Math.min(24, (registro.horasTrabajadas || 0) + 0.5))}
-                        >
-                          +
-                        </button>
-                     </div>
+                    <div className="card-section-title">JORNADA LABORAL</div>
+                    <div
+                      className="day-selector-group"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.85rem",
+                          color:
+                            registro.horasTrabajadas === 4
+                              ? "#2563eb"
+                              : "#64748b",
+                          fontWeight:
+                            registro.horasTrabajadas === 4 ? "600" : "400",
+                        }}
+                      >
+                        Medio Día
+                      </span>
+
+                      <div
+                        className="toggle-container"
+                        style={{
+                          position: "relative",
+                          width: "50px",
+                          height: "26px",
+                          backgroundColor:
+                            registro.horasTrabajadas === 8
+                              ? "#2563eb"
+                              : "#cbd5e1",
+                          borderRadius: "13px",
+                          cursor:
+                            !registro.asistio || isFutureDate || readOnly
+                              ? "not-allowed"
+                              : "pointer",
+                          opacity:
+                            !registro.asistio || isFutureDate || readOnly
+                              ? 0.6
+                              : 1,
+                          transition: "background-color 0.2s",
+                        }}
+                        onClick={() => {
+                          if (!registro.asistio || isFutureDate || readOnly)
+                            return;
+                          const newType =
+                            registro.horasTrabajadas === 8 ? "HALF" : "FULL";
+                          handleWorkAmountChange(registro.empleadoId, newType);
+                        }}
+                      >
+                        <div
+                          className="toggle-slider"
+                          style={{
+                            position: "absolute",
+                            top: "4px",
+                            left:
+                              registro.horasTrabajadas === 8 ? "28px" : "4px",
+                            width: "18px",
+                            height: "18px",
+                            backgroundColor: "white",
+                            borderRadius: "50%",
+                            transition: "left 0.2s",
+                            boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+                          }}
+                        />
+                      </div>
+
+                      <span
+                        style={{
+                          fontSize: "0.85rem",
+                          color:
+                            registro.horasTrabajadas === 8
+                              ? "#2563eb"
+                              : "#64748b",
+                          fontWeight:
+                            registro.horasTrabajadas === 8 ? "600" : "400",
+                        }}
+                      >
+                        Completo
+                      </span>
+                    </div>
                   </section>
 
                   <section className="card-section">
                     <div className="card-section-title">OBSERVACIONES</div>
                     <div className="observations-input-wrapper">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="input-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                      <div
+                        className="input-icon"
+                        style={{ marginRight: "8px" }}
+                      >
+                        <InfoIcon width="16" height="16" />
+                      </div>
                       <input
                         type="text"
                         value={registro.observaciones || ""}
                         onChange={(e) =>
                           handleObservacionesChange(
                             registro.empleadoId,
-                            e.target.value
+                            e.target.value,
                           )
                         }
-                        placeholder="Escribe una nota aquí..."
+                        placeholder="Nota..."
                         disabled={isFutureDate || readOnly}
                         className="custom-input"
                       />
@@ -414,21 +475,15 @@ const AsistenciaForm = ({
               ? "💾 Actualizar Asistencia"
               : "💾 Guardar Asistencia del Día"}
           </button>
-
-          {/* {isEditing && (
-            <div className="saved-info">
-              <p>
-                ✅ <strong>Asistencia registrada anteriormente</strong>
-              </p>
-              <small>Puedes modificar los registros y guardar los cambios.</small>
-            </div>
-          )} */}
         </div>
       )}
 
       {/* Modal de Instrucciones */}
       {showInstructions && (
-        <div className="modal-overlay" onClick={() => setShowInstructions(false)}>
+        <div
+          className="modal-overlay"
+          onClick={() => setShowInstructions(false)}
+        >
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button
               className="modal-close-btn"
@@ -436,7 +491,15 @@ const AsistenciaForm = ({
             >
               <XIcon />
             </button>
-            <div className="form-help" style={{ marginTop: 0, border: 'none', background: 'transparent', padding: 0 }}>
+            <div
+              className="form-help"
+              style={{
+                marginTop: 0,
+                border: "none",
+                background: "transparent",
+                padding: 0,
+              }}
+            >
               <h4>📋 Instrucciones:</h4>
               <ul>
                 <li>
@@ -444,28 +507,26 @@ const AsistenciaForm = ({
                   <strong>Ausente</strong>
                 </li>
                 <li>
-                  Para empleados presentes, ajusta las{" "}
-                  <strong>horas trabajadas</strong> (por defecto 8 horas)
+                  Selecciona <strong>Día Completo</strong> o{" "}
+                  <strong>Medio Día</strong> para indicar la jornada trabajada.
                 </li>
                 <li>
                   Agrega <strong>observaciones</strong> para casos especiales
                   (licencias, permisos, etc.)
                 </li>
                 <li>
-                  Los botones de acción rápida te permiten marcar todos los empleados
-                  de una vez
+                  Los botones de acción rápida te permiten marcar todos los
+                  empleados de una vez
                 </li>
                 <li>
-                  Puedes <strong>editar</strong> asistencias ya guardadas en cualquier
-                  momento
+                  Puedes <strong>editar</strong> asistencias ya guardadas en
+                  cualquier momento
                 </li>
               </ul>
             </div>
           </div>
         </div>
       )}
-
-
     </div>
   );
 };

@@ -3,9 +3,14 @@ import { formatDate } from "../../../../../../../../../../../../utils/formatters
 import "./HistorialAsistencias.css";
 import { DelateIcon } from "../../../../../../../../../../../../assets/icons/Icons";
 
-const HistorialAsistencias = ({ asistencias, employees, onDateSelect, onDelete }) => {
+const HistorialAsistencias = ({
+  asistencias,
+  employees,
+  onDateSelect,
+  onDelete,
+}) => {
   const [filterMonth, setFilterMonth] = useState(
-    new Date().toISOString().slice(0, 7)
+    new Date().toISOString().slice(0, 7),
   );
 
   // Agrupar asistencias por mes
@@ -76,8 +81,8 @@ const HistorialAsistencias = ({ asistencias, employees, onDateSelect, onDelete }
                     title="Eliminar registro de asistencia"
                   >
                     <div className="delete-icon-asistencia">
-                    <DelateIcon/>
-                  </div>
+                      <DelateIcon />
+                    </div>
                   </button>
                 </div>
               </div>
@@ -109,7 +114,9 @@ const HistorialAsistencias = ({ asistencias, employees, onDateSelect, onDelete }
                         key={registro.empleadoId}
                         className="employee-detail"
                       >
-                        <span className="employee-name-historial">{registro.nombre}</span>
+                        <span className="employee-name-historial">
+                          {registro.nombre}
+                        </span>
                         <span className="employee-cedula-historial">
                           C.I. {registro.cedula}
                         </span>
@@ -120,6 +127,31 @@ const HistorialAsistencias = ({ asistencias, employees, onDateSelect, onDelete }
                         >
                           {registro.asistio ? "✅ Presente" : "❌ Ausente"}
                         </span>
+                        {registro.asistio && (
+                          <span className="attendance-days">
+                            🗓️{" "}
+                            {registro.horasTrabajadas / 8 === 1
+                              ? "1 Día"
+                              : registro.horasTrabajadas / 8 === 0.5
+                                ? "0.5 Día"
+                                : `${(registro.horasTrabajadas / 8).toFixed(1)} Días`}
+                          </span>
+                        )}
+                        {registro.observaciones && (
+                          <div
+                            className="attendance-notes"
+                            style={{
+                              marginLeft: "0.5rem",
+                              fontSize: "0.80rem",
+                              color: "#6b7280",
+                              fontStyle: "italic",
+                              display: "block", // Ensure new line or block display if needed
+                              marginTop: "0.2rem",
+                            }}
+                          >
+                            📝 {registro.observaciones}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
