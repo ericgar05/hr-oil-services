@@ -2,8 +2,18 @@ import React, { useState, useEffect } from "react";
 import supabase from "../../../../../../../../../../api/supaBase";
 import { useNotification } from "../../../../../../../../../../contexts/NotificationContext";
 import FeedbackModal from "../../../../../../../../../common/FeedbackModal/FeedbackModal";
-import { ClipBoardIcon, SackDollarIcon } from '../../../../../../../../../../assets/icons/Icons'
-const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoaded }) => {
+import FacturaDetailsModal from "./FacturaDetailsModal";
+import {
+  ClipBoardIcon,
+  SackDollarIcon,
+} from "../../../../../../../../../../assets/icons/Icons";
+
+const FacturasList = ({
+  projectId,
+  onEditFactura,
+  parentFilters,
+  onCategoriesLoaded,
+}) => {
   const { showToast } = useNotification();
   const [facturas, setFacturas] = useState([]);
   const [filtroProveedor, setFiltroProveedor] = useState("");
@@ -12,10 +22,12 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
   const [fechaFin, setFechaFin] = useState("");
   const [feedback, setFeedback] = useState({
     isOpen: false,
-    type: 'success',
-    title: '',
-    message: ''
+    type: "success",
+    title: "",
+    message: "",
   });
+
+  const [viewFactura, setViewFactura] = useState(null);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
@@ -63,21 +75,23 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
       filtroCategoria,
       filtroProveedor,
       fechaInicio,
-      fechaFin
+      fechaFin,
     };
 
-    const { filtroCategoria: cat, filtroProveedor: prov, fechaInicio: start, fechaFin: end } = activeFilters;
+    const {
+      filtroCategoria: cat,
+      filtroProveedor: prov,
+      fechaInicio: start,
+      fechaFin: end,
+    } = activeFilters;
 
     const cumpleProveedor =
       !prov ||
       factura.proveedor.toLowerCase().includes(prov.toLowerCase()) ||
       factura.rif.includes(prov);
-    const cumpleCategoria =
-      !cat || factura.categoria === cat;
-    const cumpleFechaInicio =
-      !start || factura.fechaFactura >= start;
-    const cumpleFechaFin =
-      !end || factura.fechaFactura <= end;
+    const cumpleCategoria = !cat || factura.categoria === cat;
+    const cumpleFechaInicio = !start || factura.fechaFactura >= start;
+    const cumpleFechaFin = !end || factura.fechaFactura <= end;
 
     return (
       cumpleProveedor && cumpleCategoria && cumpleFechaInicio && cumpleFechaFin
@@ -87,7 +101,7 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
   const categoriasUnicas = [...new Set(facturas.map((f) => f.categoria))];
 
   const handleCloseFeedback = () => {
-    setFeedback(prev => ({ ...prev, isOpen: false }));
+    setFeedback((prev) => ({ ...prev, isOpen: false }));
   };
 
   const handleDelete = async (facturaId) => {
@@ -101,17 +115,17 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
         cargarFacturas(); // Recargar la lista
         setFeedback({
           isOpen: true,
-          type: 'success',
-          title: 'Factura Eliminada',
-          message: 'La factura ha sido eliminada exitosamente.'
+          type: "success",
+          title: "Factura Eliminada",
+          message: "La factura ha sido eliminada exitosamente.",
         });
       } catch (error) {
         console.error("Error al eliminar factura:", error);
         setFeedback({
           isOpen: true,
-          type: 'error',
-          title: 'Error',
-          message: 'Error al eliminar la factura.'
+          type: "error",
+          title: "Error",
+          message: "Error al eliminar la factura.",
         });
       }
     }
@@ -121,7 +135,7 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
   const formatSubcategorias = (factura) => {
     if (Array.isArray(factura.subcategorias)) {
       const subcategoriasFiltradas = factura.subcategorias.filter(
-        (sub) => sub && sub.trim() !== ""
+        (sub) => sub && sub.trim() !== "",
       );
       return subcategoriasFiltradas.length > 0
         ? subcategoriasFiltradas.join(", ")
@@ -159,23 +173,23 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
           </div>
           {(retenciones.retencionIvaCobrada > 0 ||
             retenciones.retencionIslrCobrada > 0) && (
-              <>
-                {retenciones.retencionIvaCobrada > 0 && (
-                  <div className="ccf-retencion-item">
-                    <small className="ccf-estado-bueno">
-                      IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
-                    </small>
-                  </div>
-                )}
-                {retenciones.retencionIslrCobrada > 0 && (
-                  <div className="ccf-retencion-item">
-                    <small className="ccf-estado-bueno">
-                      ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
-                    </small>
-                  </div>
-                )}
-              </>
-            )}
+            <>
+              {retenciones.retencionIvaCobrada > 0 && (
+                <div className="ccf-retencion-item">
+                  <small className="ccf-estado-bueno">
+                    IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
+                  </small>
+                </div>
+              )}
+              {retenciones.retencionIslrCobrada > 0 && (
+                <div className="ccf-retencion-item">
+                  <small className="ccf-estado-bueno">
+                    ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
+                  </small>
+                </div>
+              )}
+            </>
+          )}
         </div>
       );
     } else {
@@ -204,26 +218,26 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
           {/* Mostrar retenciones ya cobradas (si las hay) */}
           {(retenciones.retencionIvaCobrada > 0 ||
             retenciones.retencionIslrCobrada > 0) && (
-              <>
-                <div className="ccf-retencion-item ccf-separador">
-                  <small className="ccf-estado-bueno">Pagado:</small>
+            <>
+              <div className="ccf-retencion-item ccf-separador">
+                <small className="ccf-estado-bueno">Pagado:</small>
+              </div>
+              {retenciones.retencionIvaCobrada > 0 && (
+                <div className="retencion-item">
+                  <small className="estado-bueno">
+                    IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
+                  </small>
                 </div>
-                {retenciones.retencionIvaCobrada > 0 && (
-                  <div className="retencion-item">
-                    <small className="estado-bueno">
-                      IVA: Bs {retenciones.retencionIvaCobrada.toFixed(2)}
-                    </small>
-                  </div>
-                )}
-                {retenciones.retencionIslrCobrada > 0 && (
-                  <div className="retencion-item">
-                    <small className="estado-bueno">
-                      ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
-                    </small>
-                  </div>
-                )}
-              </>
-            )}
+              )}
+              {retenciones.retencionIslrCobrada > 0 && (
+                <div className="retencion-item">
+                  <small className="estado-bueno">
+                    ISLR: Bs {retenciones.retencionIslrCobrada.toFixed(2)}
+                  </small>
+                </div>
+              )}
+            </>
+          )}
         </div>
       );
     }
@@ -256,7 +270,9 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
               onChange={(e) => setFiltroProveedor(e.target.value)}
               className="ccf-search-input"
             />
-            <label htmlFor="fechaInicio" style={{ color: 'red' }}>Desde</label>
+            <label htmlFor="fechaInicio" style={{ color: "red" }}>
+              Desde
+            </label>
             <input
               type="date"
               placeholder="Fecha inicio"
@@ -264,7 +280,9 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
               onChange={(e) => setFechaInicio(e.target.value)}
               className="ccf-date-input"
             />
-            <label htmlFor="fechaFin" style={{ color: 'red' }}>Hasta</label>
+            <label htmlFor="fechaFin" style={{ color: "red" }}>
+              Hasta
+            </label>
             <input
               type="date"
               placeholder="Fecha fin"
@@ -288,7 +306,13 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
               <span className="list-card-label">TOTAL DÓLARES</span>
             </div>
             <strong className="list-card-value">
-              $ {facturasFiltradas.reduce((sum, item) => sum + (item.totalPagarDolares || 0), 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              ${" "}
+              {facturasFiltradas
+                .reduce((sum, item) => sum + (item.totalPagarDolares || 0), 0)
+                .toLocaleString("en-US", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
             </strong>
           </div>
 
@@ -297,7 +321,12 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
             <div className="mobile-facturas-list">
               {facturasFiltradas.map((factura) => {
                 const initials = factura.proveedor
-                  ? factura.proveedor.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
+                  ? factura.proveedor
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .substring(0, 2)
+                      .toUpperCase()
                   : "?";
 
                 return (
@@ -310,11 +339,13 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
                       <div className="provider-info">
                         <h4>{factura.proveedor}</h4>
                         <span className="provider-rif">
-                          <i className="fa-regular fa-user"></i> {factura.tipoRif}{factura.rif}
+                          <i className="fa-regular fa-user"></i>{" "}
+                          {factura.tipoRif}
+                          {factura.rif}
                         </span>
                       </div>
                       <div className="valuacion-tag">
-                        {factura.valuacion || 'SIN VALUACIÓN'}
+                        {factura.valuacion || "SIN VALUACIÓN"}
                       </div>
                     </div>
 
@@ -325,42 +356,85 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
                           <i className="fa-regular fa-calendar"></i>
                           <div className="date-text">
                             <span className="label">FECHA</span>
-                            <span className="value">{factura.fechaFactura}</span>
+                            <span className="value">
+                              {factura.fechaFactura}
+                            </span>
                           </div>
                         </div>
                         <span className="category-pill">
-                          <i className="fa-solid fa-truck-fast"></i> {factura.categoria}
+                          <i className="fa-solid fa-truck-fast"></i>{" "}
+                          {factura.categoria}
                         </span>
                       </div>
 
                       <div className="details-box">
                         <div className="details-header">
-                          <i className="fa-regular fa-file-lines"></i> DETALLE DEL SERVICIO
+                          <i className="fa-regular fa-file-lines"></i> DETALLE
+                          DEL SERVICIO
                         </div>
                         <p className="details-text">
                           {factura.descripcion || "Sin descripción"}
                         </p>
                         <div className="subcategory-text">
-                          Subcategoría: <strong>{formatSubcategorias(factura)}</strong>
+                          Subcategoría:{" "}
+                          <strong>{formatSubcategorias(factura)}</strong>
                         </div>
                       </div>
 
                       <div className="card-footer-row">
                         <div className="rate-info">
-                          <span className="label">TARIFA / UNITARIO</span>
-                          <span className="value">Bs. {factura.tasaPago?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</span>
+                          <span className="label">TASA</span>
+                          <span className="value">
+                            Bs. {factura.tasaPago?.toFixed(2) || "0.00"}
+                          </span>
                         </div>
                         <div className="total-box-green">
                           <span className="label">TOTAL A PAGAR</span>
-                          <span className="value">
-                            Bs. {factura.totalPagar?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}
-                          </span>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "flex-end",
+                              gap: "0",
+                            }}
+                          >
+                            <span
+                              className="value"
+                              style={{ lineHeight: "1.2" }}
+                            >
+                              ${" "}
+                              {factura.totalPagarDolares?.toLocaleString(
+                                "en-US",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                },
+                              ) || "0.00"}
+                            </span>
+                            <span
+                              style={{
+                                fontSize: "0.7rem",
+                                color: "#166534",
+                                fontWeight: "500",
+                              }}
+                            >
+                              ~ Bs.{" "}
+                              {factura.totalPagar?.toLocaleString("es-VE", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
                       <div className="card-actions-bottom">
-                        <button className="btn-details-link" onClick={() => onEditFactura(factura)}>
-                          Ver detalles completos <i className="fa-solid fa-chevron-right"></i>
+                        <button
+                          className="btn-details-link"
+                          onClick={() => setViewFactura(factura)}
+                        >
+                          Ver detalles completos{" "}
+                          <i className="fa-solid fa-chevron-right"></i>
                         </button>
                       </div>
                     </div>
@@ -409,12 +483,41 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
                       <td>{factura.numeroControl || "-"}</td>
                       <td>{factura.descripcion || "-"}</td>
                       <td>{factura.categoria}</td>
-                      <td>{factura.tasaPago?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</td>
+                      <td>
+                        {factura.tasaPago?.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || "0.00"}
+                      </td>
                       <td>{formatSubcategorias(factura)}</td>
-                      <td>Bs {factura.totalPagar?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</td>
-                      <td>$ {factura.totalPagarDolares?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</td>
-                      <td>Bs {factura.montoPagado?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</td>
-                      <td>$ {factura.pagadoDolares?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</td>
+                      <td>
+                        Bs{" "}
+                        {factura.totalPagar?.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || "0.00"}
+                      </td>
+                      <td>
+                        ${" "}
+                        {factura.totalPagarDolares?.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || "0.00"}
+                      </td>
+                      <td>
+                        Bs{" "}
+                        {factura.montoPagado?.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || "0.00"}
+                      </td>
+                      <td>
+                        ${" "}
+                        {factura.pagadoDolares?.toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }) || "0.00"}
+                      </td>
                       <td>{factura.modoPago || "-"}</td>
                       <td className="ccf-retenciones-cell">
                         {getEstadoRetenciones(factura)}
@@ -431,7 +534,7 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
                           "-"
                         )}
                       </td>
-                      <td>{factura.valuacion || '-'}</td>
+                      <td>{factura.valuacion || "-"}</td>
                       <td>
                         <button
                           className="ccf-btn-edit"
@@ -461,6 +564,13 @@ const FacturasList = ({ projectId, onEditFactura, parentFilters, onCategoriesLoa
         type={feedback.type}
         title={feedback.title}
         message={feedback.message}
+      />
+
+      <FacturaDetailsModal
+        isOpen={!!viewFactura}
+        onClose={() => setViewFactura(null)}
+        factura={viewFactura}
+        onEdit={onEditFactura}
       />
     </div>
   );

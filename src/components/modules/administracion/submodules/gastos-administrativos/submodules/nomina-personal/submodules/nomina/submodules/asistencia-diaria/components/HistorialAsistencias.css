@@ -58,12 +58,11 @@
 }
 
 .date-main {
-
   font-weight: 600;
   color: var(--text-primary);
   font-size: 1.1rem;
 }
-.date-actions{
+.date-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -196,15 +195,15 @@
     gap: 1rem;
     align-items: stretch;
   }
-  
+
   .filter-controls {
     justify-content: space-between;
   }
-  
+
   .historial-stats {
     grid-template-columns: 1fr;
   }
-  
+
   .employee-detail {
     flex-direction: column;
     gap: 0.5rem;
@@ -225,9 +224,23 @@
 
 .delete-icon-asistencia svg {
   width: 20px;
-fill: rgb(15, 15, 15);
+  fill: rgb(15, 15, 15);
 }
+
 .btn-delete-asistencia:hover {
   background-color: #e48181;
+}
 
+.attendance-days {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #4b5563;
+  background: #f3f4f6;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
