@@ -608,22 +608,6 @@ const ItemsTable = ({ items, onEditItem, onDeleteItem, onNavigateToAdd, readOnly
         </div>
       )}
 
-      {items.length > 0 && (
-        <div className="table-footer-bar">
-          <div className="footer-stats-chips">
-            <span className="stat-chip">
-              Total Partidas: <strong>{items.length}</strong>
-            </span>
-            <span className="stat-chip">
-              Con IVA: <strong>{items.filter((item) => item.aplicaIVA).length}</strong>
-            </span>
-            <span className="stat-chip">
-              Exentas: <strong>{items.filter((item) => !item.aplicaIVA).length}</strong>
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Modal 1: Dependency Guard (Bloqueo Defensivo por Avance Existente) */}
       {blockedModalData && (
         <div

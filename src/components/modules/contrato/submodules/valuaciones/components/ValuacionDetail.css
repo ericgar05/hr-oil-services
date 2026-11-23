@@ -1,307 +1,532 @@
 /* src/components/modules/contrato/submodules/valuaciones/components/ValuacionDetail.css */
 .valuacion-detail {
-  padding: 30px;
+  padding: 1.5rem;
+  box-sizing: border-box;
 }
 
-.detail-header {
+/* Encabezado Superior */
+.valuacion-detail .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #e9ecef;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
 }
 
-.back-button {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  padding: 10px 16px;
-  border-radius: 6px;
+.valuacion-detail .btn-back-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
-  color: #495057;
-  font-size: 14px;
   transition: all 0.2s ease;
 }
 
-.back-button:hover {
-  background: #e9ecef;
+.valuacion-detail .btn-back-header:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
 }
 
-.header-actions {
+.valuacion-detail .header-actions {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.btn-edit {
-  background: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeaa7;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-edit:hover {
-  background: #ffeaa7;
-}
-
-.btn-delete {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f1b0b7;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.btn-delete:hover {
-  background: #f1b0b7;
-}
-
-.info-section {
-  margin-bottom: 30px;
-}
-
-.info-card {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  border-left: 4px solid #007bff;
-}
-
-.info-card h3 {
-  margin: 0 0 20px 0;
-  color: #495057;
-  font-size: 24px;
-}
-
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 15px;
-}
-
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.info-item label {
-  font-weight: 600;
-  color: #6c757d;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.info-item span {
-  color: #495057;
-  font-size: 14px;
-}
-
-.partidas-section {
-  margin-bottom: 30px;
-}
-
-.partidas-section h4 {
-  margin: 0 0 20px 0;
-  color: #495057;
-  font-size: 18px;
-}
-
-.partidas-table {
-  overflow-x: auto;
-  background: white;
+.valuacion-detail .btn-edit-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #ffffff;
+  color: #1e40af;
+  border: 1.5px solid #cbd5e1;
+  padding: 0.6rem 1.15rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.partidas-table table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 800px;
-}
-
-.partidas-table th {
-  background: #e9ecef;
-  padding: 12px 8px;
-  text-align: left;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #495057;
-  border-bottom: 2px solid #dee2e6;
-  font-size: 12px;
-  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.partidas-table td {
-  padding: 12px 8px;
-  border-bottom: 1px solid #dee2e6;
-  vertical-align: top;
+.valuacion-detail .btn-edit-action:hover {
+  background: #eff6ff;
+  border-color: #1e40af;
 }
 
-.col-item { width: 80px; }
-.col-descripcion { min-width: 300px; }
-.col-unidad { width: 100px; }
-.col-cantidad { width: 100px; }
-.col-precio { width: 150px; }
-.col-monto { width: 150px; }
-.col-iva { width: 80px; }
-
-.iva-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.iva-badge.with-iva {
-  background: #d4edda;
-  color: #155724;
-}
-
-.iva-badge.without-iva {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.no-data {
-  text-align: center;
-  color: #6c757d;
-  font-style: italic;
-  padding: 40px !important;
-}
-
-.resumen-section {
-  margin-bottom: 30px;
-}
-
-.resumen-totales {
-  background: #f8f9fa;
-  padding: 25px;
+.valuacion-detail .btn-delete-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #ffffff;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  padding: 0.6rem 1.15rem;
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.totales-grid {
+.valuacion-detail .btn-delete-action:hover {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+/* =========================================================
+   Ficha Resumen del Encabezado
+   ========================================================= */
+.valuacion-detail .detail-info-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.valuacion-detail .info-badge-row {
   display: flex;
-  justify-content: flex-end;
-  gap: 40px;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.total-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
+.valuacion-detail .valuacion-main-badge {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
 }
 
-.total-item.final {
-  border-left: 2px solid #007bff;
-  padding-left: 40px;
+.valuacion-detail .contract-tag {
+  font-size: 0.8rem;
+  color: #64748b;
 }
 
-.total-label {
-  font-size: 14px;
-  color: #6c757d;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.valuacion-detail .contract-tag strong {
+  color: #0f172a;
 }
 
-.total-value {
-  font-size: 18px;
-  font-weight: bold;
-  color: #495057;
+.valuacion-detail .detail-contract-name {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
 }
 
-.total-item.final .total-value {
-  color: #007bff;
-  font-size: 22px;
-}
-
-.estadisticas-section {
-  margin-bottom: 30px;
-}
-
-.estadisticas-section h4 {
-  margin: 0 0 20px 0;
-  color: #495057;
-  font-size: 18px;
-}
-
-.estadisticas-grid {
+.valuacion-detail .info-meta-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
 }
 
-.estadistica {
-  background: white;
-  padding: 25px;
-  border-radius: 8px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border: 1px solid #e9ecef;
+.valuacion-detail .meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.estadistica-number {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 8px;
-}
-
-.estadistica-label {
-  font-size: 13px;
-  color: #6c757d;
+.valuacion-detail .meta-label {
+  font-size: 0.72rem;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
 }
 
-/* Responsive */
+.valuacion-detail .meta-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.valuacion-detail .meta-value.with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.valuacion-detail .meta-value.with-icon svg {
+  color: #64748b;
+}
+
+/* =========================================================
+   Sección de Partidas
+   ========================================================= */
+.valuacion-detail .detail-partidas-section {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.valuacion-detail .section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.valuacion-detail .section-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.valuacion-detail .section-badges {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.valuacion-detail .badge-pill {
+  font-size: 0.72rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.valuacion-detail .badge-pill.count {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #dcfce7;
+}
+
+.valuacion-detail .badge-pill.exento {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* =========================================================
+   Tabla Desktop (>= 769px)
+   ========================================================= */
+.valuacion-detail .desktop-table-container {
+  display: block;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.valuacion-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+.valuacion-detail table thead {
+  background: #f8fafc;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+
+.valuacion-detail table th {
+  padding: 0.75rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.valuacion-detail table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.valuacion-detail table tr:last-child td {
+  border-bottom: none;
+}
+
+.valuacion-detail table tr:hover td {
+  background: #f8fafc;
+}
+
+.valuacion-detail .item-badge {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #1e40af;
+  font-weight: 700;
+  font-family: monospace;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.8rem;
+}
+
+.valuacion-detail .unit-badge {
+  display: inline-block;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 600;
+  padding: 0.2rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+}
+
+.valuacion-detail .font-mono {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.valuacion-detail .font-bold {
+  font-weight: 700;
+  color: #1e40af;
+}
+
+.valuacion-detail .badge-iva {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.valuacion-detail .badge-iva.with-iva {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #dcfce7;
+}
+
+.valuacion-detail .badge-iva.exempt {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+/* =========================================================
+   Fichas Móviles (<= 768px)
+   ========================================================= */
+.valuacion-detail .mobile-cards-container {
+  display: none;
+}
+
+.valuacion-detail .mobile-item-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.valuacion-detail .card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.valuacion-detail .badge-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.valuacion-detail .card-desc {
+  margin: 0 0 0.65rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+/* BLOQUE FINANCIERO CALIBRADO EN 2 FILAS */
+.valuacion-detail .card-finance-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.65rem;
+}
+
+.valuacion-detail .finance-row-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.valuacion-detail .finance-col {
+  display: flex;
+  flex-direction: column;
+  width: 48%;
+}
+
+.valuacion-detail .finance-col-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.valuacion-detail .finance-col-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.valuacion-detail .finance-row-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 0.45rem 0.65rem;
+  margin-top: 0.45rem;
+}
+
+.valuacion-detail .finance-total-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #1e40af;
+  text-transform: uppercase;
+}
+
+.valuacion-detail .finance-total-val {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1e40af;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+/* =========================================================
+   Resumen de Totales Económicos
+   ========================================================= */
+.valuacion-detail .detail-totales-section {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.valuacion-detail .totales-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.valuacion-detail .total-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.85rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.valuacion-detail .total-box.highlight {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.valuacion-detail .total-box-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.valuacion-detail .total-box.highlight .total-box-label {
+  color: #1e40af;
+}
+
+.valuacion-detail .total-box-val {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.valuacion-detail .total-box.highlight .total-box-val {
+  color: #1e40af;
+}
+
+/* =========================================================
+   Responsive Móvil (<= 768px)
+   ========================================================= */
 @media (max-width: 768px) {
   .valuacion-detail {
-    padding: 20px;
+    padding: 0.75rem 0.65rem;
   }
-  
-  .detail-header {
+
+  .valuacion-detail .detail-header {
     flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 0.75rem;
   }
-  
-  .header-actions {
-    align-self: flex-end;
-  }
-  
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .totales-grid {
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
-  }
-  
-  .total-item {
-    align-items: flex-start;
-  }
-  
-  .total-item.final {
-    border-left: none;
-    border-top: 2px solid #007bff;
-    padding-left: 0;
-    padding-top: 20px;
+
+  .valuacion-detail .btn-back-header {
     width: 100%;
+    justify-content: center;
   }
-  
-  .estadisticas-grid {
+
+  .valuacion-detail .header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .valuacion-detail .btn-edit-action,
+  .valuacion-detail .btn-delete-action {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+
+  .valuacion-detail .desktop-table-container {
+    display: none;
+  }
+
+  .valuacion-detail .mobile-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .valuacion-detail .info-meta-grid {
     grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .valuacion-detail .totales-grid {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
   }
 }
