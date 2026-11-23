@@ -51,11 +51,11 @@ const ValuacionCategoriasModal = ({
 
     const handlePrevCategory = () => {
         if (!selectedCategory) return;
-        const currentIndex = categoriasOrdenadas.findIndex(
+        const currentIndex = dynamicCategoriasOrdenadas.findIndex(
             ([cat]) => cat === selectedCategory
         );
         if (currentIndex > 0) {
-            setSelectedCategory(categoriasOrdenadas[currentIndex - 1][0]);
+            setSelectedCategory(dynamicCategoriasOrdenadas[currentIndex - 1][0]);
         }
     };
 
@@ -571,9 +571,9 @@ const ValuacionCategoriasModal = ({
                                                         </span>
                                                     </td>
                                                     <td className="td-amount text-right font-bold">
-                                                        {new Intl.NumberFormat("de-DE", {
-                                                            minimumFractionDigits: 2,
-                                                        }).format(item.monto)}
+                                                        {formatCurrency
+                                                            ? formatCurrency(item.monto, "USD")
+                                                            : `$ ${Number(item.monto || 0).toFixed(2)}`}
                                                     </td>
                                                 </tr>
                                             ))}

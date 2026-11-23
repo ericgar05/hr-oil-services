@@ -397,3 +397,182 @@
     font-size: 12px;
   }
 }
+
+
+/* =========================================================
+   Quick-fill Chips, Buttons & Adaptive Input Styles
+   ========================================================= */
+
+.btn-back-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-back-header:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.label-with-chips-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.label-with-chips-bar label {
+  margin: 0 !important;
+}
+
+.quick-fill-chips-group {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.fill-help-text {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.quick-chip {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  border-radius: 6px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1.2;
+}
+
+.quick-chip:hover {
+  background: #eff6ff;
+  border-color: #1e40af;
+  color: #1e40af;
+  transform: translateY(-1px);
+}
+
+.quick-chip-max {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  border-radius: 6px;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-chip-max:hover {
+  background: #dbeafe;
+  border-color: #1e40af;
+  color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(30, 64, 175, 0.15);
+}
+
+.input-cantidad {
+  font-family: monospace;
+  font-size: 0.95rem !important;
+  font-weight: 600;
+}
+
+.saldo-info-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.35rem;
+  font-size: 0.775rem;
+  color: #64748b;
+}
+
+.saldo-available strong {
+  color: #0f172a;
+}
+
+.saldo-percentage {
+  color: #1e40af;
+  font-weight: 700;
+  background: #eff6ff;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.col-btn-add {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.label-spacer {
+  visibility: hidden;
+}
+
+.btn-add-partida-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 40px;
+  box-shadow: 0 3px 8px rgba(30, 64, 175, 0.2);
+}
+
+.btn-add-partida-cta:hover:not(:disabled) {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+}
+
+.btn-add-partida-cta:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+/* Acciones Finales */
+.form-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.form-actions-bar .btn-primary-action.large {
+  padding: 0.85rem 2rem;
+  font-size: 1rem;
+}

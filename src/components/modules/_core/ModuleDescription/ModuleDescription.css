@@ -27,3 +27,18 @@
   font-size: 1.125rem;
   line-height: 1.6;
 }
+
+@media (max-width: 640px) {
+  .module-description {
+    margin-bottom: 1rem;
+  }
+
+  .module-description h2 {
+    font-size: 1.35rem;
+  }
+
+  .module-description p {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+}

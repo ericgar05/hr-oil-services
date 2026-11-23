@@ -34,9 +34,14 @@ const CoordinacionesMain = ({ projectId }) => {
   ]
 
   const handleCardClick = (path) => {
-    console.log('Navegando desde proyecto:', projectId, 'a:', path)
-    navigate(path)
-  }
+    console.log('Navegando desde proyecto:', projectId, 'a:', path);
+    // Control amigable para secciones satélite en desarrollo
+    if (path === 'reuniones' || path === 'comunicaciones') {
+      alert(`El módulo de ${path.toUpperCase()} se encuentra en desarrollo.`);
+      return;
+    }
+    navigate(path);
+  };
 
   return (
     <div className="modules-main">

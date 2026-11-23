@@ -531,19 +531,21 @@ export const ExecutionProvider = ({ children }) => {
             .select()
             .single();
 
-          // Update Day Count immediately (Visibility Fix)
+          // Update Day Count immediately (Visibility Fix without double-count)
           if (!newActError && newAct) {
-            await supabase.rpc('increment_day_activity_count', { day_id: targetDay.id });
-            // Manual fallback update
-            const { data: currentDayData } = await supabase.from('plan_dias').select('cantidad_actividades, monto_planificado').eq('id', targetDay.id).single();
-            if (currentDayData) {
-              const newCount = (currentDayData.cantidad_actividades || 0) + 1;
-              const newAmount = (currentDayData.monto_planificado || 0) + (newActPayload.cantidad_programada * newActPayload.precio_unitario);
+            const { error: rpcError } = await supabase.rpc('increment_day_activity_count', { day_id: targetDay.id });
+            if (rpcError) {
+              // Manual fallback update only if RPC fails
+              const { data: currentDayData } = await supabase.from('plan_dias').select('cantidad_actividades, monto_planificado').eq('id', targetDay.id).single();
+              if (currentDayData) {
+                const newCount = (currentDayData.cantidad_actividades || 0) + 1;
+                const newAmount = (currentDayData.monto_planificado || 0) + (newActPayload.cantidad_programada * newActPayload.precio_unitario);
 
-              await supabase.from('plan_dias').update({
-                cantidad_actividades: newCount,
-                monto_planificado: newAmount
-              }).eq('id', targetDay.id);
+                await supabase.from('plan_dias').update({
+                  cantidad_actividades: newCount,
+                  monto_planificado: newAmount
+                }).eq('id', targetDay.id);
+              }
             }
           }
 

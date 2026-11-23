@@ -1,4 +1,6 @@
 export const getMainCurrency = (budget) => {
+  if (budget?.monedaPrincipal) return budget.monedaPrincipal;
+  if (budget?.currency) return budget.currency;
   if (!budget?.items || budget.items.length === 0) return "USD";
   const currencies = budget.items.map((i) => i.moneda).filter(Boolean);
   if (currencies.length === 0) return "USD";

@@ -49,6 +49,8 @@ export const BudgetProvider = ({ children }) => {
           contratoNumero: data.contract_number,
           nombreContrato: data.contract_name,
           estado: data.status,
+          currency: data.currency || data.budget_items?.[0]?.currency || "USD",
+          monedaPrincipal: data.currency || data.budget_items?.[0]?.currency || "USD",
           items: data.budget_items.map((item) => ({
             id: item.id,
             item: item.item_number,
@@ -84,6 +86,44 @@ export const BudgetProvider = ({ children }) => {
     );
     if (savedBudget) {
       setBudget(JSON.parse(savedBudget));
+    }
+  };
+
+  // Actualizar solo los datos principales del contrato (cabecera)
+  const updateBudgetHeader = async (headerData) => {
+    if (!budget?.id) return { success: false, error: "No hay presupuesto cargado" };
+    setLoading(true);
+    try {
+      const updatePayload = {
+        contract_number: headerData.contratoNumero,
+        contract_name: headerData.nombreContrato,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error: updateError } = await supabase
+        .from("budgets")
+        .update(updatePayload)
+        .eq("id", budget.id);
+
+      if (updateError) throw updateError;
+
+      // Si se especificó propagar la moneda a todas las partidas existentes
+      if (headerData.monedaPrincipal && headerData.propagateToItems && budget.items?.length > 0) {
+        const { error: itemsError } = await supabase
+          .from("budget_items")
+          .update({ currency: headerData.monedaPrincipal })
+          .eq("budget_id", budget.id);
+
+        if (itemsError) throw itemsError;
+      }
+
+      await loadBudget();
+      return { success: true };
+    } catch (err) {
+      console.error("Error actualizando cabecera del presupuesto:", err);
+      return { success: false, error: err.message };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -143,29 +183,74 @@ export const BudgetProvider = ({ children }) => {
     }
   };
 
-  // Guardar items del presupuesto
+  // Guardar items del presupuesto (Upsert no destructivo que preserva UUIDs)
   const saveBudgetItems = async (budgetId, items) => {
     if (!items || items.length === 0) return;
 
-    // Eliminar items existentes
-    await supabase.from("budget_items").delete().eq("budget_id", budgetId);
+    // 1. Obtener items existentes en la base de datos
+    const { data: existingItems, error: fetchError } = await supabase
+      .from("budget_items")
+      .select("id")
+      .eq("budget_id", budgetId);
 
-    // Insertar nuevos items
-    const itemsToInsert = items.map((item, index) => ({
-      budget_id: budgetId,
-      item_number: item.item,
-      description: item.descripcion,
-      unit: item.unidad,
-      quantity: item.cantidad,
-      unit_price: item.precioUnitario,
-      currency: item.moneda,
-      applies_vat: item.aplicaIVA,
-      item_order: index,
-    }));
+    if (fetchError) throw fetchError;
 
-    const { error } = await supabase.from("budget_items").insert(itemsToInsert);
+    const existingIds = new Set((existingItems || []).map((i) => i.id));
+    const incomingIds = new Set(
+      items.filter((i) => i.id && existingIds.has(i.id)).map((i) => i.id)
+    );
 
-    if (error) throw error;
+    // 2. Determinar items a eliminar (eliminados explícitamente por el usuario)
+    const idsToDelete = [...existingIds].filter((id) => !incomingIds.has(id));
+    if (idsToDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from("budget_items")
+        .delete()
+        .in("id", idsToDelete);
+      if (deleteError) throw deleteError;
+    }
+
+    // 3. Separar en items a actualizar e items a insertar
+    const itemsToUpdate = [];
+    const itemsToInsert = [];
+
+    items.forEach((item, index) => {
+      const payload = {
+        budget_id: budgetId,
+        item_number: item.item,
+        description: item.descripcion,
+        unit: item.unidad,
+        quantity: item.cantidad,
+        unit_price: item.precioUnitario,
+        currency: item.moneda,
+        applies_vat: item.aplicaIVA,
+        item_order: index,
+      };
+
+      if (item.id && existingIds.has(item.id)) {
+        itemsToUpdate.push({ id: item.id, ...payload });
+      } else {
+        itemsToInsert.push(payload);
+      }
+    });
+
+    // 4. Actualizar existentes preservando su ID para no romper FK en valuaciones/operaciones
+    for (const item of itemsToUpdate) {
+      const { id, ...dataToUpdate } = item;
+      const { error: updateError } = await supabase
+        .from("budget_items")
+        .update(dataToUpdate)
+        .eq("id", id);
+      if (updateError) throw updateError;
+    }
+
+    // 5. Insertar nuevos items
+    if (itemsToInsert.length > 0) {
+      const { error: insertError } = await supabase
+        .from("budget_items")
+        .insert(itemsToInsert);
+      if (insertError) throw insertError;
+    }
   };
 
   // Agregar item al presupuesto
@@ -283,6 +368,7 @@ export const BudgetProvider = ({ children }) => {
     error,
     loadBudget,
     saveBudget,
+    updateBudgetHeader,
     addBudgetItem,
     updateBudgetItem,
     deleteBudgetItem,

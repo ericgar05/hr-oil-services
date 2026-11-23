@@ -135,8 +135,6 @@ const ValuacionDetail = ({
               <div className="total-item">
                 <span className="total-label">SUB-TOTAL</span>
                 <span className="total-value">
-                  //TODO: Cambiar a moneda principal mismo problema que con el
-                  total acumulado
                   {formatCurrency(
                     valuacion.totales?.subtotal || 0,
                     mainCurrency

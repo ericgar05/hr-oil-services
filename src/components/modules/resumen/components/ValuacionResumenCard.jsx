@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useCurrency } from "../../../../contexts/CurrencyContext";
 import { useOperaciones } from "../../../../contexts/OperacionesContext";
 import { usePersonal } from "../../../../contexts/PersonalContext";
@@ -19,14 +19,16 @@ const ValuacionResumenCard = ({
   mainCurrency,
   budgetTotalUSD,
   cumulativeProgressUSD,
+  allPagos = null,
+  allPagosContratistas = null,
 }) => {
   const { formatCurrency, convertToUSD, customRates } = useCurrency();
   const { facturas, comprasSinFactura } = useOperaciones();
   const { getPagosByProject, getPagosContratistasByProject } = usePersonal();
 
-  const [pagos, setPagos] = useState([]);
-  const [pagosContratistas, setPagosContratistas] = useState([]);
-  const [loadingPagos, setLoadingPagos] = useState(true);
+  const [pagos, setPagos] = useState(allPagos || []);
+  const [pagosContratistas, setPagosContratistas] = useState(allPagosContratistas || []);
+  const [loadingPagos, setLoadingPagos] = useState(!allPagos);
   const [showCategories, setShowCategories] = useState(false);
   const [showAllCategoriesModal, setShowAllCategoriesModal] = useState(false);
   const [showPayrollModal, setShowPayrollModal] = useState(false);
@@ -34,6 +36,13 @@ const ValuacionResumenCard = ({
   const [includeCommissions, setIncludeCommissions] = useState(false);
 
   useEffect(() => {
+    if (allPagos && allPagosContratistas) {
+      setPagos(allPagos);
+      setPagosContratistas(allPagosContratistas);
+      setLoadingPagos(false);
+      return;
+    }
+
     const fetchPagos = async () => {
       if (valuacion.projectId) {
         setLoadingPagos(true);
@@ -47,7 +56,7 @@ const ValuacionResumenCard = ({
       }
     };
     fetchPagos();
-  }, [valuacion.projectId, getPagosByProject, getPagosContratistasByProject]);
+  }, [valuacion.projectId, allPagos, allPagosContratistas, getPagosByProject, getPagosContratistasByProject]);
 
   useEffect(() => {
     const calculateSeniatAmount = async () => {
@@ -463,8 +472,7 @@ const ValuacionResumenCard = ({
 
               const dedAlcaldia = montoBanco * 0.03;
               const dedISLR = montoBanco * 0.01;
-              const dedSENIAT = montoBanco * 0.1;
-              const totalDedGov = dedAlcaldia + dedISLR + dedSENIAT;
+              const totalDedGov = dedAlcaldia + dedISLR;
 
               const baseComisiones = montoBanco - totalDedGov;
 
@@ -479,8 +487,8 @@ const ValuacionResumenCard = ({
               const totalComisiones =
                 comisionCobro + d25 + comisionP + comisionR + comisionL;
 
-              // FINAL UTILITY with Toggle
-              const utilidadFinal = montoBanco - totalGastosUSD - (includeCommissions ? totalComisiones : 0);
+              // FINAL UTILITY with Toggle (Deducting totalDedGov properly)
+              const utilidadFinal = montoBanco - totalDedGov - totalGastosUSD - (includeCommissions ? totalComisiones : 0);
 
               const toggleCommissions = () => {
                 setIncludeCommissions(!includeCommissions);

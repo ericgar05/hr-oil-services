@@ -3,7 +3,7 @@ import CoordinacionesMain from "../components/modules/coordinaciones/Coordinacio
 
 const CoordinacionesPage = () => {
   return (
-    <ModulePage moduleId="coordinaciones" showSubRoutes={true}>
+    <ModulePage moduleId="coordinaciones" moduleName="Coordinaciones" showSubRoutes={false}>
       <CoordinacionesMain />
     </ModulePage>
   );

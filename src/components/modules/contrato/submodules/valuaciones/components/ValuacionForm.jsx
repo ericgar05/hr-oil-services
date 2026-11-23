@@ -8,6 +8,42 @@ import { useValuation } from "../../../../../../contexts/ValuationContext";
 import { useNotification } from "../../../../../../contexts/NotificationContext";
 import "./ValuacionForm.css";
 
+// Iconos Vectoriales SVG Profesionales
+const IconArrowLeft = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"></line>
+    <polyline points="12 19 5 12 12 5"></polyline>
+  </svg>
+);
+
+const IconPlus = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"></line>
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+  </svg>
+);
+
+const IconTrash = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+  </svg>
+);
+
+const IconSave = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+    <polyline points="7 3 7 8 15 8"></polyline>
+  </svg>
+);
+
+const IconZap = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+  </svg>
+);
+
 const ValuacionForm = ({
   presupuestoData,
   valuacionEdit,
@@ -214,10 +250,14 @@ const ValuacionForm = ({
   };
 
   const handleRemovePartida = (partidaId) => {
-    setFormData((prev) => ({
-      ...prev,
-      partidas: prev.partidas.filter((p) => p.id !== partidaId),
-    }));
+    const partida = formData.partidas.find((p) => p.id === partidaId);
+    const nombre = partida ? `la partida ${partida.item}` : "esta partida";
+    if (window.confirm(`¿Estás seguro de que deseas retirar ${nombre} de la valuación actual?`)) {
+      setFormData((prev) => ({
+        ...prev,
+        partidas: prev.partidas.filter((p) => p.id !== partidaId),
+      }));
+    }
   };
 
   const handleSave = () => {
@@ -305,8 +345,8 @@ const ValuacionForm = ({
       <div className="form-header">
         <h3>{valuacionEdit ? "Editar Valuación" : "Nueva Valuación"}</h3>
         <div className="header-actions">
-          <button className="btn-outline" onClick={onCancel}>
-            ← Volver
+          <button type="button" className="btn-back-header" onClick={onCancel}>
+            <IconArrowLeft /> Volver
           </button>
         </div>
       </div>
@@ -480,36 +520,103 @@ const ValuacionForm = ({
               )}
             </div>
 
-            <div className="form-group">
-              <label>Cantidad Ejecutada</label>
+            <div className="form-group col-cantidad-ejecutada">
+              <div className="label-with-chips-bar">
+                <label>Cantidad Ejecutada *</label>
+                {selectedPartida && avancePartidas.find((p) => p.id === selectedPartida)?.cantidadDisponible > 0 && (
+                  <div className="quick-fill-chips-group">
+                    <span className="fill-help-text">Rellenar:</span>
+                    <button
+                      type="button"
+                      className="quick-chip"
+                      onClick={() => {
+                        const p = avancePartidas.find((it) => it.id === selectedPartida);
+                        if (p) setCantidadEjecutada((p.cantidadDisponible * 0.25).toFixed(2));
+                      }}
+                    >
+                      25%
+                    </button>
+                    <button
+                      type="button"
+                      className="quick-chip"
+                      onClick={() => {
+                        const p = avancePartidas.find((it) => it.id === selectedPartida);
+                        if (p) setCantidadEjecutada((p.cantidadDisponible * 0.5).toFixed(2));
+                      }}
+                    >
+                      50%
+                    </button>
+                    <button
+                      type="button"
+                      className="quick-chip"
+                      onClick={() => {
+                        const p = avancePartidas.find((it) => it.id === selectedPartida);
+                        if (p) setCantidadEjecutada((p.cantidadDisponible * 0.75).toFixed(2));
+                      }}
+                    >
+                      75%
+                    </button>
+                    <button
+                      type="button"
+                      className="quick-chip-max"
+                      onClick={() => {
+                        const p = avancePartidas.find((it) => it.id === selectedPartida);
+                        if (p) setCantidadEjecutada(p.cantidadDisponible.toString());
+                      }}
+                      title="Rellenar el 100% del saldo pendiente"
+                    >
+                      <IconZap />
+                      Restante ({avancePartidas.find((p) => p.id === selectedPartida)?.cantidadDisponible.toFixed(2)})
+                    </button>
+                  </div>
+                )}
+              </div>
               <input
                 type="number"
                 value={cantidadEjecutada}
                 onChange={(e) => setCantidadEjecutada(e.target.value)}
-                min="0.01"
-                step="0.01"
+                min="0.001"
+                step="any"
                 placeholder="0.00"
                 disabled={!selectedPartida}
+                className="input-cantidad"
               />
               {selectedPartida && (
-                <small>
-                  Máximo disponible:{" "}
-                  {avancePartidas
-                    .find((p) => p.id === selectedPartida)
-                    ?.cantidadDisponible.toFixed(2) || 0}{" "}
-                  {avancePartidas.find((p) => p.id === selectedPartida)?.unidad}
-                </small>
+                <div className="saldo-info-bar">
+                  <span className="saldo-available">
+                    Disponible:{" "}
+                    <strong>
+                      {avancePartidas
+                        .find((p) => p.id === selectedPartida)
+                        ?.cantidadDisponible.toFixed(2) || 0}{" "}
+                      {avancePartidas.find((p) => p.id === selectedPartida)?.unidad}
+                    </strong>
+                  </span>
+                  {parseFloat(cantidadEjecutada) > 0 &&
+                    avancePartidas.find((p) => p.id === selectedPartida)?.cantidadDisponible > 0 && (
+                      <span className="saldo-percentage">
+                        {(
+                          (parseFloat(cantidadEjecutada) /
+                            avancePartidas.find((p) => p.id === selectedPartida).cantidadDisponible) *
+                          100
+                        ).toFixed(1)}
+                        % del saldo
+                      </span>
+                    )}
+                </div>
               )}
             </div>
 
-            <div className="form-group">
-              <label>Acción</label>
+            <div className="form-group col-btn-add">
+              <label className="label-spacer">&nbsp;</label>
               <button
-                className="btn-primary"
+                type="button"
+                className="btn-add-partida-cta"
                 onClick={handleAddPartida}
                 disabled={!selectedPartida || !cantidadEjecutada}
               >
-                ➕ Agregar
+                <IconPlus />
+                Agregar Partida
               </button>
             </div>
           </div>
@@ -552,10 +659,12 @@ const ValuacionForm = ({
                     </td>
                     <td className="col-acciones">
                       <button
-                        className="btn-delete"
+                        type="button"
+                        className="table-btn-action delete"
                         onClick={() => handleRemovePartida(partida.id)}
+                        title="Quitar partida de la valuación"
                       >
-                        🗑️
+                        <IconTrash />
                       </button>
                     </td>
                   </tr>
@@ -569,7 +678,6 @@ const ValuacionForm = ({
             <div className="resumen-grid">
               <div className="resumen-item">
                 <span className="resumen-label">SUB-TOTAL</span>
-                {/* CORREGIDO: Usar la moneda principal del proyecto */}
                 <span className="resumen-value">
                   {formatCurrency(subtotal, mainCurrency)}
                 </span>
@@ -577,14 +685,12 @@ const ValuacionForm = ({
               <div className="resumen-item">
                 <span className="resumen-label">16% IVA</span>
                 <span className="resumen-value">
-                  {/* CORREGIDO: Usar la moneda principal del proyecto */}
                   {formatCurrency(iva, mainCurrency)}
                 </span>
               </div>
               <div className="resumen-item total">
                 <span className="resumen-label">TOTAL VALUADO</span>
                 <span className="resumen-value">
-                  {/* CORREGIDO: Usar la moneda principal del proyecto */}
                   {formatCurrency(total, mainCurrency)}
                 </span>
               </div>
@@ -594,15 +700,17 @@ const ValuacionForm = ({
       )}
 
       {/* Acciones finales */}
-      <div className="form-actions">
+      <div className="form-actions-bar">
         <button
-          className="btn-primary large"
+          type="button"
+          className="btn-primary-action large"
           onClick={handleSave}
           disabled={formData.partidas.length === 0}
         >
-          💾 {valuacionEdit ? "Actualizar Valuación" : "Cargar Valuación"}
+          <IconSave />
+          {valuacionEdit ? "Actualizar Valuación" : "Guardar Valuación"}
         </button>
-        <button className="btn-outline" onClick={onCancel}>
+        <button type="button" className="btn-ghost-action" onClick={onCancel}>
           Cancelar
         </button>
       </div>

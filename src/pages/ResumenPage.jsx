@@ -1,11 +1,11 @@
+import ModulePage from "../components/modules/_core/ModulePage/ModulePage";
 import ResumenMain from "../components/modules/resumen/ResumenMain";
-//TODO: No sé que complicaciones puede traer poner resumen main donde se puso, si da errores poner con modulepage
+
 const ResumenPage = () => {
   return (
-    <>
+    <ModulePage moduleId="resumen" moduleName="Resumen" showSubRoutes={false}>
       <ResumenMain />
-      {/* <ModulePage moduleId="resumen" showSubRoutes={true}></ModulePage> */}
-    </>
+    </ModulePage>
   );
 };
 

@@ -11,7 +11,6 @@ import { ValuationProvider } from "./contexts/ValuationContext.jsx";
 import { OperacionesProvider } from "./contexts/OperacionesContext.jsx";
 import { PersonalProvider } from "./contexts/PersonalContext.jsx";
 import { UiProvider } from "./contexts/UiContext.jsx";
-import { IncomeProvider } from "./contexts/IncomeContext.jsx";
 import { PlanningProvider } from "./contexts/PlanningContext.jsx";
 import { ExecutionProvider } from "./contexts/ExecutionContext";
 
@@ -27,19 +26,17 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <NotificationProvider>
               <CurrencyProvider>
                 <BudgetProvider>
-                  <IncomeProvider>
-                    <ValuationProvider>
-                      <PlanningProvider>
-                        <ExecutionProvider>
-                          <PersonalProvider>
-                            <OperacionesProvider>
-                              <App />
-                            </OperacionesProvider>
-                          </PersonalProvider>
-                        </ExecutionProvider>
-                      </PlanningProvider>
-                    </ValuationProvider>
-                  </IncomeProvider>
+                  <ValuationProvider>
+                    <PlanningProvider>
+                      <ExecutionProvider>
+                        <PersonalProvider>
+                          <OperacionesProvider>
+                            <App />
+                          </OperacionesProvider>
+                        </PersonalProvider>
+                      </ExecutionProvider>
+                    </PlanningProvider>
+                  </ValuationProvider>
                 </BudgetProvider>
               </CurrencyProvider>
             </NotificationProvider>

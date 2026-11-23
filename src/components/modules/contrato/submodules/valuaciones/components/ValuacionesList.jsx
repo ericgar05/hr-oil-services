@@ -13,7 +13,7 @@ const ValuacionesList = ({
   onDeleteValuacion,
 }) => {
   //TODO: Por ahora lo que soluciona lo del formato de la moneda es que que calculamos en cada componente el valor principal de la moneda que se usa en el proyecto
-  const { formatCurrency } = useCurrency();
+  const { formatCurrency, convertToUSD } = useCurrency();
   const { budget } = useBudget();
   const mainCurrency = getMainCurrency(budget);
   const formatDate = (dateString) => {
@@ -29,28 +29,27 @@ const ValuacionesList = ({
   const getProgressPercentage = () => {
     if (!presupuestoData || !presupuestoData.items) return 0;
 
-    // Calcular el subtotal del presupuesto ("Subtotal Presupuesto" = Items que aplican IVA)
-    const subtotalPresupuestoBase = presupuestoData.items.reduce((sum, item) => {
-      // Filtrar items que son parte del "Subtotal Presupuesto" (aplicaIVA = true)
-      if (item.aplicaIVA) {
-        return sum + (item.montoContrato || 0);
-      }
-      return sum;
+    // Calcular el total del presupuesto en USD (incluyendo todas las partidas)
+    const totalPresupuestoUSD = presupuestoData.items.reduce((sum, item) => {
+      const montoUSD = convertToUSD
+        ? convertToUSD(item.montoContrato || 0, item.moneda || mainCurrency)
+        : (item.montoContrato || 0);
+      return sum + montoUSD;
     }, 0);
 
-    // Calcular el subtotal valuado de los items base
-    const subtotalValuadoBase = valuaciones.reduce((sumVal, valuacion) => {
+    // Calcular el total valuado de todas las partidas ejecutadas en USD
+    const totalValuadoUSD = valuaciones.reduce((sumVal, valuacion) => {
       const sumaPartidas = valuacion.partidas?.reduce((sumPar, partida) => {
-        if (partida.aplicaIVA) {
-          return sumPar + (partida.montoTotal || 0);
-        }
-        return sumPar;
+        const montoUSD = convertToUSD
+          ? convertToUSD(partida.montoTotal || 0, partida.moneda || valuacion.totales?.currency || mainCurrency)
+          : (partida.montoTotal || 0);
+        return sumPar + montoUSD;
       }, 0) || 0;
       return sumVal + sumaPartidas;
     }, 0);
 
-    return subtotalPresupuestoBase > 0
-      ? (subtotalValuadoBase / subtotalPresupuestoBase) * 100
+    return totalPresupuestoUSD > 0
+      ? (totalValuadoUSD / totalPresupuestoUSD) * 100
       : 0;
   };
 

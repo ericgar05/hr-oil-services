@@ -54,8 +54,8 @@ const HistorialPagos = ({ pagosGuardados, pagosContratistas, employees, onVerDet
     return pago.pagos.reduce(
       (totales, pagoEmp) => ({
         totalUSD: totales.totalUSD + (pagoEmp.montoTotalUSD || 0),
-        totalBs: totales.totalBs + pagoEmp.subtotalBs,
-        totalPagar: totales.totalPagar + pagoEmp.totalPagarBs + (pagoEmp.montoExtraBs || 0),
+        totalBs: totales.totalBs + (pagoEmp.subtotalBs || 0),
+        totalPagar: totales.totalPagar + (pagoEmp.totalPagarBs || 0),
       }),
       { totalUSD: 0, totalBs: 0, totalPagar: 0 }
     );
