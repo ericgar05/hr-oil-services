@@ -24,6 +24,29 @@ export const PlanningProvider = ({ children }) => {
   const [equipos, setEquipos] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Estados de Navegación y Modales Globales para Barra Dinámica
+  const [selectedSemana, setSelectedSemana] = useState(null);
+  const [selectedDia, setSelectedDia] = useState(null);
+  const [isDaySelectorOpen, setIsDaySelectorOpen] = useState(false);
+  const [showActividadModal, setShowActividadModal] = useState(false);
+  const [actividadParaEditar, setActividadParaEditar] = useState(null);
+
+  const selectSemana = useCallback((semana) => {
+    setSelectedSemana(semana);
+    setSelectedDia(null);
+    setIsDaySelectorOpen(false);
+  }, []);
+
+  const selectDia = useCallback((dia) => {
+    setSelectedDia(dia);
+    setIsDaySelectorOpen(false);
+  }, []);
+
+  const triggerNewActividad = useCallback(() => {
+    setActividadParaEditar(null);
+    setShowActividadModal(true);
+  }, []);
+
   // Cargar semanas
   const getSemanasPlanificacion = useCallback(async () => {
     if (!selectedProject) return;
@@ -235,13 +258,14 @@ export const PlanningProvider = ({ children }) => {
 
       // 3. Insertar Personal si existe
       if (personal && personal.length > 0) {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         const personalToInsert = personal.map(p => {
-          // Fix: Ensure ID is a valid UUID by stripping prefixes like "contractor-" or "employee-"
-          const cleanId = p.id.replace(/^(contractor-|employee-)/, '');
+          const rawId = p.id ? String(p.id).replace(/^(contractor-|employee-)/, '') : null;
+          const validPersonalId = (rawId && uuidRegex.test(rawId)) ? rawId : null;
           return {
             actividad_id: actividad.id,
-            personal_id: cleanId,
-            nombre_personal: p.nombre, // Optimización para display
+            personal_id: validPersonalId,
+            nombre_personal: p.nombre || '',
             rol_en_actividad: p.rol || 'General'
           };
         });
@@ -280,18 +304,51 @@ export const PlanningProvider = ({ children }) => {
 
       if (error) throw error;
 
-      // 2. Subactividades (Replace Strategy: Delete all for this activity and Insert new)
-      // Note: This resets 'completada' status. acceptable for planning phase edits.
+      // 2. Subactividades (Smart Sync: Preserva estado 'completada' y fechas existentes)
       if (subactividades) {
-        await supabase.from('plan_subactividades').delete().eq('actividad_id', actividadId);
+        const { data: existingSubs } = await supabase
+          .from('plan_subactividades')
+          .select('id, completada, fecha_completado')
+          .eq('actividad_id', actividadId);
 
-        if (subactividades.length > 0) {
-          const subToInsert = subactividades.map(s => ({
-            actividad_id: actividadId,
-            descripcion: s.descripcion,
-            completada: false
-          }));
-          await supabase.from('plan_subactividades').insert(subToInsert);
+        const existingMap = new Map((existingSubs || []).map(s => [s.id, s]));
+        const keptIds = new Set();
+        const toInsert = [];
+
+        for (const sub of subactividades) {
+          if (sub.id && existingMap.has(sub.id)) {
+            keptIds.add(sub.id);
+            // Actualizar descripción preservando completada
+            await supabase
+              .from('plan_subactividades')
+              .update({ descripcion: sub.descripcion })
+              .eq('id', sub.id);
+          } else {
+            // Nueva subactividad
+            toInsert.push({
+              actividad_id: actividadId,
+              descripcion: sub.descripcion,
+              completada: false
+            });
+          }
+        }
+
+        // Eliminar las que el usuario quitó
+        const toDeleteIds = (existingSubs || [])
+          .filter(s => !keptIds.has(s.id))
+          .map(s => s.id);
+
+        if (toDeleteIds.length > 0) {
+          await supabase
+            .from('plan_subactividades')
+            .delete()
+            .in('id', toDeleteIds);
+        }
+
+        if (toInsert.length > 0) {
+          await supabase
+            .from('plan_subactividades')
+            .insert(toInsert);
         }
       }
 
@@ -300,17 +357,19 @@ export const PlanningProvider = ({ children }) => {
         await supabase.from('plan_actividad_personal').delete().eq('actividad_id', actividadId);
 
         if (personal.length > 0) {
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
           const persToInsert = personal.map(p => {
-            // Clean ID just like in create
-            const cleanId = p.id.replace(/^(contractor-|employee-)/, '');
+            const rawId = p.id ? String(p.id).replace(/^(contractor-|employee-)/, '') : null;
+            const validPersonalId = (rawId && uuidRegex.test(rawId)) ? rawId : null;
             return {
               actividad_id: actividadId,
-              personal_id: cleanId,
-              nombre_personal: p.nombre,
+              personal_id: validPersonalId,
+              nombre_personal: p.nombre || '',
               rol_en_actividad: p.rol || 'General'
             };
           });
-          await supabase.from('plan_actividad_personal').insert(persToInsert);
+          const { error: persError } = await supabase.from('plan_actividad_personal').insert(persToInsert);
+          if (persError) console.error("Error actualizando personal en updateActividad:", persError);
         }
       }
 
@@ -662,12 +721,29 @@ export const PlanningProvider = ({ children }) => {
     eliminarPlanificacion,
     syncProjectTotals, // Exported
     actions: { syncProjectTotals }, // Alternative access
+    // Estados de navegación dinámica por niveles
+    selectedSemana,
+    setSelectedSemana,
+    selectedDia,
+    setSelectedDia,
+    selectSemana,
+    selectDia,
+    isDaySelectorOpen,
+    setIsDaySelectorOpen,
+    showActividadModal,
+    setShowActividadModal,
+    actividadParaEditar,
+    setActividadParaEditar,
+    triggerNewActividad,
+    setDias,
     // New exports
     getSubactividades,
     toggleSubactividad,
     getDisponibilidadPartida
   }), [
     semanas, dias, actividades, equipos, loading,
+    selectedSemana, selectedDia, isDaySelectorOpen, showActividadModal, actividadParaEditar,
+    selectSemana, selectDia, triggerNewActividad,
     getSemanasPlanificacion, getSemanaById, getEquipos, getAllActividades, crearEquipo,
     crearActividadPlanificada, updateActividad, deleteActividad,
     crearRequerimiento, recalcularMontosSemana, recalcularMontoRequerimientosSemana,

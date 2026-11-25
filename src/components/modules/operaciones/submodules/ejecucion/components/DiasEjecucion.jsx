@@ -51,11 +51,11 @@ export const DiasEjecucion = ({ semanaId }) => {
   }
 
   return (
-    <div className="planning-dias-wrapper">
+    <div className="ejecucion-dias-wrapper">
       {/* Column Headers */}
-      <div className="planning-days-header-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '12px', padding: '0 12px', marginBottom: '8px' }}>
+      <div className="ejecucion-days-header-row">
         {weekDays.map(day => (
-          <div key={day} className="day-column-header" style={{ textAlign: 'center', fontSize: '0.85rem', fontWeight: '600', color: '#94a3b8', textTransform: 'uppercase' }}>{day}</div>
+          <div key={day} className="day-column-header">{day}</div>
         ))}
       </div>
 

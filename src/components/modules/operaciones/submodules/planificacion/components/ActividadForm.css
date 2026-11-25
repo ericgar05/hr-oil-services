@@ -1,0 +1,952 @@
+/* src/components/modules/operaciones/submodules/planificacion/components/ActividadForm.css
+   Estándar de Diseño Corporativo Homogéneo con Valuaciones y Presupuesto */
+
+.actividad-form {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+  color: #1e293b;
+  width: 100%;
+}
+
+/* =========================================================
+   Secciones Tipo Tarjeta (Estilo ValuacionForm / PresupuestoForm)
+   ========================================================= */
+.actividad-form .form-card-section {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: border-color 0.2s ease;
+}
+
+.actividad-form .form-card-section:focus-within {
+  border-color: #cbd5e1;
+}
+
+.actividad-form .section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.actividad-form .section-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actividad-form .section-sub {
+  margin: 0 0 1rem 0;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.actividad-form .section-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  font-family: ui-monospace, monospace;
+}
+
+/* =========================================================
+   Campos Básicos e Inputs
+   ========================================================= */
+.actividad-form .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+}
+
+.actividad-form .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.actividad-form .form-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actividad-form .form-group label .required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.actividad-form .form-group input,
+.actividad-form .form-group select,
+.actividad-form .form-group textarea {
+  padding: 0.65rem 0.85rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+  width: 100%;
+  font-family: inherit;
+}
+
+.actividad-form .form-group input:focus,
+.actividad-form .form-group select:focus,
+.actividad-form .form-group textarea:focus {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+}
+
+.actividad-form .form-group textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* Cuadrículas de Campos */
+.actividad-form .form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* =========================================================
+   Selector de Partidas Inteligente (Dropdown / Combobox)
+   ========================================================= */
+.actividad-form .partida-search-box {
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.actividad-form .partida-search-box input {
+  padding-left: 2.35rem;
+}
+
+.actividad-form .partida-search-icon {
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  display: flex;
+}
+
+.actividad-form .partidas-scroll-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.actividad-form .partida-row-option {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.85rem;
+  transition: background 0.15s ease;
+}
+
+.actividad-form .partida-row-option:last-child {
+  border-bottom: none;
+}
+
+.actividad-form .partida-row-option:hover {
+  background: #f8fafc;
+}
+
+.actividad-form .partida-row-option.selected {
+  background: #eff6ff;
+  border-left: 3px solid #1e40af;
+}
+
+.actividad-form .partida-code-tag {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #1e40af;
+  background: #dbeafe;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  flex-shrink: 0;
+}
+
+.actividad-form .partida-name-text {
+  font-size: 0.85rem;
+  color: #1e293b;
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actividad-form .partida-meta-pill {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Ficha de Partida Seleccionada */
+.actividad-form .partida-active-card {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.actividad-form .partida-active-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.actividad-form .partida-active-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actividad-form .partida-active-meta {
+  font-size: 0.8rem;
+  color: #64748b;
+  display: flex;
+  gap: 12px;
+}
+
+.actividad-form .btn-switch-partida {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.actividad-form .btn-switch-partida:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* =========================================================
+   Tarjeta de Balance Presupuestario (KPIs de Partida)
+   ========================================================= */
+.actividad-form .balance-kpi-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.actividad-form .balance-kpi-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.actividad-form .kpi-card-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.4px;
+}
+
+.actividad-form .kpi-card-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: ui-monospace, monospace;
+  margin-top: 2px;
+}
+
+.actividad-form .kpi-card-value.green {
+  color: #15803d;
+}
+
+.actividad-form .kpi-card-value.blue {
+  color: #1e40af;
+}
+
+.actividad-form .kpi-card-value.red {
+  color: #dc2626;
+}
+
+.actividad-form .balance-progress-track {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 0.75rem;
+}
+
+.actividad-form .balance-progress-bar {
+  height: 100%;
+  background: #16a34a;
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+
+.actividad-form .balance-progress-bar.overbudget {
+  background: #dc2626;
+}
+
+/* =========================================================
+   Interruptores Modernos (Toggles Estilo iOS / Tailwind)
+   ========================================================= */
+.actividad-form .toggle-card-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.actividad-form .toggle-card-wrapper:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.actividad-form .toggle-card-text h4 {
+  margin: 0 0 2px 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.actividad-form .toggle-card-text p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.actividad-form .toggle-pill {
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 9999px;
+  position: relative;
+  transition: background 0.25s ease;
+  flex-shrink: 0;
+}
+
+.actividad-form .toggle-pill.active {
+  background: #1e40af;
+}
+
+.actividad-form .toggle-thumb {
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.actividad-form .toggle-pill.active .toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* =========================================================
+   Checklist de Subactividades
+   ========================================================= */
+.actividad-form .subactividades-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.actividad-form .subactividad-item-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 4px 8px;
+  transition: border-color 0.2s;
+}
+
+.actividad-form .subactividad-item-row:focus-within {
+  border-color: #1e40af;
+  box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.08);
+}
+
+.actividad-form .subactividad-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actividad-form .subactividad-input-field {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  font-size: 0.875rem !important;
+  padding: 6px 4px !important;
+  background: transparent !important;
+  color: #0f172a !important;
+  box-shadow: none !important;
+}
+
+.actividad-form .btn-delete-subtask {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.actividad-form .btn-delete-subtask:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.actividad-form .btn-add-subtask-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1.5px dashed #cbd5e1;
+  color: #475569;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  margin-top: 6px;
+  transition: all 0.2s;
+}
+
+.actividad-form .btn-add-subtask-action:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+  color: #1e40af;
+}
+
+/* =========================================================
+   Personal y Cuadrilla (Lista Cómoda Tipo Ficha)
+   ========================================================= */
+.actividad-form .personal-list-container {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.actividad-form .personal-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.95rem;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  user-select: none;
+}
+
+.actividad-form .personal-row-item:last-child {
+  border-bottom: none;
+}
+
+.actividad-form .personal-row-item:hover {
+  background: #f8fafc;
+}
+
+.actividad-form .personal-row-item.checked {
+  background: #eff6ff;
+}
+
+.actividad-form .personal-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actividad-form .personal-checkbox-custom {
+  width: 17px;
+  height: 17px;
+  accent-color: #1e40af;
+  cursor: pointer;
+}
+
+.actividad-form .personal-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.actividad-form .personal-cargo-badge {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.actividad-form .personal-daily-rate {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #15803d;
+  font-family: ui-monospace, monospace;
+}
+
+/* Barra de Resumen Financiero de Cuadrilla */
+.actividad-form .cuadrilla-finance-bar {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.actividad-form .cuadrilla-finance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.actividad-form .cuadrilla-margin-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.actividad-form .margin-item {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.actividad-form .margin-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.actividad-form .margin-val-blue {
+  color: #1e40af;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.actividad-form .margin-val-slate {
+  color: #475569;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.actividad-form .margin-val-green {
+  color: #15803d;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+.actividad-form .margin-val-red {
+  color: #dc2626;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85rem;
+}
+
+/* =========================================================
+   Replicación Semanal (Píldoras de Días)
+   ========================================================= */
+.actividad-form .replicate-days-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.75rem;
+}
+
+.actividad-form .day-selection-pill {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.actividad-form .day-selection-pill:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.actividad-form .day-selection-pill.active {
+  background: #1e40af;
+  color: #ffffff;
+  border-color: #1e40af;
+}
+
+/* Alertas de Sobregiro */
+.actividad-form .overbudget-banner {
+  background: #fff7ed;
+  border: 1.5px solid #fed7aa;
+  border-radius: 8px;
+  padding: 0.65rem 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #c2410c;
+  font-size: 0.82rem;
+  margin-top: 0.75rem;
+}
+
+/* Acciones Finales del Modal */
+.actividad-form .form-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.actividad-form .btn-modal-cancel {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #475569;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actividad-form .btn-modal-cancel:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.actividad-form .btn-modal-submit {
+  background: #1e40af;
+  border: none;
+  color: #ffffff;
+  padding: 0.65rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actividad-form .btn-modal-submit:hover:not(:disabled) {
+  background: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.25);
+}
+
+.actividad-form .btn-modal-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Monto Estimado Box */
+.actividad-form .monto-estimado-box {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  box-sizing: border-box;
+}
+
+.actividad-form .monto-estimado-val {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #15803d;
+  font-family: ui-monospace, monospace;
+}
+
+.actividad-form .monto-estimado-det {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* =========================================================
+   Responsive Design & Mobile Optimization
+   ========================================================= */
+@media (max-width: 768px) {
+  .actividad-form {
+    padding: 0;
+  }
+
+  .actividad-form .form-card-section {
+    padding: 1rem 0.85rem;
+    margin-bottom: 0.85rem;
+    border-radius: 10px;
+  }
+
+  .actividad-form .section-header-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .actividad-form .section-title {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .actividad-form .form-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* KPIs de balance en 2 columnas en móvil para no alargar tanto la pantalla */
+  .actividad-form .balance-kpi-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  .actividad-form .balance-kpi-card {
+    padding: 0.5rem 0.65rem;
+  }
+
+  .actividad-form .kpi-card-label {
+    font-size: 0.62rem;
+  }
+
+  .actividad-form .kpi-card-value {
+    font-size: 0.95rem;
+  }
+
+  /* Ficha de Partida en Móvil */
+  .actividad-form .partida-active-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .actividad-form .partida-active-meta {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  .actividad-form .btn-switch-partida {
+    width: 100%;
+    text-align: center;
+    padding: 6px 10px;
+  }
+
+  .actividad-form .partida-row-option {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .actividad-form .partida-name-text {
+    white-space: normal;
+    font-size: 0.8rem;
+  }
+
+  /* Toggle de Subactividades */
+  .actividad-form .toggle-card-wrapper {
+    padding: 0.75rem 0.85rem;
+    gap: 0.75rem;
+  }
+
+  .actividad-form .toggle-card-text h4 {
+    font-size: 0.85rem;
+  }
+
+  .actividad-form .toggle-card-text p {
+    font-size: 0.72rem;
+  }
+
+  /* Personal y Cuadrilla */
+  .actividad-form .personal-row-item {
+    padding: 0.55rem 0.65rem;
+    gap: 8px;
+  }
+
+  .actividad-form .personal-info-left {
+    min-width: 0;
+  }
+
+  .actividad-form .personal-name {
+    font-size: 0.8rem;
+    word-break: break-word;
+  }
+
+  .actividad-form .personal-cargo-badge {
+    font-size: 0.65rem;
+    padding: 1px 5px;
+  }
+
+  .actividad-form .personal-daily-rate {
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  /* Barra de Resumen Financiero y Margen */
+  .actividad-form .cuadrilla-finance-bar {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .actividad-form .cuadrilla-finance-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: 0.8rem;
+  }
+
+  .actividad-form .cuadrilla-margin-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .actividad-form .margin-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+  }
+
+  .actividad-form .margin-label {
+    margin-bottom: 0;
+    font-size: 0.7rem;
+  }
+
+  .actividad-form .margin-val-blue,
+  .actividad-form .margin-val-slate,
+  .actividad-form .margin-val-green,
+  .actividad-form .margin-val-red {
+    font-size: 0.82rem;
+  }
+
+  /* Botones del footer */
+  .actividad-form .form-modal-footer {
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .actividad-form .btn-modal-cancel,
+  .actividad-form .btn-modal-submit {
+    width: 100%;
+    justify-content: center;
+    padding: 0.7rem 1rem;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 480px) {
+  .actividad-form .form-card-section {
+    padding: 0.85rem 0.65rem;
+  }
+
+  .actividad-form .personal-row-item {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .actividad-form .personal-info-left {
+    flex: 1 1 100%;
+  }
+
+  .actividad-form .personal-daily-rate {
+    margin-left: 27px;
+    font-size: 0.75rem;
+  }
+
+  .actividad-form .margin-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+}

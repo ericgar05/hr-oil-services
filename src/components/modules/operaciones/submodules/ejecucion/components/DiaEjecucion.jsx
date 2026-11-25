@@ -4,6 +4,13 @@ import { useExecution } from '../../../../../../contexts/ExecutionContext';
 import Modal from '../../../../../common/Modal/Modal';
 import { ActividadEjecucion } from './ActividadEjecucion';
 
+const IconArrowLeft = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="19" y1="12" x2="5" y2="12"></line>
+    <polyline points="12 19 5 12 12 5"></polyline>
+  </svg>
+);
+
 export const DiaEjecucion = ({ dia, onBack }) => {
   const [actividades, setActividades] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,32 +44,42 @@ export const DiaEjecucion = ({ dia, onBack }) => {
   }, [dia, getActividadesPorDia]);
 
   return (
-    <div className="planning-detail-container">
-      {/* Header */}
-      <div className="planning-detail-header">
-        <div className="header-top">
-          <button onClick={onBack} className="btn-back">
-            ← Volver a la semana
-          </button>
-        </div>
+    <div className="ejecucion-detail-container">
+      {/* Header Back Button */}
+      <div style={{ marginBottom: '1.25rem' }}>
+        <button type="button" onClick={onBack} className="btn-back-header">
+          <IconArrowLeft /> Volver a los Días de la Semana
+        </button>
+      </div>
 
-        <div className="header-info" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+      {/* Info Card de Identidad del Día */}
+      <div className="detail-info-card" style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h2 style={{ margin: 0 }}>
-              {new Date(dia.fecha + 'T00:00:00').toLocaleDateString('es-ES', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long'
-              })}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+              <span className="semana-pill primary" style={{ textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                Ejecución Diaria
+              </span>
+              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: '500' }}>
+                {new Date(dia.fecha + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
+            </div>
+            <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', textTransform: 'capitalize' }}>
+              {new Date(dia.fecha + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
             </h2>
-            <div className="date-badge" style={{ marginTop: '8px' }}>
-              {actividades.length} actividades programadas
+            <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.85rem', color: '#64748b' }}>
+              <span>📋 <strong>{actividades.length}</strong> actividades</span>
+              <span>•</span>
+              <span>💰 Plan: <strong>${(dia.monto_planificado || 0).toLocaleString()}</strong></span>
+              <span>•</span>
+              <span>✅ Ejec: <strong style={{ color: '#16a34a' }}>${(dia.monto_ejecutado || 0).toLocaleString()}</strong></span>
             </div>
           </div>
+
           <button
             onClick={() => setShowDailyReport(true)}
-            className="btn-info"
-            style={{ backgroundColor: '#3b82f6', color: 'white', border: 'none', padding: '6px 12px', fontSize: '0.9rem' }}
+            className="btn-primary"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '0.6rem 1.1rem', fontSize: '0.85rem', fontWeight: 600, borderRadius: '8px' }}
           >
             📋 Reporte del Día
           </button>
@@ -72,7 +89,7 @@ export const DiaEjecucion = ({ dia, onBack }) => {
       {/* Lista de Actividades a Ejecutar */}
       <div className="execution-list-container">
         {loading ? (
-          <div className="planning-no-content">Cargando actividades...</div>
+          <div className="ejecucion-no-content">Cargando actividades del día...</div>
         ) : actividades.length > 0 ? (
           actividades.map(actividad => (
             <ActividadEjecucion
@@ -83,8 +100,8 @@ export const DiaEjecucion = ({ dia, onBack }) => {
             />
           ))
         ) : (
-          <div className="planning-no-content">
-            <p>No hay actividades planificadas para este día.</p>
+          <div className="ejecucion-no-content">
+            <p style={{ margin: 0 }}>No hay actividades planificadas para este día.</p>
           </div>
         )}
       </div>
