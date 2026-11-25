@@ -3,8 +3,28 @@ import { useExecution } from '../../../../../../contexts/ExecutionContext';
 import { useNotification } from '../../../../../../contexts/NotificationContext';
 import { usePersonal } from '../../../../../../contexts/PersonalContext';
 import { useOperaciones } from '../../../../../../contexts/OperacionesContext';
+import { useBudget } from '../../../../../../contexts/BudgetContext';
 import { SubactividadesList } from './SubactividadesList';
 import Modal from '../../../../../common/Modal/Modal';
+
+// Iconos Vectoriales SVG Profesionales
+const IconFolder = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+  </svg>
+);
+
+const IconChevronDown = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9"></polyline>
+  </svg>
+);
+
+const IconChevronUp = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+);
 
 export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,6 +58,7 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
   const { showToast } = useNotification();
   const { getEmployeesByProject } = usePersonal();
   const { inventory, withdrawInventory } = useOperaciones();
+  const { budget } = useBudget();
 
   // ... (rest of component code remains same until end)
 
@@ -339,117 +360,196 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
     return dateStr;
   };
 
+  const budItem = budget?.items?.find(i => i.id === actividadPlanificada.partida_id);
+  const itemCode = budItem?.item || actividadPlanificada.item || actividadPlanificada.partida_codigo || null;
+  const partidaNombre = actividadPlanificada.nombre_partida || budItem?.descripcion || actividadPlanificada.budget_items?.description || 'Partida no asignada';
+
+  const cantRealVal = actividadPlanificada.cantidad_real;
+  const cantProg = actividadPlanificada.cantidad_programada || 0;
+  const pu = actividadPlanificada.precio_unitario || 0;
+  const montoProgramado = actividadPlanificada.monto_programado || (cantProg * pu);
+  const montoEjecutadoReal = (cantRealVal !== null && cantRealVal !== undefined && cantRealVal !== '')
+    ? Number(cantRealVal) * pu
+    : (estadoActual === 'completada' ? montoProgramado : 0);
+
   return (
-    <div className={`execution-item status-${estadoActual}`} style={{ borderLeft: `6px solid ${getStatusColor(estadoActual)}`, marginBottom: '10px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+    <div className={`execution-item planning-actividad-card ejecucion-actividad-card status-${estadoActual}`}>
 
-      {/* Header Row */}
-      <div className="execution-item-header" onClick={handleToggleExpand} style={{ padding: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-
-        {/* Info Blocks */}
-        <div className="execution-item-info" style={{ flex: 2 }}>
-          <h4 style={{ margin: '0 0 5px 0', color: '#1e293b' }}>{actividadPlanificada.descripcion}</h4>
-          <div style={{ fontSize: '0.85rem', color: '#64748b' }}>
-            {actividadPlanificada.nombre_partida || 'Sin partida asignada'}
-          </div>
-          <div style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '2px' }}>
-            Cant: {actividadPlanificada.cantidad_programada} {actividadPlanificada.unidad_medida}
-            {actividadPlanificada.cantidad_real && (
-              <span style={{ color: '#22c55e', marginLeft: '10px', fontWeight: '500' }}>
-                (Ejecutado: {actividadPlanificada.cantidad_real})
-              </span>
-            )}
-          </div>
-          <div style={{ display: 'flex', gap: '15px', marginTop: '8px', fontSize: '0.8rem' }}>
-            <span title="Personal">👥 {actividadPlanificada.personal?.length || 0}</span>
-            <span title="Subactividades">✅ {subCompleted}/{subTotal}</span>
-          </div>
-        </div>
-
-        {/* Progress & Status */}
-        <div className="execution-item-status" style={{ flex: 1.2, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-
-          {/* Physical Progress Bar */}
-          <div style={{ width: '100%', maxWidth: '140px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#64748b', marginBottom: '2px' }}>
-              <span>Físico (Checklist)</span>
-              <span>{avanceFisico}%</span>
-            </div>
-            <div style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${avanceFisico}%`, height: '100%', backgroundColor: '#3b82f6', borderRadius: '3px' }}></div>
-            </div>
-          </div>
-
-          {/* Financial Progress Bar */}
-          <div style={{ width: '100%', maxWidth: '140px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: '#64748b', marginBottom: '2px' }}>
-              <span>Financiero (Unidades)</span>
-              <span style={{ color: avanceFinanciero < 100 && estadoActual === 'completada' ? '#ea580c' : 'inherit' }}>{avanceFinanciero}%</span>
-            </div>
-            <div style={{ height: '6px', backgroundColor: '#e2e8f0', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${avanceFinanciero}%`, height: '100%', backgroundColor: '#22c55e', borderRadius: '3px' }}></div>
-            </div>
-          </div>
-
-          <span className={`status-badge`} style={{
-            backgroundColor: `${getStatusColor(estadoActual)}20`,
-            color: getStatusColor(estadoActual),
-            padding: '2px 8px',
-            borderRadius: '12px',
-            fontSize: '0.75rem',
-            fontWeight: '600',
-            textTransform: 'uppercase',
-            marginTop: '4px'
-          }}>
+      {/* Header de la Tarjeta (Homogéneo con Semanas y Valuaciones) */}
+      <div className="actividad-card-header" onClick={handleToggleExpand} style={{ cursor: 'pointer' }}>
+        <div className="actividad-card-title-group">
+          <span className="actividad-partida-badge">
+            <IconFolder />
+            <span>{itemCode ? `Partida ${itemCode}` : 'Partida'}</span>
+          </span>
+          <span className="actividad-partida-nombre" title={partidaNombre}>
+            {partidaNombre}
+          </span>
+          <span
+            className="status-badge"
+            style={{
+              backgroundColor: `${getStatusColor(estadoActual)}18`,
+              color: getStatusColor(estadoActual),
+              border: `1px solid ${getStatusColor(estadoActual)}35`,
+              padding: '3px 8px',
+              borderRadius: '6px',
+              fontSize: '0.72rem',
+              fontWeight: '700',
+              textTransform: 'uppercase',
+              letterSpacing: '0.3px',
+              flexShrink: 0
+            }}
+          >
             {estadoActual.replace('_', ' ')}
           </span>
         </div>
 
-        {/* Actions Button */}
-        <div className="execution-item-actions" style={{ marginLeft: '15px', minWidth: '120px', display: 'flex', justifyContent: 'flex-end', flexDirection: 'column', gap: '5px', alignItems: 'flex-end' }}>
-
-          {/* Always show Report Button if there are reports (usually check if status completed OR has reports, but let's assume if started/completed/reports exist) */}
+        {/* Grupo de Acciones del Header */}
+        <div className="actividad-card-actions-group" onClick={(e) => e.stopPropagation()}>
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               setShowReportModal(true);
             }}
-            style={{ fontSize: '0.75rem', padding: '4px 8px', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+            className="btn-action-icon report"
+            title="Ver Informes de la Actividad"
+            style={{ width: 'auto', padding: '0 8px', fontSize: '0.75rem', gap: '4px' }}
           >
-            📄 Ver Informes
+            📄 <span className="action-text-hide-mobile">Informes</span>
           </button>
 
           {(estadoActual === 'pendiente' || estadoActual === 'replanificada') && (
             <button
+              type="button"
               onClick={handleStartClick}
               disabled={loading}
-              className="btn-primary"
-              style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+              className="btn-action-primary start"
+              title="Iniciar Ejecución"
             >
               ▶ Iniciar
             </button>
           )}
+
           {estadoActual === 'en_progreso' && (
             <>
               <button
+                type="button"
                 onClick={handleCloseDayClick}
                 disabled={loading}
-                className="btn-secondary"
-                style={{ fontSize: '0.8rem', padding: '6px 12px', backgroundColor: '#f59e0b', color: 'white', border: 'none', borderRadius: '4px', marginRight: '0' }}
+                className="btn-action-warning pause"
+                title="Cierre Parcial del Día"
               >
                 ⏸ Cerrar Día
               </button>
               <button
+                type="button"
                 onClick={handleFinishClick}
                 disabled={loading}
-                className="btn-success"
-                style={{ fontSize: '0.8rem', padding: '6px 12px', backgroundColor: '#22c55e', color: 'white', border: 'none', borderRadius: '4px' }}
+                className="btn-action-success finish"
+                title="Finalizar Actividad"
               >
                 ✓ Finalizar
               </button>
             </>
           )}
-          <div style={{ marginLeft: '10px', transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s', color: '#94a3b8' }}>
-            ▼
+
+          <button
+            type="button"
+            className="btn-action-icon expand"
+            onClick={handleToggleExpand}
+            title={isExpanded ? "Colapsar detalles" : "Expandir detalles"}
+          >
+            {isExpanded ? <IconChevronUp /> : <IconChevronDown />}
+          </button>
+        </div>
+      </div>
+
+      {/* Cuerpo de la Tarjeta */}
+      <div className="actividad-card-body">
+        {/* Descripción Principal de la Actividad */}
+        <h4 className="actividad-card-descripcion">
+          {actividadPlanificada.descripcion || 'Sin descripción'}
+        </h4>
+
+        {/* Barras de Progreso Físico y Financiero */}
+        <div className="ejecucion-progress-row">
+          <div className="ejecucion-progress-track">
+            <div className="track-header">
+              <span>Avance Físico (Checklist)</span>
+              <strong>{avanceFisico}%</strong>
+            </div>
+            <div className="progress-bar-bg">
+              <div className="progress-bar-fill physical" style={{ width: `${avanceFisico}%` }} />
+            </div>
+          </div>
+
+          <div className="ejecucion-progress-track">
+            <div className="track-header">
+              <span>Avance Financiero (Unidades)</span>
+              <strong style={{ color: avanceFinanciero < 100 && estadoActual === 'completada' ? '#ea580c' : '#15803d' }}>
+                {avanceFinanciero}%
+              </strong>
+            </div>
+            <div className="progress-bar-bg">
+              <div className="progress-bar-fill financial" style={{ width: `${avanceFinanciero}%` }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Bloque Financiero y Operativo idéntico a semanas y valuaciones */}
+        <div className="actividad-financial-block">
+          <div className="actividad-financial-cell">
+            <span className="cell-label">Volumen / Cantidad</span>
+            <div className="cell-value-group">
+              <span className="cell-value-primary">
+                {cantRealVal !== null && cantRealVal !== undefined && cantRealVal !== '' ? `${cantRealVal} / ` : ''}
+                {actividadPlanificada.cantidad_programada || 0} {actividadPlanificada.unidad_medida || 'UND'}
+              </span>
+              {cantRealVal !== null && cantRealVal !== undefined && cantRealVal !== '' && (
+                <span className="cell-sub-info" style={{ color: '#16a34a' }}>
+                  Ejecutado: {cantRealVal} {actividadPlanificada.unidad_medida || 'UND'}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="actividad-financial-cell">
+            <span className="cell-label">Monto Estimado</span>
+            <div className="cell-value-group">
+              <span className="cell-value-primary highlight">
+                ${montoProgramado.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span className="cell-sub-info">
+                P.U: ${(actividadPlanificada.precio_unitario || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+            </div>
+          </div>
+
+          <div className="actividad-financial-cell">
+            <span className="cell-label">Monto Ejecutado Real</span>
+            <div className="cell-value-group">
+              <span className="cell-value-primary" style={{ color: '#15803d' }}>
+                ${montoEjecutadoReal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
+              <span className="cell-sub-info">
+                {avanceFinanciero}% ejecutado
+              </span>
+            </div>
+          </div>
+
+          <div className="actividad-financial-cell">
+            <span className="cell-label">Recursos Asignados</span>
+            <div className="cell-value-group">
+              <div className="cell-badges-row">
+                <span className="pill-badge crew">
+                  👤 {actividadPlanificada.personal?.length || 0} Personal
+                </span>
+                <span className="pill-badge checklist">
+                  ✅ {subCompleted}/{subTotal} Tareas
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

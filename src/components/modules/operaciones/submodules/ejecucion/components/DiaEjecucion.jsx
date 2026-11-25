@@ -4,13 +4,6 @@ import { useExecution } from '../../../../../../contexts/ExecutionContext';
 import Modal from '../../../../../common/Modal/Modal';
 import { ActividadEjecucion } from './ActividadEjecucion';
 
-const IconArrowLeft = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="19" y1="12" x2="5" y2="12"></line>
-    <polyline points="12 19 5 12 12 5"></polyline>
-  </svg>
-);
-
 export const DiaEjecucion = ({ dia, onBack }) => {
   const [actividades, setActividades] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,13 +38,6 @@ export const DiaEjecucion = ({ dia, onBack }) => {
 
   return (
     <div className="ejecucion-detail-container">
-      {/* Header Back Button */}
-      <div style={{ marginBottom: '1.25rem' }}>
-        <button type="button" onClick={onBack} className="btn-back-header">
-          <IconArrowLeft /> Volver a los Días de la Semana
-        </button>
-      </div>
-
       {/* Info Card de Identidad del Día */}
       <div className="detail-info-card" style={{ marginBottom: '1.5rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -67,7 +53,7 @@ export const DiaEjecucion = ({ dia, onBack }) => {
             <h2 style={{ margin: 0, fontSize: '1.45rem', fontWeight: 800, color: '#0f172a', textTransform: 'capitalize' }}>
               {new Date(dia.fecha + 'T00:00:00').toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
             </h2>
-            <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.85rem', color: '#64748b' }}>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '0.85rem', color: '#64748b', flexWrap: 'wrap' }}>
               <span>📋 <strong>{actividades.length}</strong> actividades</span>
               <span>•</span>
               <span>💰 Plan: <strong>${(dia.monto_planificado || 0).toLocaleString()}</strong></span>
@@ -199,54 +185,74 @@ const DailyReportModal = ({ isOpen, onClose, diaId, diaFecha }) => {
                         }}>
                           {report.tipo_accion?.replace('_', ' ') || 'REPORTE'}
                         </span>
-                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
-                          {new Date(report.fecha_reporte).toLocaleTimeString()} • Por: {report.usuario_reporta}
+                        <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                          {new Date(report.fecha_reporte).toLocaleDateString()} • Por: {report.usuario_reporta}
                         </div>
                       </div>
 
-                      {/* Content */}
-                      <p style={{ margin: '0 0 8px 0', fontSize: '0.9rem', color: '#334155' }}>
+                      {/* Body Description */}
+                      <p style={{ margin: '0 0 8px 0', fontSize: '0.85rem', color: '#334155', whiteSpace: 'pre-wrap' }}>
                         {report.descripcion_trabajo}
                       </p>
 
-                      {/* Metrics Line */}
-                      <div style={{ fontSize: '0.85rem', display: 'flex', gap: '15px', color: '#475569' }}>
-                        <span>Ejec: <strong style={{ color: '#22c55e' }}>{report.cantidades_ejecutadas}</strong></span>
-                        {report.cantidades_pendientes > 0 && <span>Pend: <strong style={{ color: '#ea580c' }}>{report.cantidades_pendientes}</strong></span>}
+                      {/* Quantities Mini-Bar */}
+                      <div style={{
+                        display: 'flex',
+                        gap: '15px',
+                        fontSize: '0.75rem',
+                        backgroundColor: '#f8fafc',
+                        padding: '6px 10px',
+                        borderRadius: '4px',
+                        color: '#475569'
+                      }}>
+                        <span>Ejecutado hoy: <strong style={{ color: '#15803d' }}>{report.cantidades_ejecutadas}</strong></span>
+                        {report.cantidades_pendientes > 0 && (
+                          <span>Pendiente: <strong style={{ color: '#d97706' }}>{report.cantidades_pendientes}</strong></span>
+                        )}
                       </div>
 
-                      {/* Note */}
-                      {report.justificacion && (
-                        <div style={{ marginTop: '5px', fontSize: '0.85rem', color: '#be123c', fontStyle: 'italic' }}>
-                          Nota: {report.justificacion}
-                        </div>
-                      )}
-
-                      {/* Materials Used Section */}
-                      {report.detalles?.materiales && report.detalles.materiales.length > 0 && (
-                        <div style={{ marginTop: '10px', padding: '8px', backgroundColor: '#f0f9ff', borderRadius: '6px', border: '1px solid #bae6fd' }}>
-                          <small style={{ fontWeight: 600, color: '#0369a1', display: 'block', marginBottom: '2px' }}>📦 Materiales:</small>
-                          <ul style={{ margin: 0, paddingLeft: '15px', fontSize: '0.8rem' }}>
-                            {report.detalles.materiales.map((mat, idx) => (
-                              <li key={idx} style={{ color: '#0c4a6e' }}>
-                                {mat.nombre}: <strong>{mat.cantidad} {mat.unidad}</strong>
-                              </li>
+                      {/* Materials List (If Any) */}
+                      {report.materiales_consumidos && report.materiales_consumidos.length > 0 && (
+                        <div style={{ marginTop: '8px', fontSize: '0.75rem', color: '#475569' }}>
+                          <span style={{ fontWeight: 600, display: 'block', marginBottom: '2px' }}>Materiales utilizados:</span>
+                          <ul style={{ margin: 0, paddingLeft: '15px' }}>
+                            {report.materiales_consumidos.map((m, i) => (
+                              <li key={i}>{m.nombre} - {m.cantidad} {m.unidad}</li>
                             ))}
                           </ul>
                         </div>
                       )}
+
+                      {/* Justification if Replanned */}
+                      {report.justificacion_replanificacion && (
+                        <div style={{
+                          marginTop: '8px',
+                          fontSize: '0.75rem',
+                          color: '#b45309',
+                          backgroundColor: '#fefce8',
+                          padding: '6px 10px',
+                          borderRadius: '4px',
+                          border: '1px solid #fef08a'
+                        }}>
+                          <strong>Justificación:</strong> {report.justificacion_replanificacion}
+                        </div>
+                      )}
+
                     </div>
                   ))}
                 </div>
+
               </div>
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>
-            <p>No hay reportes registrados para este día.</p>
+          <div style={{ textAlign: 'center', padding: '30px', color: '#94a3b8' }}>
+            No hay reportes de ejecución registrados para este día.
           </div>
         )}
       </div>
     </Modal>
   );
 };
+
+export default DiaEjecucion;

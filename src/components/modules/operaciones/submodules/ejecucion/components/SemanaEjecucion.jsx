@@ -4,17 +4,17 @@ import { useExecution } from '../../../../../../contexts/ExecutionContext';
 import { useBudget } from '../../../../../../contexts/BudgetContext';
 import Modal from '../../../../../common/Modal/Modal';
 import { DiasEjecucion } from './DiasEjecucion';
+import { DiaEjecucion } from './DiaEjecucion';
 import { MetricasSemana } from './MetricasSemana';
 
-// Icono Vectorial Profesional
-const IconArrowLeft = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="19" y1="12" x2="5" y2="12"></line>
-    <polyline points="12 19 5 12 12 5"></polyline>
-  </svg>
-);
-
-export const SemanaEjecucion = ({ semana, onBack }) => {
+export const SemanaEjecucion = ({
+  semana,
+  onBack,
+  selectedDia,
+  onSelectDia,
+  dias,
+  setDias,
+}) => {
   const [vista, setVista] = useState('dias'); // 'dias' | 'metricas'
   const [showReporteSemana, setShowReporteSemana] = useState(false);
   const { budget: presupuestoData } = useBudget();
@@ -40,14 +40,22 @@ export const SemanaEjecucion = ({ semana, onBack }) => {
       })
     : "";
 
+  // Si hay un día seleccionado, mostramos directamente la vista del día (sin tarjeta semanal redundante)
+  if (selectedDia) {
+    return (
+      <div className="ejecucion-detail-container">
+        <DiaEjecucion
+          dia={selectedDia}
+          onBack={() => onSelectDia && onSelectDia(null)}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="ejecucion-detail-container">
-      {/* Barra Superior de Navegación y Acciones (Estilo ValuacionDetail) */}
-      <div className="header-top" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "10px" }}>
-        <button type="button" className="btn-back-header" onClick={onBack}>
-          <IconArrowLeft /> Volver al Listado
-        </button>
-
+      {/* Barra Superior de Acciones de la Semana */}
+      <div className="header-top" style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "10px" }}>
         <div className="header-actions" style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
           <button
             type="button"
@@ -186,7 +194,12 @@ export const SemanaEjecucion = ({ semana, onBack }) => {
       {/* Contenido */}
       <div style={{ flexGrow: 1 }}>
         {vista === 'dias' ? (
-          <DiasEjecucion semanaId={semana.id} />
+          <DiasEjecucion
+            semanaId={semana.id}
+            onSelectDia={onSelectDia}
+            dias={dias}
+            setDias={setDias}
+          />
         ) : (
           <MetricasSemana semana={semana} />
         )}
