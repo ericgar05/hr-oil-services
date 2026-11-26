@@ -7,22 +7,73 @@ import { useBudget } from '../../../../../../contexts/BudgetContext';
 import { SubactividadesList } from './SubactividadesList';
 import Modal from '../../../../../common/Modal/Modal';
 
-// Iconos Vectoriales SVG Profesionales
+// Modern Lucide-Style Vector SVG Icons
 const IconFolder = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
     <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
   </svg>
 );
 
 const IconChevronDown = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
     <polyline points="6 9 12 15 18 9"></polyline>
   </svg>
 );
 
 const IconChevronUp = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
     <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+);
+
+const IconFileText = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </svg>
+);
+
+const IconPlay = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style={{ flexShrink: 0 }}>
+    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+  </svg>
+);
+
+const IconPause = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style={{ flexShrink: 0 }}>
+    <rect x="6" y="4" width="4" height="16"></rect>
+    <rect x="14" y="4" width="4" height="16"></rect>
+  </svg>
+);
+
+const IconCheck = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+);
+
+const IconPlus = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <line x1="12" y1="5" x2="12" y2="19"></line>
+    <line x1="5" y1="12" x2="19" y2="12"></line>
+  </svg>
+);
+
+const IconX = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <line x1="18" y1="6" x2="6" y2="18"></line>
+    <line x1="6" y1="6" x2="18" y2="18"></line>
+  </svg>
+);
+
+const IconAlertCircle = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="12"></line>
+    <line x1="12" y1="16" x2="12.01" y2="16"></line>
   </svg>
 );
 
@@ -39,7 +90,7 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
   const [reporteData, setReporteData] = useState({ usuario: '', descripcion: '', justificacion: '' });
   const [replanData, setReplanData] = useState({ replanificar: false, fechaNueva: '', autoTomorrow: true });
 
-  // New States for Replan Alert Flow
+  // Replan Alert Flow
   const [showReplanConfirmModal, setShowReplanConfirmModal] = useState(false);
   const [pendingDiff, setPendingDiff] = useState(0);
 
@@ -54,13 +105,11 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
   const [selectedMaterialId, setSelectedMaterialId] = useState('');
   const [materialQuantity, setMaterialQuantity] = useState('');
 
-  const { iniciarEjecucionActividad, finalizarActividad, registrarCierreDiario, agregarPersonalActividad, eliminarPersonalActividad, loading, getReportes } = useExecution();
+  const { iniciarEjecucionActividad, finalizarActividad, registrarCierreDiario, agregarPersonalActividad, eliminarPersonalActividad, loading } = useExecution();
   const { showToast } = useNotification();
   const { getEmployeesByProject } = usePersonal();
   const { inventory, withdrawInventory } = useOperaciones();
   const { budget } = useBudget();
-
-  // ... (rest of component code remains same until end)
 
   // Load Personal on demand
   useEffect(() => {
@@ -99,22 +148,17 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
     }
   };
 
-  // ... (existing code) ...
-
   const handleCloseDayClick = (e) => {
     e.stopPropagation();
     setSelectedDate(new Date().toISOString().split('T')[0]);
-    // Pre-fill with programmed amount or existing real amount (but usually empty for 'what did you do today')
     setCantidadRealInput('');
     setReporteData({ usuario: '', descripcion: '', justificacion: '' });
-    // Reset Material State
     setMaterialsToConsume([]);
     setSelectedMaterialId('');
     setMaterialQuantity('');
     setShowCloseDayModal(true);
   };
 
-  // Helper to add material to list
   const handleAddMaterial = () => {
     if (!selectedMaterialId || !materialQuantity || parseFloat(materialQuantity) <= 0) {
       showToast("Seleccione un material y una cantidad válida", "error");
@@ -145,21 +189,16 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
     setMaterialsToConsume(prev => prev.filter((_, i) => i !== index));
   };
 
-  const processMaterialWithdrawals = async (materials, reporteUsuario) => {
+  const processMaterialWithdrawals = async (materials) => {
     if (!materials || materials.length === 0) return true;
 
-    // We execute withdrawals one by one. If one fails, we might have partials.
-    // In a real app we'd want a transaction or batch endpoint.
-    // Here we will try best effort.
     for (const mat of materials) {
-      // We reuse the existing withdrawInventory function which likely updates DB state
-      // We need to pass valid payload.
       try {
         await withdrawInventory({
           inventario_id: mat.id,
           cantidad_retirada: mat.cantidad,
-          retirado_por: reporteData.usuario, // Explicitly use the report user
-          observaciones: `Actividad: ${actividadPlanificada.descripcion}` // Clean connection info
+          retirado_por: reporteData.usuario,
+          observaciones: `Actividad: ${actividadPlanificada.descripcion}`
         });
       } catch (err) {
         console.error("Error withdrawing material:", mat, err);
@@ -181,11 +220,9 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
     }
 
     try {
-      // 1. Withdraw Materials
-      const withdrawalsSuccess = await processMaterialWithdrawals(materialsToConsume, reporteData.usuario);
-      if (!withdrawalsSuccess) return; // Stop if inventory fail
+      const withdrawalsSuccess = await processMaterialWithdrawals(materialsToConsume);
+      if (!withdrawalsSuccess) return;
 
-      // 2. Register Close Day with Materials
       await registrarCierreDiario(actividadPlanificada.id, selectedDate, cantidadRealInput, reporteData, materialsToConsume);
 
       setShowCloseDayModal(false);
@@ -196,31 +233,25 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
     }
   };
 
-
   const estadoActual = actividadPlanificada.estado || 'pendiente';
-  // Avance se basa en subactividades completadas ahora? O manual?
-  // Por ahora, simple: 0 si pendiente, 50 en proceso, 100 completada. 
-  // O mejor, calcular based on subactividades checklist if available.
 
   const subTotal = actividadPlanificada.subactividades?.length || 0;
   const subCompleted = actividadPlanificada.subactividades?.filter(s => s.completada).length || 0;
+  const hasSubactividades = subTotal > 0;
 
-  // Prefer stored 'avance' if available (from DB update), otherwise fallback to live calculation
-  // NOTE: DB 'avance' seems to track Physical progress based on subactivities.
-  const avanceFisico = actividadPlanificada.avance !== undefined
-    ? actividadPlanificada.avance
-    : (subTotal > 0 ? Math.round((subCompleted / subTotal) * 100) : (estadoActual === 'completada' ? 100 : 0));
-
-  // Financial Progress logic: Executed Units / Planned Units
-  // If finalized, we strictly use 'cantidad_real' if present.
   const cantProgramada = parseFloat(actividadPlanificada.cantidad_programada) || 1;
   const cantReal = parseFloat(actividadPlanificada.cantidad_real) || 0;
 
-  // If pending/in_progress, cantReal might be 0 unless we track partials. Assume 0 until finalized? 
-  // Or if completed, calculate ratio.
   const avanceFinanciero = (estadoActual === 'completada' || actividadPlanificada.cantidad_real)
     ? Math.min(Math.round((cantReal / cantProgramada) * 100), 100)
     : 0;
+
+  // Si no tiene subactividades asignadas, el avance físico es igual al avance financiero
+  const avanceFisico = hasSubactividades
+    ? (actividadPlanificada.avance !== undefined
+        ? actividadPlanificada.avance
+        : Math.round((subCompleted / subTotal) * 100))
+    : avanceFinanciero;
 
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -246,14 +277,10 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
 
   const handleFinishClick = (e) => {
     e.stopPropagation();
-    // Validar si todas las subactividades están listas? 
-    // Por ahora flexible.
     setSelectedDate(new Date().toISOString().split('T')[0]);
-    // Pre-fill with programmed amount or existing real amount
     setCantidadRealInput(actividadPlanificada.cantidad_real || actividadPlanificada.cantidad_programada || '');
     setReporteData({ usuario: '', descripcion: '', justificacion: '' });
-    setReplanData({ replanificar: true, fechaNueva: '', autoTomorrow: true }); // Default to Auto Replan if partial
-    // Reset Material State
+    setReplanData({ replanificar: true, fechaNueva: '', autoTomorrow: true });
     setMaterialsToConsume([]);
     setSelectedMaterialId('');
     setMaterialQuantity('');
@@ -261,7 +288,6 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
   };
 
   const confirmFinish = async () => {
-    // Validation
     if (!reporteData.usuario || !reporteData.descripcion || cantidadRealInput === '') {
       showToast("Complete todos los campos obligatorios", "error");
       return;
@@ -272,22 +298,17 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
     const diff = planned - executed;
 
     if (diff > 0) {
-      // Pending units detected -> Trigger Alert Flow
       setPendingDiff(diff);
-
-      // Calculate Tomorrow
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowStr = tomorrow.toISOString().split('T')[0];
 
-      // Default to tomorrow, preset value
       setReplanData({ replanificar: true, fechaNueva: tomorrowStr, autoTomorrow: false });
-      setShowFinishModal(false); // Close main modal
-      setShowReplanConfirmModal(true); // Open decision modal
+      setShowFinishModal(false);
+      setShowReplanConfirmModal(true);
       return;
     }
 
-    // If complete or over-executed, finalize immediately
     if (window.confirm("¿Confirma que desea FINALIZAR esta actividad? Esta acción es irreversible.")) {
       performFinalize(null);
     }
@@ -295,8 +316,7 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
 
   const performFinalize = async (replanPayload) => {
     try {
-      // 1. Withdraw Materials
-      const withdrawalsSuccess = await processMaterialWithdrawals(materialsToConsume, reporteData.usuario);
+      const withdrawalsSuccess = await processMaterialWithdrawals(materialsToConsume);
       if (!withdrawalsSuccess) return;
 
       await finalizarActividad(
@@ -319,7 +339,6 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
 
   const handleReplanDecision = (shouldReplan) => {
     if (shouldReplan) {
-      // Validate Date if custom
       if (!replanData.autoTomorrow && !replanData.fechaNueva) {
         showToast("Seleccione una fecha para la replanificación", "error");
         return;
@@ -332,7 +351,6 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
       };
       performFinalize(payload);
     } else {
-      // Finalize without replanning (just close with partials)
       if (window.confirm("¿Seguro que desea finalizar con cantidades pendientes SIN replanificar? Las unidades restantes NO se programarán para otro día.")) {
         performFinalize(null);
       }
@@ -341,23 +359,11 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completada': return '#22c55e'; // Green
-      case 'en_progreso': return '#3b82f6'; // Blue
-      case 'replanificada': return '#a855f7'; // Purple (Distinct)
-      default: return '#94a3b8'; // Slate
+      case 'completada': return '#16a34a'; // Green
+      case 'en_progreso': return '#2563eb'; // Blue
+      case 'replanificada': return '#9333ea'; // Purple
+      default: return '#64748b'; // Slate
     }
-  };
-
-  // Helper for Date Display (YYYY-MM-DD to Local UI without TZ shift)
-  const formatDateNoTZ = (dateStr) => {
-    if (!dateStr) return 'N/A';
-    // If it's full ISO with T, split it. If it's YYYY-MM-DD, split it.
-    const parts = dateStr.includes('T') ? dateStr.split('T')[0].split('-') : dateStr.split('-');
-    if (parts.length === 3) {
-      // Create date at noon to avoid timezone rollover
-      return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0).toLocaleDateString();
-    }
-    return dateStr;
   };
 
   const budItem = budget?.items?.find(i => i.id === actividadPlanificada.partida_id);
@@ -375,8 +381,9 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
   return (
     <div className={`execution-item planning-actividad-card ejecucion-actividad-card status-${estadoActual}`}>
 
-      {/* Header de la Tarjeta (Homogéneo con Semanas y Valuaciones) */}
-      <div className="actividad-card-header" onClick={handleToggleExpand} style={{ cursor: 'pointer' }}>
+      {/* Header de la Tarjeta con Distribución Adaptativa PC/Móvil */}
+      <div className="actividad-card-header" onClick={handleToggleExpand}>
+        {/* Fila/Grupo de Título y Badges */}
         <div className="actividad-card-title-group">
           <span className="actividad-partida-badge">
             <IconFolder />
@@ -388,49 +395,46 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
           <span
             className="status-badge"
             style={{
-              backgroundColor: `${getStatusColor(estadoActual)}18`,
+              backgroundColor: `${getStatusColor(estadoActual)}14`,
               color: getStatusColor(estadoActual),
-              border: `1px solid ${getStatusColor(estadoActual)}35`,
-              padding: '3px 8px',
-              borderRadius: '6px',
-              fontSize: '0.72rem',
-              fontWeight: '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.3px',
-              flexShrink: 0
+              borderColor: `${getStatusColor(estadoActual)}35`
             }}
           >
             {estadoActual.replace('_', ' ')}
           </span>
         </div>
 
-        {/* Grupo de Acciones del Header */}
+        {/* Grupo de Botones de Acción */}
         <div className="actividad-card-actions-group" onClick={(e) => e.stopPropagation()}>
+          {/* Botón Informes */}
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               setShowReportModal(true);
             }}
-            className="btn-action-icon report"
+            className="btn-activity-reports"
             title="Ver Informes de la Actividad"
-            style={{ width: 'auto', padding: '0 8px', fontSize: '0.75rem', gap: '4px' }}
           >
-            📄 <span className="action-text-hide-mobile">Informes</span>
+            <IconFileText />
+            <span>Informes</span>
           </button>
 
+          {/* Botón Iniciar (Pendiente o Replanificada) */}
           {(estadoActual === 'pendiente' || estadoActual === 'replanificada') && (
             <button
               type="button"
               onClick={handleStartClick}
               disabled={loading}
               className="btn-action-primary start"
-              title="Iniciar Ejecución"
+              title="Iniciar Ejecución de la Actividad"
             >
-              ▶ Iniciar
+              <IconPlay />
+              <span className="action-btn-text">Iniciar</span>
             </button>
           )}
 
+          {/* Botones En Progreso: Cerrar Día y Finalizar */}
           {estadoActual === 'en_progreso' && (
             <>
               <button
@@ -438,22 +442,25 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
                 onClick={handleCloseDayClick}
                 disabled={loading}
                 className="btn-action-warning pause"
-                title="Cierre Parcial del Día"
+                title="Registrar Cierre Parcial del Día"
               >
-                ⏸ Cerrar Día
+                <IconPause />
+                <span className="action-btn-text">Cerrar Día</span>
               </button>
               <button
                 type="button"
                 onClick={handleFinishClick}
                 disabled={loading}
                 className="btn-action-success finish"
-                title="Finalizar Actividad"
+                title="Finalizar Actividad Definitivamente"
               >
-                ✓ Finalizar
+                <IconCheck />
+                <span className="action-btn-text">Finalizar</span>
               </button>
             </>
           )}
 
+          {/* Botón Acordeón / Expansión */}
           <button
             type="button"
             className="btn-action-icon expand"
@@ -473,31 +480,47 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
         </h4>
 
         {/* Barras de Progreso Físico y Financiero */}
-        <div className="ejecucion-progress-row">
-          <div className="ejecucion-progress-track">
-            <div className="track-header">
-              <span>Avance Físico (Checklist)</span>
-              <strong>{avanceFisico}%</strong>
+        {hasSubactividades ? (
+          <div className="ejecucion-progress-row">
+            <div className="ejecucion-progress-track">
+              <div className="track-header">
+                <span>Avance Físico (Checklist)</span>
+                <strong>{avanceFisico}%</strong>
+              </div>
+              <div className="progress-bar-bg">
+                <div className="progress-bar-fill physical" style={{ width: `${avanceFisico}%` }} />
+              </div>
             </div>
-            <div className="progress-bar-bg">
-              <div className="progress-bar-fill physical" style={{ width: `${avanceFisico}%` }} />
+
+            <div className="ejecucion-progress-track">
+              <div className="track-header">
+                <span>Avance Financiero (Unidades)</span>
+                <strong style={{ color: avanceFinanciero < 100 && estadoActual === 'completada' ? '#ea580c' : '#15803d' }}>
+                  {avanceFinanciero}%
+                </strong>
+              </div>
+              <div className="progress-bar-bg">
+                <div className="progress-bar-fill financial" style={{ width: `${avanceFinanciero}%` }} />
+              </div>
             </div>
           </div>
-
-          <div className="ejecucion-progress-track">
-            <div className="track-header">
-              <span>Avance Financiero (Unidades)</span>
-              <strong style={{ color: avanceFinanciero < 100 && estadoActual === 'completada' ? '#ea580c' : '#15803d' }}>
-                {avanceFinanciero}%
-              </strong>
-            </div>
-            <div className="progress-bar-bg">
-              <div className="progress-bar-fill financial" style={{ width: `${avanceFinanciero}%` }} />
+        ) : (
+          <div className="ejecucion-progress-row single-track">
+            <div className="ejecucion-progress-track">
+              <div className="track-header">
+                <span>Avance Físico y Financiero (Unidades)</span>
+                <strong style={{ color: avanceFinanciero < 100 && estadoActual === 'completada' ? '#ea580c' : '#15803d' }}>
+                  {avanceFinanciero}%
+                </strong>
+              </div>
+              <div className="progress-bar-bg">
+                <div className="progress-bar-fill financial" style={{ width: `${avanceFinanciero}%` }} />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Bloque Financiero y Operativo idéntico a semanas y valuaciones */}
+        {/* Bloque Financiero y Operativo Homogéneo */}
         <div className="actividad-financial-block">
           <div className="actividad-financial-cell">
             <span className="cell-label">Volumen / Cantidad</span>
@@ -545,9 +568,11 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
                 <span className="pill-badge crew">
                   👤 {actividadPlanificada.personal?.length || 0} Personal
                 </span>
-                <span className="pill-badge checklist">
-                  ✅ {subCompleted}/{subTotal} Tareas
-                </span>
+                {hasSubactividades && (
+                  <span className="pill-badge checklist">
+                    ✅ {subCompleted}/{subTotal} Tareas
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -556,106 +581,103 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
 
       {/* Expanded Details */}
       {isExpanded && (
-        <div className="execution-item-details" style={{ borderTop: '1px solid #dae1e7', padding: '15px', backgroundColor: '#f8fafc' }}>
-
+        <div className="execution-item-details">
           {/* Personal Section */}
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h5 style={{ margin: 0, fontSize: '0.9rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Personal Asignado</h5>
+          <div className="ejecucion-personal-section">
+            <div className="ejecucion-section-header">
+              <h5 className="section-title">Personal Asignado</h5>
               <button
+                type="button"
                 onClick={() => setShowAddPersonalModal(true)}
-                style={{ fontSize: '0.75rem', padding: '2px 8px', backgroundColor: '#eff6ff', color: '#2563eb', border: '1px solid #dbeafe', borderRadius: '4px', cursor: 'pointer' }}
+                className="btn-add-pill"
               >
-                + Agregar
+                <IconPlus />
+                <span>Agregar Personal</span>
               </button>
             </div>
+
             {actividadPlanificada.personal && actividadPlanificada.personal.length > 0 ? (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              <div className="ejecucion-personal-list">
                 {actividadPlanificada.personal.map(p => (
-                  <span key={p.id} style={{
-                    backgroundColor: '#fff',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: '6px',
-                    padding: '4px 8px',
-                    fontSize: '0.85rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    position: 'relative',
-                    paddingRight: (estadoActual === 'pendiente' || estadoActual === 'en_progreso') ? '28px' : '8px'
-                  }}>
-                    <span style={{ fontSize: '1rem' }}>👤</span>
-                    <span style={{ fontWeight: 500 }}>{p.nombre_personal}</span>
-                    {p.rol_en_actividad && <span style={{ color: '#64748b', fontSize: '0.8rem' }}>• {p.rol_en_actividad}</span>}
+                  <span key={p.id} className="personal-badge-chip">
+                    <span className="personal-avatar">👤</span>
+                    <span className="personal-name">{p.nombre_personal}</span>
+                    {p.rol_en_actividad && (
+                      <span className="personal-role">• {p.rol_en_actividad}</span>
+                    )}
 
                     {(estadoActual === 'pendiente' || estadoActual === 'en_progreso') && (
                       <button
+                        type="button"
                         onClick={() => handleRemovePersonal(p.id, p.nombre_personal)}
                         title="Remover personal"
-                        style={{
-                          position: 'absolute',
-                          right: '2px',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          background: 'none',
-                          border: 'none',
-                          color: '#ef4444',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                          padding: '2px 5px',
-                          lineHeight: 1
-                        }}
+                        className="personal-remove-btn"
                       >
-                        ✖
+                        <IconX />
                       </button>
                     )}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-muted" style={{ fontSize: '0.9rem', fontStyle: 'italic' }}>No hay personal asignado.</p>
+              <p className="ejecucion-empty-hint">No hay personal asignado a esta actividad.</p>
             )}
           </div>
-          {(estadoActual === 'pendiente' || estadoActual === 'replanificada') ? (
-            <p className="text-center text-muted">Inicia la actividad para gestionar el checklist.</p>
-          ) : (
-            <div className="details-grid">
-              <h5 style={{ marginBottom: '10px' }}>Checklist de Subactividades</h5>
-              <SubactividadesList
-                actividadId={actividadPlanificada.id}
-                initialData={actividadPlanificada.subactividades}
-                readOnly={estadoActual === 'completada'}
-              />
-            </div>
+
+          {/* Subactividades Section (Solo si tiene subactividades asignadas desde planificación) */}
+          {hasSubactividades && (
+            (estadoActual === 'pendiente' || estadoActual === 'replanificada') ? (
+              <p className="ejecucion-empty-hint text-center">Inicia la actividad para gestionar el checklist de tareas operativas.</p>
+            ) : (
+              <div className="ejecucion-subactividades-section">
+                <h5 className="section-title">Checklist de Tareas Operativas</h5>
+                <SubactividadesList
+                  actividadId={actividadPlanificada.id}
+                  initialData={actividadPlanificada.subactividades}
+                  readOnly={estadoActual === 'completada'}
+                />
+              </div>
+            )
           )}
         </div>
       )}
 
       {/* Start Modal */}
       <Modal isOpen={showStartModal} onClose={() => setShowStartModal(false)} title="Iniciar Actividad">
-        <div style={{ padding: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '8px' }}>Fecha de Inicio Real:</label>
-          <input
-            type="date"
-            className="form-control"
-            value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
-          />
-          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button className="btn-secondary" onClick={() => setShowStartModal(false)}>Cancelar</button>
-            <button className="btn-primary" onClick={confirmStart} disabled={loading}>Confirmar Inicio</button>
+        <div className="ejecucion-modal-body">
+          <p className="modal-intro-text">
+            Confirme la fecha de inicio oficial para registrar los avances de esta actividad.
+          </p>
+          <div className="form-group">
+            <label className="form-label">Fecha de Inicio Real:</label>
+            <input
+              type="date"
+              className="form-control"
+              value={selectedDate}
+              onChange={e => setSelectedDate(e.target.value)}
+            />
+          </div>
+          <div className="ejecucion-modal-actions">
+            <button type="button" className="btn-secondary" onClick={() => setShowStartModal(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn-primary" onClick={confirmStart} disabled={loading}>
+              Confirmar Inicio
+            </button>
           </div>
         </div>
       </Modal>
 
       {/* Close Day Modal */}
       <Modal isOpen={showCloseDayModal} onClose={() => setShowCloseDayModal(false)} title="Cerrar Día (Avance Diario)">
-        <div style={{ padding: '20px' }}>
-          <p style={{ marginBottom: '10px', color: '#64748b', fontSize: '0.9rem' }}>Registre el avance del día para generar un reporte parcial y pausar/guardar estado.</p>
+        <div className="ejecucion-modal-body">
+          <p className="modal-intro-text">
+            Registre el avance parcial ejecutado hoy para generar un reporte diario y actualizar los datos.
+          </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Fecha Cierre:</label>
+          <div className="ejecucion-form-grid">
+            <div className="form-group">
+              <label className="form-label">Fecha de Cierre:</label>
               <input
                 type="date"
                 className="form-control"
@@ -663,8 +685,8 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
                 onChange={e => setSelectedDate(e.target.value)}
               />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Ejecutado Hoy:</label>
+            <div className="form-group">
+              <label className="form-label">Ejecutado Hoy ({actividadPlanificada.unidad_medida || 'UND'}):</label>
               <input
                 type="number"
                 className="form-control"
@@ -673,115 +695,120 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
                 placeholder="0.00"
                 step="0.01"
               />
-              <div style={{ marginTop: '5px', fontSize: '0.8rem', color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-                <span>Total Ejec: {actividadPlanificada.cantidad_real || 0}</span>
-                <span>Disp: {(parseFloat(actividadPlanificada.cantidad_programada || 0) - parseFloat(actividadPlanificada.cantidad_real || 0)).toFixed(2)}</span>
+              <div className="field-hint-row">
+                <span>Acumulado: {actividadPlanificada.cantidad_real || 0}</span>
+                <span>Restante: {(parseFloat(actividadPlanificada.cantidad_programada || 0) - parseFloat(actividadPlanificada.cantidad_real || 0)).toFixed(2)}</span>
               </div>
             </div>
           </div>
 
-          <div style={{ marginTop: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Reportado Por: *</label>
+          <div className="form-group">
+            <label className="form-label">Reportado Por (Responsable): *</label>
             <input
               type="text"
               className="form-control"
               value={reporteData.usuario}
               onChange={e => setReporteData(prev => ({ ...prev, usuario: e.target.value }))}
-              placeholder="Supervisor"
+              placeholder="Nombre del supervisor o responsable"
             />
           </div>
 
-          <div style={{ marginTop: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Actividades Realizadas Hoy: *</label>
+          <div className="form-group">
+            <label className="form-label">Actividades Realizadas Hoy: *</label>
             <textarea
               className="form-control"
-              rows="2"
+              rows="3"
               value={reporteData.descripcion}
               onChange={e => setReporteData(prev => ({ ...prev, descripcion: e.target.value }))}
-              placeholder="Detalle de trabajos..."
+              placeholder="Describa el trabajo ejecutado durante la jornada..."
             />
           </div>
 
-          {/* Material Selection UI */}
-          <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f9ff', borderRadius: '6px', border: '1px solid #bae6fd' }}>
-            <h5 style={{ fontSize: '0.9rem', marginBottom: '10px', color: '#0369a1' }}>Consumo de Materiales (Opcional)</h5>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          {/* Consumo de Materiales Opcional */}
+          <div className="ejecucion-material-section">
+            <h5 className="material-section-title">📦 Consumo de Materiales (Opcional)</h5>
+            <div className="material-inputs-row">
               <select
-                className="form-control"
+                className="form-control material-select"
                 value={selectedMaterialId}
                 onChange={e => setSelectedMaterialId(e.target.value)}
-                style={{ fontSize: '0.85rem' }}
               >
-                <option value="">-- Seleccionar Material --</option>
+                <option value="">-- Seleccionar Material en Almacén --</option>
                 {inventory.filter(i => i.cantidad_disponible > 0).map(item => (
                   <option key={item.id} value={item.id}>
-                    {item.nombre_producto} (Disp: {item.cantidad_disponible} {item.unidad})
+                    {item.nombre_producto} (Disponible: {item.cantidad_disponible} {item.unidad})
                   </option>
                 ))}
               </select>
               <input
                 type="number"
-                className="form-control"
-                style={{ width: '100px', fontSize: '0.85rem' }}
+                className="form-control material-qty-input"
                 placeholder="Cant."
                 value={materialQuantity}
                 onChange={e => setMaterialQuantity(e.target.value)}
+                step="0.01"
               />
               <button
                 type="button"
-                className="btn-info"
+                className="btn-info material-add-btn"
                 onClick={handleAddMaterial}
-                style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                title="Agregar material"
               >
-                +
+                <IconPlus />
               </button>
             </div>
 
-            {/* List of pending materials */}
             {materialsToConsume.length > 0 && (
-              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem' }}>
+              <div className="materials-chips-stack">
                 {materialsToConsume.map((mat, idx) => (
-                  <li key={idx}>
-                    {mat.nombre}: <strong>{mat.cantidad} {mat.unidad}</strong>
+                  <span key={idx} className="material-item-chip">
+                    <span>{mat.nombre}: <strong>{mat.cantidad} {mat.unidad}</strong></span>
                     <button
                       type="button"
                       onClick={() => handleRemoveMaterial(idx)}
-                      style={{ marginLeft: '10px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}
+                      className="material-chip-remove"
+                      title="Eliminar material"
                     >
-                      ✖
+                      <IconX />
                     </button>
-                  </li>
+                  </span>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
 
-          <div style={{ marginTop: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Observaciones:</label>
+          <div className="form-group">
+            <label className="form-label">Observaciones / Incidentes:</label>
             <textarea
               className="form-control"
               rows="2"
               value={reporteData.justificacion}
               onChange={e => setReporteData(prev => ({ ...prev, justificacion: e.target.value }))}
-              placeholder="Incidentes, pendientes..."
+              placeholder="Notas adicionales, dificultades encontradas o condiciones climáticas..."
             />
           </div>
 
-          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button className="btn-secondary" onClick={() => setShowCloseDayModal(false)}>Cancelar</button>
-            <button className="btn-primary" onClick={confirmCloseDay} disabled={loading}>Guardar Cierre Diario</button>
+          <div className="ejecucion-modal-actions">
+            <button type="button" className="btn-secondary" onClick={() => setShowCloseDayModal(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn-primary" onClick={confirmCloseDay} disabled={loading}>
+              Guardar Cierre Diario
+            </button>
           </div>
         </div>
       </Modal>
 
       {/* Finish Modal (Step 1) */}
       <Modal isOpen={showFinishModal} onClose={() => setShowFinishModal(false)} title="Finalizar Actividad">
-        <div style={{ padding: '20px' }}>
-          <p>Complete los datos para finalizar la actividad.</p>
+        <div className="ejecucion-modal-body">
+          <p className="modal-intro-text">
+            Complete el balance final de la actividad para cerrar la ejecución y emitir el informe final.
+          </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Fecha Culminación:</label>
+          <div className="ejecucion-form-grid">
+            <div className="form-group">
+              <label className="form-label">Fecha de Culminación:</label>
               <input
                 type="date"
                 className="form-control"
@@ -789,8 +816,8 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
                 onChange={e => setSelectedDate(e.target.value)}
               />
             </div>
-            <div>
-              <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Total Ejecutado Final:</label>
+            <div className="form-group">
+              <label className="form-label">Total Acumulado Ejecutado ({actividadPlanificada.unidad_medida || 'UND'}):</label>
               <input
                 type="number"
                 className="form-control"
@@ -801,137 +828,141 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
               />
             </div>
           </div>
-          <small style={{ display: 'block', marginTop: '5px', color: '#64748b' }}>Nota: Ingrese el TOTAL acumulado ejecutado.</small>
+          <small className="field-hint-text">Nota: Ingrese la cantidad TOTAL final acumulada de la actividad.</small>
 
-          <hr style={{ margin: '20px 0', border: '0', borderTop: '1px solid #e2e8f0' }} />
-
-          <h5 style={{ marginBottom: '10px', color: '#475569' }}>Informe de Ejecución Final</h5>
-
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Reportado Por (Responsable): *</label>
+          <div className="form-group" style={{ marginTop: '1rem' }}>
+            <label className="form-label">Reportado Por (Responsable): *</label>
             <input
               type="text"
               className="form-control"
               value={reporteData.usuario}
               onChange={e => setReporteData(prev => ({ ...prev, usuario: e.target.value }))}
-              placeholder="Nombre del supervisor/responsable"
+              placeholder="Nombre del supervisor o responsable"
             />
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Descripción del Trabajo: *</label>
+          <div className="form-group">
+            <label className="form-label">Descripción del Trabajo Final Realizado: *</label>
             <textarea
               className="form-control"
-              rows="2"
+              rows="3"
               value={reporteData.descripcion}
               onChange={e => setReporteData(prev => ({ ...prev, descripcion: e.target.value }))}
-              placeholder="Detalles de la ejecución..."
+              placeholder="Resumen ejecutivo del trabajo culminado..."
             />
           </div>
 
-          {/* Material Selection UI */}
-          <div style={{ marginTop: '15px', padding: '10px', backgroundColor: '#f0f9ff', borderRadius: '6px', border: '1px solid #bae6fd' }}>
-            <h5 style={{ fontSize: '0.9rem', marginBottom: '10px', color: '#0369a1' }}>Consumo de Materiales (Opcional)</h5>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          {/* Consumo de Materiales Opcional */}
+          <div className="ejecucion-material-section">
+            <h5 className="material-section-title">📦 Consumo de Materiales en Cierre (Opcional)</h5>
+            <div className="material-inputs-row">
               <select
-                className="form-control"
+                className="form-control material-select"
                 value={selectedMaterialId}
                 onChange={e => setSelectedMaterialId(e.target.value)}
-                style={{ fontSize: '0.85rem' }}
               >
-                <option value="">-- Seleccionar Material --</option>
+                <option value="">-- Seleccionar Material en Almacén --</option>
                 {inventory.filter(i => i.cantidad_disponible > 0).map(item => (
                   <option key={item.id} value={item.id}>
-                    {item.nombre_producto} (Disp: {item.cantidad_disponible} {item.unidad})
+                    {item.nombre_producto} (Disponible: {item.cantidad_disponible} {item.unidad})
                   </option>
                 ))}
               </select>
               <input
                 type="number"
-                className="form-control"
-                style={{ width: '100px', fontSize: '0.85rem' }}
+                className="form-control material-qty-input"
                 placeholder="Cant."
                 value={materialQuantity}
                 onChange={e => setMaterialQuantity(e.target.value)}
+                step="0.01"
               />
               <button
                 type="button"
-                className="btn-info"
+                className="btn-info material-add-btn"
                 onClick={handleAddMaterial}
-                style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                title="Agregar material"
               >
-                +
+                <IconPlus />
               </button>
             </div>
+
             {materialsToConsume.length > 0 && (
-              <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem' }}>
+              <div className="materials-chips-stack">
                 {materialsToConsume.map((mat, idx) => (
-                  <li key={idx}>
-                    {mat.nombre}: <strong>{mat.cantidad} {mat.unidad}</strong>
+                  <span key={idx} className="material-item-chip">
+                    <span>{mat.nombre}: <strong>{mat.cantidad} {mat.unidad}</strong></span>
                     <button
                       type="button"
                       onClick={() => handleRemoveMaterial(idx)}
-                      style={{ marginLeft: '10px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 'bold' }}
+                      className="material-chip-remove"
+                      title="Eliminar material"
                     >
-                      ✖
+                      <IconX />
                     </button>
-                  </li>
+                  </span>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
 
-          <div style={{ marginBottom: '10px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem' }}>Justificación / Comentarios:</label>
+          <div className="form-group">
+            <label className="form-label">Observaciones Finales:</label>
             <textarea
               className="form-control"
               rows="2"
               value={reporteData.justificacion}
               onChange={e => setReporteData(prev => ({ ...prev, justificacion: e.target.value }))}
-              placeholder="Alguna observación final..."
+              placeholder="Comentarios adicionales de cierre..."
             />
           </div>
 
-          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button className="btn-secondary" onClick={() => setShowFinishModal(false)}>Cancelar</button>
-            <button className="btn-success" onClick={confirmFinish} disabled={loading} style={{ backgroundColor: '#22c55e', color: 'white' }}>Continuar</button>
+          <div className="ejecucion-modal-actions">
+            <button type="button" className="btn-secondary" onClick={() => setShowFinishModal(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn-success" onClick={confirmFinish} disabled={loading}>
+              Continuar Finalización
+            </button>
           </div>
         </div>
       </Modal>
 
-      {/* NEW: Replan Confirm Modal (Step 2 if pending) */}
+      {/* Replan Confirm Modal (Step 2 if pending units exist) */}
       <Modal isOpen={showReplanConfirmModal} onClose={() => setShowReplanConfirmModal(false)} title="Unidades Pendientes Detectadas">
-        <div style={{ padding: '20px' }}>
-          <div style={{ backgroundColor: '#fff7ed', border: '1px solid #fdba74', borderRadius: '8px', padding: '15px', color: '#9a3412', marginBottom: '15px' }}>
-            <strong>¡Atención!</strong>
-            <p style={{ margin: '5px 0' }}>Has reportado <strong>{cantidadRealInput}</strong> de <strong>{actividadPlanificada.cantidad_programada}</strong> unidades planificadas.</p>
-            <p style={{ margin: '0' }}>Quedan <strong>{pendingDiff}</strong> unidades pendientes.</p>
+        <div className="ejecucion-modal-body">
+          <div className="ejecucion-alert-card warning">
+            <IconAlertCircle />
+            <div className="alert-content">
+              <strong>¡Diferencia de Unidades Detectada!</strong>
+              <p>Has reportado <strong>{cantidadRealInput}</strong> de <strong>{actividadPlanificada.cantidad_programada}</strong> {actividadPlanificada.unidad_medida || 'unidades'} planificadas.</p>
+              <p className="pending-highlight">Quedan <strong>{pendingDiff}</strong> unidades pendientes de ejecución.</p>
+            </div>
           </div>
 
-          <p style={{ marginBottom: '10px', fontWeight: 600 }}>Seleccione fecha para la replanificación:</p>
-
-          <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '15px', marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.9rem', color: '#64748b' }}>Nueva Fecha (Por defecto: Mañana)</label>
+          <div className="form-group" style={{ marginTop: '1.25rem' }}>
+            <label className="form-label">Fecha para Replanificar las Unidades Pendientes:</label>
             <input
               type="date"
               className="form-control"
               value={replanData.fechaNueva}
               onChange={e => setReplanData(prev => ({ ...prev, fechaNueva: e.target.value, autoTomorrow: false }))}
             />
+            <small className="field-hint-text">Por defecto se sugiere para mañana, o elija el día deseado.</small>
           </div>
 
-          <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <div className="ejecucion-modal-actions stacked-mobile">
             <button
+              type="button"
               className="btn-secondary"
               onClick={() => handleReplanDecision(false)}
-              title="Finalizará la tarea concluyendo solo lo ejecutado."
+              title="Finalizará la tarea concluyendo solo lo ejecutado sin replanificar pendientes."
             >
               No, Finalizar Parcial (Cierra Item)
             </button>
             <button
-              className="btn-primary"
+              type="button"
+              className="btn-primary btn-replan"
               onClick={() => handleReplanDecision(true)}
-              style={{ backgroundColor: '#ea580c', borderColor: '#ea580c' }}
             >
               Sí, Replanificar Pendientes
             </button>
@@ -940,10 +971,10 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
       </Modal>
 
       {/* Add Personal Modal */}
-      <Modal isOpen={showAddPersonalModal} onClose={() => setShowAddPersonalModal(false)} title="Agregar Personal a Actividad">
-        <div style={{ padding: '20px' }}>
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Seleccionar Personal:</label>
+      <Modal isOpen={showAddPersonalModal} onClose={() => setShowAddPersonalModal(false)} title="Agregar Personal a la Actividad">
+        <div className="ejecucion-modal-body">
+          <div className="form-group">
+            <label className="form-label">Seleccionar Personal:</label>
             <select
               className="form-control"
               value={selectedPersonalId}
@@ -954,44 +985,51 @@ export const ActividadEjecucion = ({ actividadPlanificada, onUpdate }) => {
                 if (p) setSelectedPersonalRol(p.cargo || '');
               }}
             >
-              <option value="">-- Seleccione --</option>
+              <option value="">-- Seleccione del personal del proyecto --</option>
               {availablePersonal.map(p => (
                 <option key={p.id} value={p.id}>
-                  {p.isContractor ? '[Contr] ' : ''}{p.nombre} {p.apellido} - {p.cargo}
+                  {p.isContractor ? '[Contratista] ' : ''}{p.nombre} {p.apellido} - {p.cargo || 'Sin cargo'}
                 </option>
               ))}
             </select>
           </div>
-          <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', marginBottom: '5px' }}>Rol en esta actividad:</label>
+
+          <div className="form-group">
+            <label className="form-label">Rol en esta actividad:</label>
             <input
               type="text"
               className="form-control"
               value={selectedPersonalRol}
               onChange={e => setSelectedPersonalRol(e.target.value)}
-              placeholder="Ej. Operador, Ayudante..."
+              placeholder="Ej. Cuadrillero, Operador, Caporal, Soldador..."
             />
           </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-            <button className="btn-secondary" onClick={() => setShowAddPersonalModal(false)}>Cancelar</button>
-            <button className="btn-primary" onClick={confirmAddPersonal} disabled={loading}>Agregar</button>
+
+          <div className="ejecucion-modal-actions">
+            <button type="button" className="btn-secondary" onClick={() => setShowAddPersonalModal(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn-primary" onClick={confirmAddPersonal} disabled={loading}>
+              Agregar Personal
+            </button>
           </div>
         </div>
       </Modal>
 
-      {/* View Report Modal (List) */}
+      {/* View Reports Modal */}
       <ReportViewerModal
         isOpen={showReportModal}
         onClose={() => setShowReportModal(false)}
         actividadId={actividadPlanificada.id}
+        actividadTitulo={actividadPlanificada.descripcion}
       />
 
     </div>
   );
 };
 
-// Sub-component for Viewing Reports (Stacked List)
-const ReportViewerModal = ({ isOpen, onClose, actividadId }) => {
+// Sub-component for Viewing Activity Reports
+const ReportViewerModal = ({ isOpen, onClose, actividadId, actividadTitulo }) => {
   const [reports, setReports] = useState([]);
   const [loadingReport, setLoadingReport] = useState(false);
   const { getReportes } = useExecution();
@@ -1006,60 +1044,60 @@ const ReportViewerModal = ({ isOpen, onClose, actividadId }) => {
     }
   }, [isOpen, actividadId, getReportes]);
 
-  // Date format helper
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString();
-  };
-
-  // Date display helper (no tz)
   const displayDate = (dateStr) => {
     if (!dateStr) return '';
     if (dateStr.includes('T')) return new Date(dateStr).toLocaleDateString();
     const parts = dateStr.split('-');
-    return `${parts[2]}/${parts[1]}/${parts[0]}`; // DD/MM/YYYY
+    return `${parts[2]}/${parts[1]}/${parts[0]}`;
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Historial de Reportes">
-      <div style={{ padding: '20px' }}>
+    <Modal isOpen={isOpen} onClose={onClose} title="Historial de Informes de Ejecución" size="lg">
+      <div className="ejecucion-modal-body">
+        {actividadTitulo && (
+          <div className="report-viewer-subtitle">
+            <span>Actividad: <strong>{actividadTitulo}</strong></span>
+          </div>
+        )}
+
         {loadingReport ? (
-          <p>Cargando reportes...</p>
+          <div className="ejecucion-report-loading">
+            <p>Cargando informes de la actividad...</p>
+          </div>
         ) : reports.length > 0 ? (
-          <div className="reports-stack" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="ejecucion-reports-stack">
             {reports.map((report) => (
-              <div key={report.id} className="report-card" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '15px', backgroundColor: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+              <div key={report.id} className="ejecucion-report-card">
                 {/* Header of Report Card */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid #f1f5f9' }}>
+                <div className="report-card-header">
                   <div>
-                    <span style={{
-                      backgroundColor: report.tipo_accion === 'replanificacion' ? '#fff7ed' : (report.tipo_accion === 'avance_diario' ? '#eff6ff' : '#f0fdf4'),
-                      color: report.tipo_accion === 'replanificacion' ? '#c2410c' : (report.tipo_accion === 'avance_diario' ? '#1d4ed8' : '#15803d'),
-                      padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 'bold', textTransform: 'uppercase'
-                    }}>
+                    <span className={`report-action-pill ${report.tipo_accion || 'cierre'}`}>
                       {report.tipo_accion?.replace('_', ' ') || 'REPORTE'}
                     </span>
-                    <div style={{ marginTop: '5px', fontWeight: 600, fontSize: '0.9rem' }}>{new Date(report.fecha_reporte).toLocaleString()}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Por: {report.usuario_reporta}</div>
+                    <div className="report-date-title">
+                      {new Date(report.fecha_reporte).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                    </div>
+                    <div className="report-author-subtitle">
+                      Por: <strong>{report.usuario_reporta || 'Supervisor'}</strong>
+                    </div>
                   </div>
+
                   {report.detalles?.partida_asociada && (
-                    <div style={{ textAlign: 'right', maxWidth: '40%' }}>
-                      <small style={{ color: '#64748b', fontSize: '0.7rem', display: 'block' }}>Partida Asociada</small>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 500, color: '#334155' }}>{report.detalles.partida_asociada.nombre}</span>
+                    <div className="report-partida-box">
+                      <small>Partida</small>
+                      <span>{report.detalles.partida_asociada.nombre}</span>
                     </div>
                   )}
                 </div>
 
                 {/* Body of Report Card */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
-                  {/* Dates */}
+                <div className="report-entry-content-grid">
                   {report.detalles && (
-                    <div style={{ backgroundColor: '#f8fafc', padding: '8px', borderRadius: '6px' }}>
-                      <small style={{ color: '#64748b', display: 'block', marginBottom: '2px' }}>
-                        {report.tipo_accion === 'avance_diario' ? 'Fecha Cierre:' : 'Período Ejecución:'}
-                      </small>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 500 }}>
+                    <div className="report-content-box">
+                      <span className="report-box-label">
+                        {report.tipo_accion === 'avance_diario' ? 'Fecha Cierre:' : 'Período Ejecutado:'}
+                      </span>
+                      <div className="report-box-value-text">
                         {report.tipo_accion === 'avance_diario'
                           ? displayDate(report.detalles.fecha_cierre_diario)
                           : `${displayDate(report.detalles.fecha_inicio_real)} - ${displayDate(report.detalles.fecha_fin_real)}`
@@ -1067,58 +1105,56 @@ const ReportViewerModal = ({ isOpen, onClose, actividadId }) => {
                       </div>
                     </div>
                   )}
-                  {/* Quantities */}
-                  <div style={{ backgroundColor: '#f8fafc', padding: '8px', borderRadius: '6px' }}>
-                    <small style={{ color: '#64748b', display: 'block', marginBottom: '2px' }}>Ejecutado (Reporte):</small>
-                    <div style={{ fontSize: '1rem', fontWeight: 'bold', color: '#22c55e' }}>
-                      {report.cantidades_ejecutadas} Units
+
+                  <div className="report-content-box">
+                    <span className="report-box-label">Cantidad Reportada:</span>
+                    <div className="report-box-value highlight-green">
+                      {report.cantidades_ejecutadas} UND
                     </div>
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '10px' }}>
-                  <small style={{ fontWeight: 600, color: '#475569' }}>Descripción / Actividades:</small>
-                  <p style={{ margin: '4px 0', fontSize: '0.9rem', whiteSpace: 'pre-wrap', color: '#334155' }}>{report.descripcion_trabajo}</p>
+                <div className="report-desc-block">
+                  <span className="report-box-label">Descripción de Trabajos:</span>
+                  <p className="report-box-desc">{report.descripcion_trabajo || 'Sin detalles'}</p>
                 </div>
 
                 {report.justificacion && (
-                  <div style={{ marginBottom: '10px' }}>
-                    <small style={{ fontWeight: 600, color: '#be123c' }}>Observaciones:</small>
-                    <p style={{ margin: '4px 0', fontSize: '0.9rem', color: '#be123c' }}>{report.justificacion}</p>
+                  <div className="report-entry-alert">
+                    <span className="report-alert-label">Observaciones / Incidentes:</span>
+                    <p className="report-alert-text">{report.justificacion}</p>
                   </div>
                 )}
 
-                {/* Materials Used Section */}
                 {report.detalles?.materiales && report.detalles.materiales.length > 0 && (
-                  <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f0f9ff', borderRadius: '6px', border: '1px solid #bae6fd' }}>
-                    <small style={{ fontWeight: 600, color: '#0369a1', display: 'block', marginBottom: '5px' }}>📦 Materiales Utilizados:</small>
-                    <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '0.85rem' }}>
+                  <div className="report-entry-materials">
+                    <span className="materials-title">📦 Materiales Utilizados:</span>
+                    <div className="materials-chip-list">
                       {report.detalles.materiales.map((mat, idx) => (
-                        <li key={idx} style={{ color: '#0c4a6e' }}>
+                        <span key={idx} className="material-chip">
                           {mat.nombre}: <strong>{mat.cantidad} {mat.unidad}</strong>
-                        </li>
+                        </span>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
 
-                {/* Snapshots (Collapsible or Small) */}
                 {(report.detalles?.personal_snapshot || report.detalles?.subactividades_snapshot) && (
-                  <details style={{ marginTop: '10px', borderTop: '1px dashed #e2e8f0', paddingTop: '5px' }}>
-                    <summary style={{ fontSize: '0.8rem', cursor: 'pointer', color: '#64748b' }}>Ver Detalles Snapshot (Personal/Checklist)</summary>
-                    <div style={{ marginTop: '10px', paddingLeft: '10px' }}>
+                  <details className="report-snapshot-details">
+                    <summary>Ver Detalles Snapshot (Personal y Checklist)</summary>
+                    <div className="snapshot-content">
                       {report.detalles.personal_snapshot && (
-                        <div style={{ marginBottom: '8px' }}>
-                          <small style={{ fontWeight: 600 }}>Personal:</small>
-                          <span style={{ fontSize: '0.8rem', marginLeft: '5px' }}>
+                        <div className="snapshot-row">
+                          <strong>Personal:</strong>
+                          <span>
                             {report.detalles.personal_snapshot.map(p => p.nombre_personal).join(', ')}
                           </span>
                         </div>
                       )}
                       {report.detalles.subactividades_snapshot && (
-                        <div>
-                          <small style={{ fontWeight: 600 }}>Checklist:</small>
-                          <ul style={{ margin: '4px 0 0 20px', fontSize: '0.8rem', padding: 0 }}>
+                        <div className="snapshot-row">
+                          <strong>Checklist:</strong>
+                          <ul>
                             {report.detalles.subactividades_snapshot.map((s, i) => (
                               <li key={i}>{s.descripcion} {s.completada ? '✅' : '⚪'}</li>
                             ))}
@@ -1133,13 +1169,19 @@ const ReportViewerModal = ({ isOpen, onClose, actividadId }) => {
             ))}
           </div>
         ) : (
-          <p style={{ color: '#64748b', fontStyle: 'italic', textAlign: 'center' }}>No hay reportes registrados para esta actividad.</p>
+          <div className="ejecucion-report-empty">
+            <p>No hay informes registrados para esta actividad.</p>
+          </div>
         )}
 
-        <div style={{ marginTop: '20px', textAlign: 'right' }}>
-          <button className="btn-secondary" onClick={onClose}>Cerrar</button>
+        <div className="ejecucion-modal-footer">
+          <button type="button" className="btn-secondary" onClick={onClose}>
+            Cerrar
+          </button>
         </div>
       </div>
-    </Modal >
+    </Modal>
   );
 };
+
+export default ActividadEjecucion;

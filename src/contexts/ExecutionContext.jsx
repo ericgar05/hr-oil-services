@@ -260,12 +260,17 @@ export const ExecutionProvider = ({ children }) => {
       const newTotalReal = (parseFloat(currentAct.cantidad_real) || 0) + parseFloat(cantidadHoy);
       const cantProgramada = parseFloat(currentAct.cantidad_programada) || 0;
       const isCompleted = newTotalReal >= cantProgramada;
+      const hasSubactividades = currentAct.subactividades && currentAct.subactividades.length > 0;
 
       // 2. Update Main Activity
       const updateData = {
         cantidad_real: newTotalReal,
         estado: isCompleted ? 'completada' : 'en_progreso'
       };
+
+      if (!hasSubactividades) {
+        updateData.avance = cantProgramada > 0 ? Math.min(Math.round((newTotalReal / cantProgramada) * 100), 100) : (isCompleted ? 100 : 0);
+      }
 
       if (isCompleted) {
         updateData.fecha_fin_real = fechaCierre;
@@ -400,13 +405,20 @@ export const ExecutionProvider = ({ children }) => {
       if (fetchError) throw fetchError;
 
       // 2. Update Main Activity
+      const hasSubactividades = currentAct.subactividades && currentAct.subactividades.length > 0;
       const updateData = {
         estado: 'completada',
         fecha_fin_real: fechaFin
-        // avance: 100  <-- Removed to avoid forcing 100% if not physically complete (though we auto-complete subactivities below, we let that drive it or remain as is)
       };
       if (cantidadReal !== undefined && cantidadReal !== null) {
         updateData.cantidad_real = parseFloat(cantidadReal);
+      }
+      if (!hasSubactividades) {
+        const prog = parseFloat(currentAct.cantidad_programada) || 0;
+        const realVal = (cantidadReal !== undefined && cantidadReal !== null) ? parseFloat(cantidadReal) : (parseFloat(currentAct.cantidad_real) || 0);
+        updateData.avance = prog > 0 ? Math.min(Math.round((realVal / prog) * 100), 100) : 100;
+      } else {
+        updateData.avance = 100;
       }
 
       const { error: updateError } = await supabase

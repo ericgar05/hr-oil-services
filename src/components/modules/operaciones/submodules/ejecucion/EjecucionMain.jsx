@@ -7,7 +7,8 @@ import { useProjects } from '../../../../../contexts/ProjectContext';
 import { useBudget } from '../../../../../contexts/BudgetContext';
 import { EjecucionDashboard } from './components/EjecucionDashboard';
 import { SemanasEjecucion } from './components/SemanasEjecucion';
-import { SemanaEjecucion } from './components/SemanaEjecucion';
+import { SemanaEjecucion, WeeklyReportModal } from './components/SemanaEjecucion';
+import { DailyReportModal } from './components/DiaEjecucion';
 import ModuleDescription from '../../../_core/ModuleDescription/ModuleDescription';
 import Modal from '../../../../common/Modal/Modal';
 import './Ejecucion.css';
@@ -67,6 +68,24 @@ const IconChevronRight = () => (
   </svg>
 );
 
+const IconFileText = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+    <polyline points="14 2 14 8 20 8"></polyline>
+    <line x1="16" y1="13" x2="8" y2="13"></line>
+    <line x1="16" y1="17" x2="8" y2="17"></line>
+    <polyline points="10 9 9 9 8 9"></polyline>
+  </svg>
+);
+
+const IconBarChart = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="20" x2="18" y2="10"></line>
+    <line x1="12" y1="20" x2="12" y2="4"></line>
+    <line x1="6" y1="20" x2="6" y2="14"></line>
+  </svg>
+);
+
 const EjecucionMain = () => {
   const navigate = useNavigate();
   const { semanas, getSemanasPlanificacion, actividades, loading } = usePlanning();
@@ -78,8 +97,11 @@ const EjecucionMain = () => {
   const [selectedSemana, setSelectedSemana] = useState(null);
   const [selectedDia, setSelectedDia] = useState(null);
   const [dias, setDias] = useState([]);
+  const [semanaVista, setSemanaVista] = useState("dias"); // "dias" | "metricas"
   const [isDaySelectorOpen, setIsDaySelectorOpen] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showDailyReportModal, setShowDailyReportModal] = useState(false);
+  const [showWeeklyReportModal, setShowWeeklyReportModal] = useState(false);
 
   useEffect(() => {
     if (selectedProject) {
@@ -95,8 +117,11 @@ const EjecucionMain = () => {
   const handleSelectSemana = async (semana) => {
     setSelectedSemana(semana);
     setSelectedDia(null);
+    setSemanaVista("dias");
     setActiveTab("detail");
     setIsDaySelectorOpen(false);
+    setShowWeeklyReportModal(false);
+    setShowDailyReportModal(false);
 
     try {
       const { data, error } = await supabase
@@ -115,26 +140,32 @@ const EjecucionMain = () => {
   const handleBackToSemanas = () => {
     setSelectedSemana(null);
     setSelectedDia(null);
+    setSemanaVista("dias");
     setActiveTab("list");
     setIsDaySelectorOpen(false);
+    setShowDailyReportModal(false);
+    setShowWeeklyReportModal(false);
   };
 
   const handleSelectDia = (dia) => {
     setSelectedDia(dia);
     setActiveTab("detail");
     setIsDaySelectorOpen(false);
+    setShowDailyReportModal(false);
   };
 
   const handleBackToDias = () => {
     setSelectedDia(null);
     setIsDaySelectorOpen(false);
     setActiveTab("detail");
+    setShowDailyReportModal(false);
   };
 
   const handleDayButtonClick = () => {
     if (activeTab !== "detail") {
       setActiveTab("detail");
       setIsDaySelectorOpen(false);
+      setShowDailyReportModal(false);
     } else {
       setIsDaySelectorOpen((prev) => !prev);
     }
@@ -144,11 +175,13 @@ const EjecucionMain = () => {
     setSelectedDia(d);
     setActiveTab("detail");
     setIsDaySelectorOpen(false);
+    setShowDailyReportModal(false);
   };
 
   const handleGoToDashboard = () => {
     setActiveTab("dashboard");
     setIsDaySelectorOpen(false);
+    setShowDailyReportModal(false);
   };
 
   // Cálculo de día previo y siguiente
@@ -160,6 +193,7 @@ const EjecucionMain = () => {
     if (prevDia) {
       setSelectedDia(prevDia);
       setActiveTab("detail");
+      setShowDailyReportModal(false);
     }
   };
 
@@ -167,6 +201,7 @@ const EjecucionMain = () => {
     if (nextDia) {
       setSelectedDia(nextDia);
       setActiveTab("detail");
+      setShowDailyReportModal(false);
     }
   };
 
@@ -318,7 +353,26 @@ const EjecucionMain = () => {
               )}
             </div>
 
-            {/* 3. Dashboard de Avance */}
+            {/* 3. Reporte del Día */}
+            <button
+              type="button"
+              className={`tab-btn tab-btn-report ${showDailyReportModal ? "active" : ""}`}
+              onClick={() => {
+                setIsDaySelectorOpen(false);
+                setShowDailyReportModal(true);
+              }}
+              title="Ver Reporte General del Día"
+            >
+              <div className="tab-icon-wrap">
+                <IconFileText />
+              </div>
+              <span className="tab-label">
+                <span className="tab-label-desktop">Reporte del Día</span>
+                <span className="tab-label-mobile">Reporte</span>
+              </span>
+            </button>
+
+            {/* 4. Dashboard de Avance */}
             <button
               type="button"
               className={`tab-btn ${activeTab === "dashboard" ? "active" : ""}`}
@@ -358,23 +412,62 @@ const EjecucionMain = () => {
               </span>
             </button>
 
-            {/* 2. Semana Actual (activa) */}
+            {/* 2. Días de Ejecución de la Semana */}
             <button
               type="button"
-              className={`tab-btn ${activeTab === "detail" ? "active" : ""}`}
-              onClick={() => setActiveTab("detail")}
+              className={`tab-btn ${activeTab === "detail" && semanaVista === "dias" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("detail");
+                setSemanaVista("dias");
+              }}
+              title={`Días de la Semana ${selectedSemana.numero_semana}`}
             >
               <div className="tab-icon-wrap">
-                <IconEye />
+                <IconCalendar />
                 <span className="tab-count-badge">Sem. {selectedSemana.numero_semana}</span>
               </div>
               <span className="tab-label">
-                <span className="tab-label-desktop">Semana {selectedSemana.numero_semana}</span>
-                <span className="tab-label-mobile">Semana {selectedSemana.numero_semana}</span>
+                <span className="tab-label-desktop">Días Semana {selectedSemana.numero_semana}</span>
+                <span className="tab-label-mobile">Sem. {selectedSemana.numero_semana}</span>
               </span>
             </button>
 
-            {/* 3. Dashboard de Avance */}
+            {/* 3. Métricas Semanales */}
+            <button
+              type="button"
+              className={`tab-btn ${activeTab === "detail" && semanaVista === "metricas" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("detail");
+                setSemanaVista("metricas");
+              }}
+              title="Métricas Semanales"
+            >
+              <div className="tab-icon-wrap">
+                <IconBarChart />
+              </div>
+              <span className="tab-label">
+                <span className="tab-label-desktop">Métricas</span>
+                <span className="tab-label-mobile">Métricas</span>
+              </span>
+            </button>
+
+            {/* 4. Reporte Semanal */}
+            <button
+              type="button"
+              className={`tab-btn tab-btn-report ${showWeeklyReportModal ? "active" : ""}`}
+              onClick={() => setShowWeeklyReportModal(true)}
+              title="Ver Reporte Semanal"
+            >
+              <div className="tab-icon-wrap">
+                <IconFileText />
+              </div>
+              <span className="tab-label">
+                <span className="tab-label-desktop">Reporte Semanal</span>
+                <span className="tab-label-mobile">Reporte</span>
+              </span>
+            </button>
+
+            {/* 5. Dashboard de Avance */}
             <button
               type="button"
               className={`tab-btn ${activeTab === "dashboard" ? "active" : ""}`}
@@ -517,6 +610,7 @@ const EjecucionMain = () => {
             onSelectDia={handleSelectDia}
             dias={dias}
             setDias={setDias}
+            vista={semanaVista}
           />
         ) : activeTab === "dashboard" ? (
           <div style={{ padding: "1.5rem" }}>
@@ -533,6 +627,26 @@ const EjecucionMain = () => {
           />
         )}
       </div>
+
+      {/* Modal de Reporte Semanal (Disponible sobre cualquier pestaña cuando hay semana seleccionada) */}
+      {selectedSemana && !selectedDia && (
+        <WeeklyReportModal
+          isOpen={showWeeklyReportModal}
+          onClose={() => setShowWeeklyReportModal(false)}
+          semanaId={selectedSemana.id}
+          semanaNumero={selectedSemana.numero_semana}
+        />
+      )}
+
+      {/* Modal de Reporte Diario (Disponible sobre cualquier pestaña cuando hay día seleccionado) */}
+      {selectedDia && (
+        <DailyReportModal
+          isOpen={showDailyReportModal}
+          onClose={() => setShowDailyReportModal(false)}
+          diaId={selectedDia.id}
+          diaFecha={selectedDia.fecha}
+        />
+      )}
 
       {/* Modal Informativo */}
       <Modal

@@ -194,21 +194,11 @@ const CoordinacionesMain = () => {
               )}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="coordinaciones-filter-group">
               <select
                 value={filterEstado}
                 onChange={(e) => setFilterEstado(e.target.value)}
-                style={{
-                  padding: '0.55rem 0.85rem',
-                  borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#ffffff',
-                  fontSize: '0.85rem',
-                  color: '#334155',
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  outline: 'none',
-                }}
+                className="coordinaciones-filter-select"
               >
                 <option value="todos">Todos los Estados</option>
                 <option value="activo">Solo Activas</option>
