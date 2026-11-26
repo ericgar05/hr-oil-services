@@ -576,7 +576,7 @@
   margin-top: 4px;
 }
 
-.total-highlight {
+.compras-facturacion-main .total-highlight {
   border-top: 1px solid #e2e8f0;
   margin-top: 10px;
   padding-top: 15px;
@@ -596,7 +596,7 @@
 
 /* Dark mode adjustments for new styles */
 @media (prefers-color-scheme: dark) {
-  .total-highlight {
+  .compras-facturacion-main .total-highlight {
     border-top-color: var(--border-light, #4a5568);
     background-color: rgba(255, 255, 255, 0.05);
   }

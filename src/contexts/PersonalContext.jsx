@@ -700,7 +700,9 @@ export const PersonalProvider = ({ children }) => {
           id: payment.id,
           projectId: payment.project_id,
           fechaPago: payment.fecha_pago,
+          fecha_pago: payment.fecha_pago,
           tasaCambio: parseFloat(payment.tasa_cambio),
+          tasa_cambio: parseFloat(payment.tasa_cambio),
           pagos: payment.payment_details.map((detail) => ({
             id: detail.id,
             empleado: {
@@ -729,6 +731,7 @@ export const PersonalProvider = ({ children }) => {
             montoExtraBs: parseFloat(detail.monto_extra_bs || 0),
             montoExtraUSD: parseFloat(detail.monto_extra_usd || 0),
             montoTotalUSD: parseFloat(detail.monto_total_usd || 0),
+            monto_total_usd: parseFloat(detail.monto_total_usd || 0),
             adelantosUSD: parseFloat(detail.adelantos_usd || 0),
             totalPagarBs: parseFloat(detail.total_pagar_bs),
             bancoPago: detail.banco_pago,
@@ -796,7 +799,7 @@ export const PersonalProvider = ({ children }) => {
           subtotalBs: parseFloat(detail.subtotal_bs),
           deduccionesLeyBs: parseFloat(detail.deducciones_ley_bs),
           desgloseDeduccionesLey: detail.desglose_deducciones_ley,
-          desgloseDeduccionesLey: detail.desglose_deducciones_ley,
+
           montoExtraBs: parseFloat(detail.monto_extra_bs || 0),
           montoExtraUSD: parseFloat(detail.monto_extra_usd || 0),
           montoTotalUSD: parseFloat(detail.monto_total_usd || 0),
@@ -867,8 +870,16 @@ export const PersonalProvider = ({ children }) => {
           id: p.id,
           projectId: p.project_id,
           fechaPago: p.fecha_pago,
+          fecha_pago: p.fecha_pago,
           tasaCambio: p.tasa_cambio,
-          pagos: p.pagos, // Array of objects
+          tasa_cambio: p.tasa_cambio,
+          pagos: (p.pagos || []).map((cp) => ({
+            ...cp,
+            monto_total_usd: parseFloat(cp.monto_total_usd || cp.montoTotalUSD || 0),
+            montoTotalUSD: parseFloat(cp.montoTotalUSD || cp.monto_total_usd || 0),
+            nombre_contratista: cp.nombre_contratista || cp.nombre || "Contratista",
+            nombre: cp.nombre || cp.nombre_contratista || "Contratista",
+          })),
           timestamp: p.created_at,
         }));
 

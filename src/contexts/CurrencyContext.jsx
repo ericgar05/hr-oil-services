@@ -77,10 +77,6 @@ export const CurrencyProvider = ({ children }) => {
     return `${symbols[currency]} ${formatter.format(amount)}`;
   };
 
-  const getTotalMonto = () => {
-    return items.reduce((total, item) => total + item.montoContrato, 0);
-  };
-
   // const formatCurrency = (amount, currency = "USD", options = {}) => {
   //   const defaultOptions = {
   //     minimumFractionDigits: 2,

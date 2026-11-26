@@ -654,7 +654,7 @@ export const OperacionesProvider = ({ children }) => {
         total_usd: total_usd.toFixed(2),
         iva: iva.toFixed(2),
         precio_unitario: parseFloat(purchaseData.precio_unitario).toFixed(2),
-        cantidad: parseInt(purchaseData.cantidad),
+        cantidad: parseFloat(purchaseData.cantidad),
         project_id: selectedProject.id,
       };
 
@@ -737,13 +737,14 @@ export const OperacionesProvider = ({ children }) => {
         }
       }
 
-      // Actualizar requerimientos pendientes
+      // Actualizar requerimientos pendientes (estrictamente filtrados por el proyecto activo)
       const { data: pendingReqItems, error: reqItemsError } = await supabase
         .from("requerimiento_items")
         .select(
-          "id, cantidad_requerida, cantidad_comprada, requerimiento_id, status",
+          "id, cantidad_requerida, cantidad_comprada, requerimiento_id, status, requerimientos!inner(project_id)",
         )
         .eq("nombre_producto", purchaseData.nombre_producto)
+        .eq("requerimientos.project_id", selectedProject.id)
         .in("status", ["pendiente", "en_progreso"]);
 
       if (reqItemsError) {

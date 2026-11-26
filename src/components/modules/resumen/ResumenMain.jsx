@@ -137,8 +137,8 @@ const ResumenMain = () => {
       }, 0) || 0;
 
     const porcentajeTotalEjecutado =
-      subtotalConIVA_USD > 0
-        ? (totalEjecutado_USD / subtotalConIVA_USD) * 100
+      totalPresupuesto_USD > 0
+        ? (totalEjecutado_USD / totalPresupuesto_USD) * 100
         : 0;
 
     const generarConversiones = (usdAmount) => {
@@ -376,6 +376,7 @@ const ResumenMain = () => {
     facturas,
     comprasSinFactura,
     allPagos,
+    allPagosContratistas,
   ]);
 
   const isLoading =
@@ -464,8 +465,10 @@ const ResumenMain = () => {
                         <ValuacionResumenCard
                           valuacion={valuacion}
                           mainCurrency={mainCurrency}
-                          budgetTotalUSD={subtotalConIVA_USD}
+                          budgetTotalUSD={totalPresupuesto_USD}
                           cumulativeProgressUSD={cumulativeValuationUSD}
+                          allPagos={allPagos}
+                          allPagosContratistas={allPagosContratistas}
                         />
                       </div>
                     );

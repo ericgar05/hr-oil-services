@@ -1,228 +1,643 @@
-// src/components/modules/contrato/submodules/presupuesto/components/PresupuestoForm.jsx
-import React, { useState } from 'react'
-import './PresupuestoForm.css'
+/* src/components/modules/contrato/submodules/presupuesto/components/PresupuestoForm.css */
 
-const PresupuestoForm = ({ 
-  presupuesto, 
-  onSubmit, 
-  onCancel, 
-  showItemsForm = false, 
-  onAddItem 
-}) => {
-  const [formData, setFormData] = useState({
-    contratoNumero: presupuesto.contratoNumero || '',
-    nombreContrato: presupuesto.nombreContrato || ''
-  })
-
-  const [itemData, setItemData] = useState({
-    item: '',
-    descripcion: '',
-    unidad: '',
-    cantidad: 1,
-    precioUnitario: 0,
-    moneda: 'USD',
-    aplicaIVA: true
-  })
-
-  const unidades = ['SG', 'DIA', 'M3', 'UNIDAD', 'H-H', 'ML', 'M2', 'KG', 'TON', 'LTS', 'GLN']
-
-  const handleContratoSubmit = (e) => {
-    e.preventDefault()
-    if (formData.contratoNumero && formData.nombreContrato) {
-      onSubmit(formData)
-    } else {
-      alert('Por favor complete todos los campos del contrato')
-    }
-  }
-
-  const handleItemSubmit = (e) => {
-    e.preventDefault()
-    
-    // Generar número de ítem automáticamente
-    const numeroItems = presupuesto.items.length
-    const nextItemNumber = `8.${numeroItems + 1}`
-    
-    const newItem = {
-      ...itemData,
-      item: nextItemNumber
-    }
-
-    onAddItem(newItem)
-
-    // Resetear formulario de ítem
-    setItemData({
-      item: '',
-      descripcion: '',
-      unidad: '',
-      cantidad: 1,
-      precioUnitario: 0,
-      moneda: 'USD',
-      aplicaIVA: true
-    })
-  }
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
-  }
-
-  const handleItemChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setItemData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }))
-  }
-
-  if (!showItemsForm) {
-    return (
-      <div className="presupuesto-form">
-        <form onSubmit={handleContratoSubmit}>
-          <div className="form-group">
-            <label htmlFor="contratoNumero">Contrato N° *</label>
-            <input
-              type="text"
-              id="contratoNumero"
-              name="contratoNumero"
-              value={formData.contratoNumero}
-              onChange={handleInputChange}
-              placeholder="Ej: 3N-069-035-D-24-S-0201 / SAP 4600139869"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="nombreContrato">Nombre Completo del Contrato *</label>
-            <textarea
-              id="nombreContrato"
-              name="nombreContrato"
-              value={formData.nombreContrato}
-              onChange={handleInputChange}
-              placeholder="Ej: MANTENIMIENTO CORRECTIVO A VÁLVULAS DE CONTROL, ON-OFF Y VÁLVULAS SP Y ACTUADORES DE LAS UNIDADES DE PROCESO..."
-              rows="3"
-              required
-            />
-          </div>
-
-          <div className="form-actions">
-            <button type="submit" className="btn-primary">
-              ➡️ Continuar a Agregar Ítems
-            </button>
-            <button type="button" className="btn-outline" onClick={onCancel}>
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
-    )
-  }
-
-  return (
-    <div className="presupuesto-form items-form">
-      <h4>Agregar Nuevo Ítem</h4>
-      <form onSubmit={handleItemSubmit}>
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="descripcion">Descripción *</label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={itemData.descripcion}
-              onChange={handleItemChange}
-              placeholder="Descripción detallada del ítem..."
-              rows="2"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="unidad">Unidad *</label>
-            <select
-              id="unidad"
-              name="unidad"
-              value={itemData.unidad}
-              onChange={handleItemChange}
-              required
-            >
-              <option value="">Seleccionar unidad...</option>
-              {unidades.map(unidad => (
-                <option key={unidad} value={unidad}>{unidad}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="cantidad">Cantidad *</label>
-            <input
-              type="number"
-              id="cantidad"
-              name="cantidad"
-              value={itemData.cantidad}
-              onChange={handleItemChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="precioUnitario">Precio Unitario *</label>
-            <input
-              type="number"
-              id="precioUnitario"
-              name="precioUnitario"
-              value={itemData.precioUnitario}
-              onChange={handleItemChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="moneda">Moneda *</label>
-            <select
-              id="moneda"
-              name="moneda"
-              value={itemData.moneda}
-              onChange={handleItemChange}
-              required
-            >
-              <option value="USD">USD$</option>
-              <option value="EUR">EURO</option>
-              <option value="BS">Bs</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="form-group checkbox-group">
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              name="aplicaIVA"
-              checked={itemData.aplicaIVA}
-              onChange={handleItemChange}
-            />
-            <span className="checkmark"></span>
-            Aplicar IVA (16%) a este ítem
-          </label>
-        </div>
-
-        <div className="form-actions">
-          <button type="submit" className="btn-primary">
-            ➕ Agregar Ítem
-          </button>
-        </div>
-      </form>
-    </div>
-  )
+.presupuesto-form {
+  padding: 1.75rem 2rem;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  border: 1px solid #e2e8f0;
 }
 
-export default PresupuestoForm
+/* Encabezado con Icono */
+.form-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.15rem 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.badge-icon-box {
+  width: 44px;
+  height: 44px;
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.form-header-badge h3 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.form-header-badge p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* Grupos y Campos del Formulario */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.2px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.65rem 0.875rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.925rem;
+  color: #0f172a;
+  background-color: #ffffff;
+  transition: all 0.15s ease-in-out;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-group input {
+  height: 42px;
+}
+
+.form-group select {
+  height: 42px;
+  cursor: pointer;
+}
+
+.form-group textarea {
+  min-height: 85px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1e40af;
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8;
+  font-style: normal;
+}
+
+.input-help {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+}
+
+/* =========================================================
+   Paso 1: Configuración de Cabecera Contractual
+   ========================================================= */
+
+.form-row-contract-head {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.35rem;
+}
+
+.col-contract-scope {
+  margin-bottom: 1.35rem;
+}
+
+@media (max-width: 800px) {
+  .form-row-contract-head {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Selector Segmentado de Moneda */
+.currency-segmented-control {
+  display: flex;
+  gap: 0.65rem;
+  height: 42px;
+}
+
+.currency-pill {
+  flex: 1;
+  padding: 0 0.85rem;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  height: 42px;
+}
+
+.currency-pill:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.currency-pill.active {
+  border-color: #1e40af;
+  background: #eff6ff;
+  color: #1e40af;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.12);
+}
+
+.currency-symbol-tag {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1e40af;
+}
+
+.currency-pill-label {
+  font-size: 0.825rem;
+}
+
+.currency-pill-indicator {
+  color: #16a34a;
+  font-weight: 700;
+  margin-left: 0.25rem;
+}
+
+/* =========================================================
+   Paso 2: Carga de Partidas (Espaciado Proporcionado)
+   ========================================================= */
+
+.items-form-header {
+  padding-bottom: 1.15rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.items-header-title h4 {
+  margin: 0 0 0.2rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.header-subtitle {
+  font-size: 0.825rem;
+  color: #64748b;
+}
+
+/* Fila 1: Clasificación de la Partida */
+.form-row-classification {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin-bottom: 1.35rem;
+  flex-wrap: wrap;
+}
+
+.col-item-num {
+  flex: 0 0 140px;
+}
+
+.col-unit {
+  flex: 0 0 280px;
+}
+
+.col-item-currency {
+  flex: 0 0 240px;
+}
+
+.item-currency-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 42px;
+  padding: 0 0.85rem;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.currency-badge-text {
+  color: #475569;
+}
+
+.currency-badge-text strong {
+  color: #1e40af;
+}
+
+.btn-currency-override {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.775rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.btn-currency-override:hover {
+  color: #1d4ed8;
+}
+
+.currency-override-select {
+  height: 32px !important;
+  padding: 0 0.5rem !important;
+  font-size: 0.8rem !important;
+  border-radius: 6px !important;
+}
+
+/* Entrada de Unidad Personalizada */
+.custom-unit-input-group {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  height: 42px;
+}
+
+.custom-unit-input-group input {
+  flex: 1;
+  text-transform: uppercase;
+  font-weight: 600;
+  height: 42px;
+}
+
+.btn-unit-save {
+  background: #16a34a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-unit-save:hover {
+  background: #15803d;
+}
+
+.btn-unit-cancel {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-unit-cancel:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Fila 2: Descripción */
+.col-desc {
+  margin-bottom: 1.35rem;
+}
+
+/* Fila 3: Cantidad, Precio y Live Preview */
+.form-row-financial {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin-bottom: 1.35rem;
+  flex-wrap: wrap;
+}
+
+.col-qty {
+  flex: 0 0 160px;
+}
+
+.col-price {
+  flex: 0 0 200px;
+}
+
+.col-preview {
+  flex: 1;
+  min-width: 280px;
+  max-width: 420px;
+}
+
+.col-qty input,
+.col-price input {
+  font-family: monospace;
+  font-weight: 600;
+}
+
+/* Caja de Cálculo Estimado en Vivo */
+.live-preview-box {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-left: 4px solid #1e40af;
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+.live-preview-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.live-preview-label {
+  font-size: 0.725rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.live-preview-amount {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: monospace;
+}
+
+.live-preview-sub {
+  font-size: 0.725rem;
+  color: #475569;
+}
+
+.exempt-badge {
+  color: #b45309;
+  font-weight: 600;
+}
+
+/* Checkbox Moderno */
+.checkbox-group {
+  margin: 0.5rem 0 1.5rem 0;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.875rem;
+  color: #334155;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #1e40af;
+}
+
+/* Barra de Acciones y Botones Principales */
+.form-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-primary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+  height: 44px;
+}
+
+.btn-primary-action:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(30, 64, 175, 0.3);
+}
+
+.btn-primary-action:active {
+  transform: translateY(0);
+  filter: brightness(0.96);
+}
+
+.btn-ghost-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  color: #475569;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 1.4rem;
+  font-size: 0.925rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  height: 44px;
+}
+
+.btn-ghost-action:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+/* =========================================================
+   Adaptación Móvil 100% Responsiva
+   ========================================================= */
+
+@media (max-width: 768px) {
+  .presupuesto-form {
+    padding: 1rem 0.85rem;
+    border-radius: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .form-header-badge {
+    padding: 0.85rem 0.95rem;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .badge-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .form-header-badge h3 {
+    font-size: 1.05rem;
+  }
+
+  .form-header-badge p {
+    font-size: 0.775rem;
+  }
+
+  /* Paso 1: Configuración de Cabecera Contractual */
+  .form-row-contract-head {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .currency-segmented-control {
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .currency-pill {
+    padding: 0 0.5rem;
+    font-size: 0.8rem;
+    height: 40px;
+  }
+
+  /* Paso 2: Carga de Partidas */
+  .items-form-header {
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.15rem;
+  }
+
+  .items-header-title h4 {
+    font-size: 1.05rem;
+  }
+
+  /* Fila 1: Clasificación de Partida (Ítem + Moneda arriba, Unidad abajo) */
+  .form-row-classification {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .col-item-num {
+    flex: unset;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .col-item-currency {
+    flex: unset;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .col-unit {
+    flex: unset;
+    grid-column: 1 / -1;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Fila 2: Descripción */
+  .col-desc {
+    margin-bottom: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Fila 3: Financiera y Live Preview (Cantidad + Precio arriba, Preview abajo) */
+  .form-row-financial {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .col-qty {
+    flex: unset;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .col-price {
+    flex: unset;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .col-preview {
+    flex: unset;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .live-preview-box {
+    height: auto;
+    padding: 0.65rem 0.85rem;
+    min-height: 46px;
+    box-sizing: border-box;
+  }
+
+  .live-preview-main {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  /* Barra de Acciones */
+  .form-actions-bar {
+    flex-direction: column-reverse;
+    gap: 0.65rem;
+    width: 100%;
+    padding-top: 1.15rem;
+  }
+
+  .btn-primary-action,
+  .btn-ghost-action {
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+}

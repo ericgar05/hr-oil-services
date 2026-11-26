@@ -9,11 +9,9 @@ import { useProjects } from "../../../../../../contexts/ProjectContext";
 import { calculateDailyLaborCost } from "../../../../../../utils/payrollCalculator";
 
 export const DiasList = ({ semanaId }) => {
+  const { selectedDia, selectDia, setDias, actividades } = usePlanning();
   const [diasDeLaSemana, setDiasDeLaSemana] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [selectedDia, setSelectedDia] = useState(null);
-
-  const { actividades } = usePlanning();
 
   const { getEmployeesByProject } = usePersonal();
   const { selectedProject } = useProjects();
@@ -63,9 +61,10 @@ export const DiasList = ({ semanaId }) => {
       console.error("Error fetching días:", error);
     } else {
       setDiasDeLaSemana(data || []);
+      setDias(data || []);
     }
     setLoading(false);
-  }, []);
+  }, [setDias]);
 
   useEffect(() => {
     if (semanaId) {
@@ -74,7 +73,7 @@ export const DiasList = ({ semanaId }) => {
   }, [semanaId, getDiasPorSemana]);
 
   const handleBackFromDia = () => {
-    setSelectedDia(null);
+    selectDia(null);
     getDiasPorSemana(semanaId);
   };
 
@@ -103,7 +102,7 @@ export const DiasList = ({ semanaId }) => {
         <DiaPlanning
           dia={selectedDia}
           allDias={diasDeLaSemana}
-          onNavigate={setSelectedDia}
+          onNavigate={selectDia}
           onBack={handleBackFromDia}
         />
       ) : diasDeLaSemana.length > 0 ? (
@@ -123,7 +122,7 @@ export const DiasList = ({ semanaId }) => {
                 <PlanningDayItem
                   key={dia.id}
                   dia={dia}
-                  onClick={setSelectedDia}
+                  onClick={selectDia}
                   payrollEstimated={calculatePayrollForDay(dia)}
                 />
               );
