@@ -15,6 +15,7 @@ import { PlanningProvider } from "./contexts/PlanningContext.jsx";
 import { ExecutionProvider } from "./contexts/ExecutionContext";
 
 import { NotificationProvider } from "./contexts/NotificationContext.jsx";
+import { CoordinacionesProvider } from "./contexts/CoordinacionesContext.jsx";
 import App from "./App.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -31,7 +32,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                       <ExecutionProvider>
                         <PersonalProvider>
                           <OperacionesProvider>
-                            <App />
+                            <CoordinacionesProvider>
+                              <App />
+                            </CoordinacionesProvider>
                           </OperacionesProvider>
                         </PersonalProvider>
                       </ExecutionProvider>
