@@ -649,6 +649,7 @@
   border-radius: 12px;
   border: 1px solid #e2e8f0;
   padding: 1.25rem;
+  box-sizing: border-box;
 }
 
 .planning-list .resumen-cards {
@@ -656,6 +657,7 @@
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem;
   margin-bottom: 1.25rem;
+  box-sizing: border-box;
 }
 
 .planning-list .resumen-card {
@@ -668,6 +670,7 @@
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
 }
 
 .planning-list .resumen-card:hover {
@@ -1202,7 +1205,10 @@
 @media (max-width: 768px) {
   .planning-main {
     padding: 1rem 0.75rem;
-    padding-bottom: 5.5rem;
+    padding-bottom: 6rem !important;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
   }
 
   /* Barra de Pestañas Fija en la Parte Inferior (Mobile Command Bar) */
@@ -1427,8 +1433,134 @@
     z-index: 1010;
   }
 
+  .planning-tab-content {
+    border-radius: 12px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  .planning-list {
+    padding: 0.85rem 0.75rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .planning-list .list-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+    margin-bottom: 1rem !important;
+    padding-bottom: 0.85rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .planning-list .header-content h3 {
+    font-size: 1.15rem !important;
+  }
+
+  .planning-list .header-content p {
+    font-size: 0.8rem !important;
+  }
+
+  .planning-list .header-actions {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+    width: 100% !important;
+  }
+
+  .planning-list .badge-total-pill {
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.78rem !important;
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+  }
+
+  .planning-list .planning-action-btn {
+    flex-shrink: 0 !important;
+  }
+
+  .planning-list .resumen-general {
+    padding: 0.85rem 0.75rem !important;
+    border-radius: 10px !important;
+    margin-bottom: 1.25rem !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  .planning-list .resumen-cards {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+    margin-bottom: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .planning-list .resumen-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 0.75rem 0.85rem !important;
+    gap: 0.75rem !important;
+  }
+
+  .planning-list .resumen-icon {
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 8px !important;
+  }
+
+  .planning-list .resumen-icon svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+
+  .planning-list .resumen-value {
+    font-size: 1.15rem !important;
+  }
+
+  .planning-list .resumen-label {
+    font-size: 0.7rem !important;
+  }
+
+  .planning-list .resumen-subtitle {
+    font-size: 0.68rem !important;
+  }
+
+  .planning-list .progress-section {
+    padding: 0.75rem 0.85rem !important;
+    box-sizing: border-box !important;
+  }
+
   .planning-list .planning-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
+    gap: 0.85rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 2rem !important;
+  }
+
+  .planning-list .semana-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+  }
+
+  .planning-list .semana-card .card-financial-block {
+    padding: 0.65rem 0.75rem !important;
+    box-sizing: border-box !important;
+  }
+
+  .planning-list .semana-card .cell-val {
+    font-size: 0.88rem !important;
   }
 
   .planning-dias-container {

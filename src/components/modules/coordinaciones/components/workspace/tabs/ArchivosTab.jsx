@@ -120,7 +120,7 @@ export const ArchivosTab = ({ coordinacion, departamento, actionTrigger }) => {
     <div>
       {/* Barra de Herramientas y Filtros */}
       <div className="tab-toolbar">
-        <div className="coordinaciones-search-wrap" style={{ maxWidth: '300px' }}>
+        <div className="coordinaciones-search-wrap">
           <IconSearch />
           <input
             type="text"
