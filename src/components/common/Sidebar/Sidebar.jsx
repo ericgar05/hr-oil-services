@@ -115,8 +115,8 @@ const Sidebar = ({ items, isOpen, onToggle, isMobile }) => {
                 );
               })}
 
-              {/* Admin Section - Habilitado para Jefes y Directores */}
-              {ROLES[currentUser?.role]?.level >= 50 && (
+              {/* Admin Section - Habilitado según permisos del usuario */}
+              {hasPermission("permissions") && (
                 <SidebarItem
                   item={{
                     id: "permissions",
