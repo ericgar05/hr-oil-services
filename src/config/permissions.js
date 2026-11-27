@@ -1,93 +1,163 @@
 /**
- * Configuración de Roles y Permisos (Sistema de Cargos)
- * 
- * Define la jerarquía de acceso basada en la estructura organizativa.
- * - scope: define a qué módulo principal tiene acceso el rol.
- * - level: define la jerarquía (mayor número = mayor rango).
- * - label: nombre legible del cargo.
+ * Configuración Centralizada de Roles, Jerarquía y Módulos (RBAC)
+ *
+ * Jerarquía oficial (4 roles):
+ * 1. admin (Programador / Superusuario): Acceso total. Único que crea Directivos.
+ * 2. directivo: Creado por Admin. Crea Coordinadores con módulos dentro de su propio alcance.
+ * 3. coordinador (Jefe de Departamento): Crea Administrativos con módulos dentro de su propio alcance.
+ * 4. administrativo: Solo accede a los módulos otorgados. No crea usuarios.
  */
+
+export const SYSTEM_MODULES = [
+  {
+    id: "resumen",
+    label: "Resumen / Dashboard",
+    description: "Panel general y métricas globales del proyecto",
+    path: "/resumen",
+  },
+  {
+    id: "solicitudes",
+    label: "Solicitudes",
+    description: "Bandeja de requerimientos y aprobaciones",
+    path: "/solicitudes",
+  },
+  {
+    id: "administracion",
+    label: "Administración",
+    description: "Gastos administrativos, nómina, compras e ingresos",
+    path: "/administracion",
+  },
+  {
+    id: "operaciones",
+    label: "Operaciones",
+    description: "Planificación, ejecución diaria y control de obra",
+    path: "/operaciones",
+  },
+  {
+    id: "contrato",
+    label: "Contrato",
+    description: "Presupuesto, partidas y valuaciones",
+    path: "/contrato",
+  },
+  {
+    id: "coordinaciones",
+    label: "Coordinaciones",
+    description: "Espacios operativos, actividades y documentos",
+    path: "/coordinaciones",
+  },
+  {
+    id: "permissions",
+    label: "Gestión de Usuarios",
+    description: "Crear usuarios y delegar accesos según jerarquía",
+    path: "/permissions",
+  },
+];
 
 export const ROLES = {
-  // --- Nivel Directivo (Acceso Total) ---
-  DIRECTOR_GENERAL: {
-    label: "Director General",
-    scope: "*", // Comodín para acceso total
-    level: 100,
-  },
-
-  // --- Nivel Jefes de Módulo ---
-  JEFE_ADMINISTRACION: {
-    label: "Jefe de Administración",
-    scope: "administracion",
-    level: 50,
-  },
-
-  JEFE_OPERACIONES: {
-    label: "Jefe de Operaciones",
-    scope: "operaciones", 
-    level: 50,
-  },
-
-  JEFE_CONTRATO: {
-    label: "Jefe de Contrato",
-    scope: "contrato",
-    level: 50,
-  },
-
-  JEFE_COORDINACIONES: {
-    label: "Jefe de Coordinaciones",
-    scope: "coordinaciones",
-    level: 50,
-  },
-  
-  // --- Nivel Auxiliares (Requieren Aprobación) ---
-  AUXILIAR_ADMINISTRACION: {
-    label: "Auxiliar de Administración",
-    scope: "administracion",
-    level: 10,
-  },
-  AUXILIAR_OPERACIONES: {
-    label: "Auxiliar de Operaciones",
-    scope: "operaciones",
-    level: 10,
-  },
-  AUXILIAR_CONTRATO: {
-    label: "Auxiliar de Contrato",
-    scope: "contrato",
-    level: 10,
-  },
-  AUXILIAR_COORDINACIONES: {
-    label: "Auxiliar de Coordinaciones",
-    scope: "coordinaciones",
-    level: 10,
-  },
-  
-  // --- Roles Legacy (para compatibilidad temporal) ---
   admin: {
-    label: "Admin (Legacy)",
+    label: "Admin (Programador)",
+    shortLabel: "Admin",
     scope: "*",
-    level: 100
+    level: 100,
+    tier: "admin",
+    canCreate: ["directivo", "coordinador", "administrativo"],
   },
-  editor: {
-    label: "Editor (Legacy)",
-    scope: "administracion", // Asumiendo que editor solía ser admin
-    level: 50
+  directivo: {
+    label: "Directivo",
+    shortLabel: "Directivo",
+    scope: "custom",
+    level: 80,
+    tier: "directivo",
+    canCreate: ["coordinador"],
   },
-  viewer: {
-    label: "Viewer (Legacy)",
-    scope: "resumen",
-    level: 0
-  }
+  coordinador: {
+    label: "Coordinador (Jefe de Dpto.)",
+    shortLabel: "Coordinador",
+    scope: "custom",
+    level: 50,
+    tier: "coordinador",
+    canCreate: ["administrativo"],
+  },
+  administrativo: {
+    label: "Administrativo",
+    shortLabel: "Administrativo",
+    scope: "custom",
+    level: 10,
+    tier: "administrativo",
+    canCreate: [],
+  },
 };
 
-/**
- * Módulos disponibles en el sistema
- * Se usan para validar el scope
- */
 export const MODULES = {
   RESUMEN: "resumen",
+  SOLICITUDES: "solicitudes",
   ADMINISTRACION: "administracion",
   OPERACIONES: "operaciones",
   CONTRATO: "contrato",
-  COORDINACIONES: "coordinaciones"
+  COORDINACIONES: "coordinaciones",
+  PERMISSIONS: "permissions",
+};
+
+/**
+ * Determina si el usuario es Super Admin (acceso irrestricto)
+ */
+export const isSuperAdmin = (user) => {
+  return user?.role === "admin";
+};
+
+/**
+ * Retorna la lista de módulos permitidos de un usuario.
+ * Si es admin devuelve todos los módulos del sistema.
+ */
+export const getUserAllowedModules = (user) => {
+  if (!user || !user.role) return [];
+
+  if (isSuperAdmin(user)) {
+    return SYSTEM_MODULES.map((m) => m.id);
+  }
+
+  let rawModules = user.allowed_modules;
+  if (typeof rawModules === "string") {
+    try {
+      rawModules = JSON.parse(rawModules);
+    } catch {
+      rawModules = [];
+    }
+  }
+
+  return Array.isArray(rawModules) ? rawModules : [];
+};
+
+/**
+ * Retorna los roles que el usuario actual tiene permitido crear
+ */
+export const getAssignableRoles = (creatorRole) => {
+  const roleConfig = ROLES[creatorRole];
+  if (!roleConfig || !Array.isArray(roleConfig.canCreate)) return [];
+
+  return roleConfig.canCreate
+    .filter((roleKey) => ROLES[roleKey])
+    .map((roleKey) => ({
+      key: roleKey,
+      ...ROLES[roleKey],
+    }));
+};
+
+/**
+ * Retorna los módulos que el usuario creador puede delegar a sus subordinados.
+ * Admin puede delegar todos; Directivo y Coordinador solo los que poseen.
+ */
+export const getDelegableModules = (creatorUser) => {
+  if (isSuperAdmin(creatorUser)) {
+    return SYSTEM_MODULES;
+  }
+  const allowed = getUserAllowedModules(creatorUser);
+  return SYSTEM_MODULES.filter((m) => allowed.includes(m.id));
+};
+
+/**
+ * Obtiene el tier visual del rol para badges y estilos
+ */
+export const getRoleTier = (role) => {
+  return ROLES[role]?.tier || "administrativo";
 };

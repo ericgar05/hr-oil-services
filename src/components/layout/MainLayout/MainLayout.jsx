@@ -20,6 +20,7 @@ const MainLayout = ({ children }) => {
   const { selectedProject } = useProjects();
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const handleToggleSidebar = (newState) =>
     setSidebarOpen(typeof newState === "boolean" ? newState : !isSidebarOpen);
@@ -43,6 +44,13 @@ const MainLayout = ({ children }) => {
       label: "Resumen / Dashboard",
       icon: <DashboarddIcon className="sidebar-action-icon" />,
       path: "/resumen",
+    },
+    {
+      id: "solicitudes",
+      label: "Solicitudes",
+      icon: <MultiUsersIcon className="sidebar-action-icon" />,
+      path: "/solicitudes",
+      badge: pendingCount,
     },
     {
       id: "administracion",
@@ -69,13 +77,6 @@ const MainLayout = ({ children }) => {
       path: "/coordinaciones",
     },
   ];
-
-  // Agregar item de Solicitudes SOLO para Jefes (>= 50)
-  // Necesitamos ROLES para comparar level, o hardcodear la logica si no queremos importar ROLES aqui
-  // Pero lo correcto es usar permissions.
-  // Importaremos ROLES arriba.
-  // Estado para el badge de solicitudes
-  const [pendingCount, setPendingCount] = useState(0);
 
   // Efecto para consultar solicitudes pendientes (Solo Jefes de Operaciones)
   useEffect(() => {
@@ -145,15 +146,7 @@ const MainLayout = ({ children }) => {
     return () => clearInterval(interval);
   }, [userData, selectedProject]);
 
-  if (userData?.role && ROLES[userData.role]?.level >= 50) {
-    sidebarItems.splice(1, 0, {
-      id: "solicitudes",
-      label: "Solicitudes",
-      icon: <MultiUsersIcon className="sidebar-action-icon" />,
-      path: "/solicitudes",
-      badge: pendingCount, // Pasamos el conteo aquí
-    });
-  }
+  // El filtrado de permisos para 'solicitudes' y el resto de módulos se realiza en Sidebar.jsx via hasPermission()
 
   return (
     <div

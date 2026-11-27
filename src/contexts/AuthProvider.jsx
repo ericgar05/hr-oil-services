@@ -4,7 +4,11 @@ import { AuthContext } from "./AuthContext";
 import { useState, useEffect } from "react";
 import supabase from "../api/supaBase";
 import bcrypt from "bcryptjs";
-import { ROLES } from "../config/permissions"; // Importamos la configuración global de permisos
+import {
+  ROLES,
+  getUserAllowedModules,
+  isSuperAdmin,
+} from "../config/permissions"; // Importamos la configuración global de permisos
 export const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -67,6 +71,10 @@ export const AuthProvider = ({ children }) => {
         alert("Este usuario no está registrado");
         return;
       }
+      if (data.status === "Inactivo") {
+        alert("Tu cuenta ha sido desactivada. Contacta a tu supervisor.");
+        return;
+      }
       const isMatch = await bcrypt.compare(credentials.password, data.password);
       if (!isMatch) {
         alert("Contraseña incorrecta");
@@ -100,36 +108,16 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Sistema Centralizado de Permisos
-   * Verifica si el usuario actual tiene acceso al módulo solicitado.
+   * Verifica si el usuario actual tiene acceso al módulo/ruta solicitado.
    */
   const hasPermission = (targetModule) => {
-    // 1. Validar que tengamos datos de usuario seguros
     if (!userData || !userData.role) return false;
+    if (userData.status === "Inactivo") return false;
 
-    // 2. Obtener configuración del rol desde el archivo central
-    const userRoleConfig = ROLES[userData.role];
-    
-    // Si el rol no está definido en nuestra config, denegar acceso (Fail Safe)
-    if (!userRoleConfig) {
-      console.warn(`Rol desconocido: ${userData.role}`);
-      return false;
-    }
+    if (isSuperAdmin(userData)) return true;
 
-    // 3. Acceso Total (Director General, Admin Legacy)
-    if (userRoleConfig.scope === "*") return true;
-
-    // 4. Validación de Scope (Alcance del Módulo)
-    // El "Jefe" tiene acceso total a su módulo asignado
-    if (userRoleConfig.scope === targetModule) return true;
-    
-    // 5. Permisos transversales (Todos pueden ver el resumen/dashboard)
-    if (targetModule === 'resumen') return true;
-
-    // 6. Acceso a Solicitudes (Solo Jefes y Directores)
-    if (targetModule === 'solicitudes' && userRoleConfig.level >= 50) return true;
-
-    // Por defecto, denegar
-    return false;
+    const allowedModules = getUserAllowedModules(userData);
+    return allowedModules.includes(targetModule);
   };
 
   // Mantenemos alias para compatibilidad si algún componente usa hasPermissionSync
